@@ -3,7 +3,7 @@
 <template>
   <main class="home">
     <section class="home__section intro">
-      <div class="home__content">
+      <div class="section__content">
         <div class="intro__describe">
           <div class="intro__describe-text">
             <p class="intro__describe-text--main">
@@ -28,7 +28,7 @@
     </section>
 
     <section class="home__section discover">
-      <h1 class="home__title">Pratiquez en Conditions Réelles</h1>
+      <h1 class="section__title">Pratiquez en Conditions Réelles</h1>
 
       <div class="discover__content">
         <div class="discover__cardBlock">
@@ -77,8 +77,8 @@
     </section>
 
     <section class="home__section explore">
-      <h2 class="home__title">Explorez, Apprenez, Créez</h2>
-      <div class="home__content">
+      <h2 class="section__title">Explorez, Apprenez, Créez</h2>
+      <div class="section__content">
         <img
           src="@/assets/img/explore-img.webp"
           alt="image mockup mobile and desktop"
@@ -100,9 +100,9 @@
     </section>
 
     <section class="home__section access">
-      <h3 class="home__title">Simple et accessible</h3>
+      <h3 class="section__title">Simple et accessible</h3>
 
-      <div class="home__content">
+      <div class="section__content">
         <img src="@/assets/img/access-img.webp" alt="image" class="access__img" />
         <div class="access__block">
           <h6 class="access__subtitle">Créez et Accédez à Nos APIs en toute simplicité</h6>
@@ -164,9 +164,9 @@
     </section>
 
     <section class="home__section achieve">
-      <h4 class="home__title">Partagez Vos Réalisations</h4>
+      <h4 class="section__title">Partagez Vos Réalisations</h4>
 
-      <div class="home__content">
+      <div class="section__content">
         <div class="achieve__textBlock">
           <p class="achieve__text">
             Lorsque vous maîtrisez une API et créez quelque chose d’unique, partagez-le avec la
@@ -254,38 +254,6 @@
     grid-template-rows: min-content 1fr;
 
     @include m.xl {
-      grid-template-columns: 2fr 1fr;
-    }
-  }
-
-  &__title {
-    margin: 2rem;
-    grid-row: 1/2;
-    font-family: var(--font-title);
-    font-size: 1.8rem;
-    font-weight: 300;
-    position: relative;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--color-white);
-    @include m.lg {
-      font-size: 2.5rem;
-    }
-
-    @include m.xl {
-      grid-column: 1/2;
-    }
-  }
-
-  &__content {
-    grid-row: 2/-1;
-    display: grid;
-    grid-template-rows: 2fr 1fr;
-    grid-template-columns: 1fr;
-    row-gap: 2rem;
-
-    @include m.xl {
-      grid-column: 1/-1;
-      grid-template-rows: 1fr;
       grid-template-columns: 2fr 1fr;
     }
   }
@@ -538,7 +506,7 @@
     grid-row: 1/2;
     width: 80vw;
     min-width: 20rem;
-    max-width: 50rem;
+    max-width: 40rem;
     justify-self: center;
     align-self: center;
     @include m.xl {

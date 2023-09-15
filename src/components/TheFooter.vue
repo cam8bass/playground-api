@@ -2,7 +2,7 @@
 
 <template>
   <footer class="footer">
-    <img src="@/assets/img/logo.svg" alt="logo playground api" class="footer__logo" />
+    <img src="@/assets/img/logo.webp" alt="logo playground api" class="footer__logo" />
   </footer>
 </template>
 

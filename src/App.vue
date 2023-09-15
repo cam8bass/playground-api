@@ -16,12 +16,12 @@ import TheFooter from './components/TheFooter.vue'
 @import '@/assets/base.scss';
 .container {
   display: grid;
-  grid-template-rows: 10vh 1fr min-content;
-
+  grid-template-rows: min-content 1fr min-content;
 }
 
 .content {
   position: relative;
+  min-height: 80vh; // TODO: A voir
 }
 
 .header,

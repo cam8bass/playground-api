@@ -6,7 +6,7 @@ import TheNavigation from '@/components/TheNavigation.vue'
   <header class="header">
     <div class="header_brand">
       <RouterLink to="/home">
-        <img src="@/assets/img/logo.svg" alt="logo playground api" class="header__logo" />
+        <img src="@/assets/img/logo.webp" alt="logo playground api" class="header__logo" />
       </RouterLink>
     </div>
     <TheNavigation />
