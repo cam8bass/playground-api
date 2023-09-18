@@ -1,223 +1,243 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AnimatedComponent from '@/components/AnimatedComponent.vue'
+</script>
 
 <template>
   <main class="home">
-    <section class="home__section intro">
+    <section class="home__section intro" id="intro"
+    >
       <div class="section__content">
-        <div class="intro__describe">
-          <div class="intro__describe-text">
-            <p class="intro__describe-text--main">
-              API Playground, votre terrain d’entraînement pour maîtriser les appels API et créer
-              des sites web interactifs.
-            </p>
-            <p class="intro__describe-text--sub">
-              Que vous soyez novice en développement web en quête d’amélioration ou un passionné de
-              code en quête d’inspiration, API Playground est votre allié.
-            </p>
+        <AnimatedComponent animation-type="translateLeft">
+          <div class="intro__describe">
+            <div class="intro__describe-text">
+              <p class="intro__describe-text--main">
+                API Playground, votre terrain d’entraînement pour maîtriser les appels API et créer
+                des sites web interactifs.
+              </p>
+              <p class="intro__describe-text--sub">
+                Que vous soyez novice en développement web en quête d’amélioration ou un passionné
+                de code en quête d’inspiration, API Playground est votre allié.
+              </p>
+            </div>
+            <RouterLink to="/apis" class="btn intro__describe-btn">Nos apis</RouterLink>
           </div>
-          <RouterLink to="/apis" class="btn intro__describe-btn">Nos apis</RouterLink>
-        </div>
-        <div class="intro__begin">
-          <h1 class="intro__begin-title">Commencer maintenant</h1>
-          <div class="intro__begin-link">
-            <RouterLink to="/signup" class="btn intro__begin-link--signup">Inscription</RouterLink>
-            <RouterLink to="/login" class="btn">Connexion</RouterLink>
-          </div>
-        </div>
-      </div>
-    </section>
+        </AnimatedComponent>
 
-    <section class="home__section discover">
-      <h1 class="section__title">Pratiquez en Conditions Réelles</h1>
-
-      <div class="discover__content">
-        <div class="discover__cardBlock">
-          <div class="discover__card">
-            <h5 class="discover__card-title">Inscription facile</h5>
-            <svg class="discover__card-icon">
-              <use xlink:href="@/components/icons/sprite.svg#icon-user-plus"></use>
-            </svg>
-            <p class="discover__card-text">
-              Rejoignez notre communauté en quelques clics avec une inscription rapide et intuitive.
-            </p>
-          </div>
-
-          <div class="discover__card">
-            <h5 class="discover__card-title">Exploration immédiate</h5>
-            <svg class="discover__card-icon">
-              <use xlink:href="@/components/icons/sprite.svg#icon-compass"></use>
-            </svg>
-            <p class="discover__card-text">
-              Parcourez nos APIs dès votre arrivée, sans tracas ni complications.
-            </p>
-          </div>
-
-          <div class="discover__card">
-            <h5 class="discover__card-title">Documentation clair</h5>
-            <svg class="discover__card-icon">
-              <use xlink:href="@/components/icons/sprite.svg#icon-document"></use>
-            </svg>
-            <p class="discover__card-text">
-              Des informations claires et précises vous guident à chaque étape.
-            </p>
-          </div>
-        </div>
-
-        <p class="discover__text discover__text-up">
-          Notre environnement de jeu vous permet de faire des appels réels à nos APIs, vous donnant
-          la possibilité de manipuler des données et de voir instantanément comment elles
-          réagissent.
-        </p>
-
-        <p class="discover__text discover__text-down">
-          C’est l’occasion idéale d’affiner vos compétences en communication entre le frontend et le
-          backend tout en gagnant en confiance.
-        </p>
-      </div>
-    </section>
-
-    <section class="home__section explore">
-      <h2 class="section__title">Explorez, Apprenez, Créez</h2>
-      <div class="section__content">
-        <img
-          src="@/assets/img/explore-img.webp"
-          alt="image mockup mobile and desktop"
-          class="explore__img"
-        />
-
-        <div class="explore__textBlock">
-          <p class="explore__text">
-            Découvrez un ensemble varié d’APIs soigneusement conçues pour vous offrir une expérience
-            d’apprentissage pratique. Chaque API est accompagnée d’une documentation détaillée, vous
-            guidant à travers les endpoints, les paramètres requis et les réponses attendues.
-          </p>
-          <p class="explore__text">
-            Vous pourrez ainsi apprendre en vous engageant directement dans la création de vos
-            propres projets front-end.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="home__section access">
-      <h3 class="section__title">Simple et accessible</h3>
-
-      <div class="section__content">
-        <img src="@/assets/img/access-img.webp" alt="image" class="access__img" />
-        <div class="access__block">
-          <h6 class="access__subtitle">Créez et Accédez à Nos APIs en toute simplicité</h6>
-
-          <ul class="access__list">
-            <li class="access__item">
-              <svg class="access__item-icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
-              </svg>
-
-              <span class="access__item-text">Cliquez sur Inscription pour commencer</span>
-            </li>
-
-            <li class="access__item">
-              <svg class="access__item-icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
-              </svg>
-
-              <span class="access__item-text"
-                >Remplissez rapidement le formulaire d’inscription.</span
+        <AnimatedComponent animation-type="translateRight">
+          <div class="intro__begin">
+            <h1 class="intro__begin-title">Commencer maintenant</h1>
+            <div class="intro__begin-link">
+              <RouterLink to="/signup" class="btn intro__begin-link--signup"
+                >Inscription</RouterLink
               >
+              <button @click="$emit('openLogin', true)" class="btn">Connexion</button>
+            </div>
+          </div>
+        </AnimatedComponent>
+      </div>
+    </section>
+
+    <AnimatedComponent animation-type="fade">
+      <section class="home__section discover" id="discover">
+        <h1 class="section__title">Pratiquez en Conditions Réelles</h1>
+
+        <div class="discover__content">
+          <div class="discover__cardBlock">
+            <div class="discover__card">
+              <h5 class="discover__card-title">Inscription facile</h5>
+              <svg class="discover__card-icon">
+                <use xlink:href="@/components/icons/sprite.svg#icon-user-plus"></use>
+              </svg>
+              <p class="discover__card-text">
+                Rejoignez notre communauté en quelques clics avec une inscription rapide et
+                intuitive.
+              </p>
+            </div>
+
+            <div class="discover__card">
+              <h5 class="discover__card-title">Exploration immédiate</h5>
+              <svg class="discover__card-icon">
+                <use xlink:href="@/components/icons/sprite.svg#icon-compass"></use>
+              </svg>
+              <p class="discover__card-text">
+                Parcourez nos APIs dès votre arrivée, sans tracas ni complications.
+              </p>
+            </div>
+
+            <div class="discover__card">
+              <h5 class="discover__card-title">Documentation clair</h5>
+              <svg class="discover__card-icon">
+                <use xlink:href="@/components/icons/sprite.svg#icon-document"></use>
+              </svg>
+              <p class="discover__card-text">
+                Des informations claires et précises vous guident à chaque étape.
+              </p>
+            </div>
+          </div>
+
+          <p class="discover__text discover__text-up">
+            Notre environnement de jeu vous permet de faire des appels réels à nos APIs, vous
+            donnant la possibilité de manipuler des données et de voir instantanément comment elles
+            réagissent.
+          </p>
+
+          <p class="discover__text discover__text-down">
+            C’est l’occasion idéale d’affiner vos compétences en communication entre le frontend et
+            le backend tout en gagnant en confiance.
+          </p>
+        </div>
+      </section>
+    </AnimatedComponent>
+
+    <AnimatedComponent animation-type="fade">
+      <section class="home__section explore" id="explore">
+        <h2 class="section__title">Explorez, Apprenez, Créez</h2>
+        <div class="section__content">
+          <img
+            src="@/assets/img/explore-img.webp"
+            alt="image mockup mobile and desktop"
+            class="explore__img"
+          />
+
+          <div class="explore__textBlock">
+            <p class="explore__text">
+              Découvrez un ensemble varié d’APIs soigneusement conçues pour vous offrir une
+              expérience d’apprentissage pratique. Chaque API est accompagnée d’une documentation
+              détaillée, vous guidant à travers les endpoints, les paramètres requis et les réponses
+              attendues.
+            </p>
+            <p class="explore__text">
+              Vous pourrez ainsi apprendre en vous engageant directement dans la création de vos
+              propres projets front-end.
+            </p>
+          </div>
+        </div>
+      </section>
+    </AnimatedComponent>
+
+    <AnimatedComponent animation-type="fade">
+      <section class="home__section access" id="access">
+        <h3 class="section__title">Simple et accessible</h3>
+
+        <div class="section__content">
+          <img src="@/assets/img/access-img.webp" alt="image" class="access__img" />
+          <div class="access__block">
+            <h6 class="access__subtitle">Créez et Accédez à Nos APIs en toute simplicité</h6>
+
+            <ul class="access__list">
+              <li class="access__item">
+                <svg class="access__item-icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
+                </svg>
+
+                <span class="access__item-text">Cliquez sur Inscription pour commencer</span>
+              </li>
+
+              <li class="access__item">
+                <svg class="access__item-icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
+                </svg>
+
+                <span class="access__item-text"
+                  >Remplissez rapidement le formulaire d’inscription.</span
+                >
+              </li>
+
+              <li class="access__item">
+                <svg class="access__item-icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
+                </svg>
+
+                <span class="access__item-text">Activé votre compte</span>
+              </li>
+
+              <li class="access__item">
+                <svg class="access__item-icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
+                </svg>
+
+                <span class="access__item-text">Accédez à votre profil utilisateur.</span>
+              </li>
+
+              <li class="access__item">
+                <svg class="access__item-icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
+                </svg>
+
+                <span class="access__item-text">Trouvez la section Gérer les Clés API</span>
+              </li>
+
+              <li class="access__item">
+                <svg class="access__item-icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
+                </svg>
+
+                <span class="access__item-text">Cliquez sur Ajouter une Nouvelle Clé</span>
+              </li>
+            </ul>
+            <RouterLink to="/login" class="btn access__btn">Inscription</RouterLink>
+          </div>
+        </div>
+      </section>
+    </AnimatedComponent>
+
+    <AnimatedComponent animation-type="fade">
+      <section class="home__section achieve" id="achieve">
+        <h4 class="section__title">Partagez Vos Réalisations</h4>
+
+        <div class="section__content">
+          <div class="achieve__textBlock">
+            <p class="achieve__text">
+              Lorsque vous maîtrisez une API et créez quelque chose d’unique, partagez-le avec la
+              communauté ! La section <strong>Réalisations</strong> met en valeur vos projets
+              créatifs et vos applications construites à partir des APIs Playground.
+            </p>
+            <p class="achieve__text">
+              Rejoignez une communauté enthousiaste de développeurs partageant les mêmes idées et
+              inspirez-vous des réalisations des autres.
+            </p>
+          </div>
+
+          <ul class="achieve__list">
+            <li class="achieve__item">
+              <a href="" class="achieve__link">
+                <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
+              </a>
             </li>
 
-            <li class="access__item">
-              <svg class="access__item-icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
-              </svg>
-
-              <span class="access__item-text">Activé votre compte</span>
+            <li class="achieve__item">
+              <a href="" class="achieve__link">
+                <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
+              </a>
             </li>
 
-            <li class="access__item">
-              <svg class="access__item-icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
-              </svg>
-
-              <span class="access__item-text">Accédez à votre profil utilisateur.</span>
+            <li class="achieve__item">
+              <a href="" class="achieve__link">
+                <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
+              </a>
             </li>
 
-            <li class="access__item">
-              <svg class="access__item-icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
-              </svg>
-
-              <span class="access__item-text">Trouvez la section Gérer les Clés API</span>
+            <li class="achieve__item">
+              <a href="" class="achieve__link">
+                <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
+              </a>
             </li>
 
-            <li class="access__item">
-              <svg class="access__item-icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
-              </svg>
+            <li class="achieve__item">
+              <a href="" class="achieve__link">
+                <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
+              </a>
+            </li>
 
-              <span class="access__item-text">Cliquez sur Ajouter une Nouvelle Clé</span>
+            <li class="achieve__item">
+              <a href="" class="achieve__link">
+                <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
+              </a>
             </li>
           </ul>
-          <RouterLink to="/login" class="btn access__btn">Inscription</RouterLink>
         </div>
-      </div>
-    </section>
-
-    <section class="home__section achieve">
-      <h4 class="section__title">Partagez Vos Réalisations</h4>
-
-      <div class="section__content">
-        <div class="achieve__textBlock">
-          <p class="achieve__text">
-            Lorsque vous maîtrisez une API et créez quelque chose d’unique, partagez-le avec la
-            communauté ! La section <strong>Réalisations</strong> met en valeur vos projets créatifs
-            et vos applications construites à partir des APIs Playground.
-          </p>
-          <p class="achieve__text">
-            Rejoignez une communauté enthousiaste de développeurs partageant les mêmes idées et
-            inspirez-vous des réalisations des autres.
-          </p>
-        </div>
-
-        <ul class="achieve__list">
-          <li class="achieve__item">
-            <a href="" class="achieve__link">
-              <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
-            </a>
-          </li>
-
-          <li class="achieve__item">
-            <a href="" class="achieve__link">
-              <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
-            </a>
-          </li>
-
-          <li class="achieve__item">
-            <a href="" class="achieve__link">
-              <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
-            </a>
-          </li>
-
-          <li class="achieve__item">
-            <a href="" class="achieve__link">
-              <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
-            </a>
-          </li>
-
-          <li class="achieve__item">
-            <a href="" class="achieve__link">
-              <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
-            </a>
-          </li>
-
-          <li class="achieve__item">
-            <a href="" class="achieve__link">
-              <img src="@/assets/img/access-img.webp" alt="image" class="achieve__img" />
-            </a>
-          </li>
-        </ul>
-      </div>
-    </section>
+      </section>
+    </AnimatedComponent>
   </main>
 </template>
 

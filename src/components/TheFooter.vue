@@ -13,6 +13,8 @@
   display: flex;
   justify-content: center;
   background-color: var(--color-black-1);
+  // z-index: 2000;
+
   &__logo {
     width: 15rem;
 

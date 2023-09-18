@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+</script>
 
 <template>
   <main class="signup">
@@ -60,7 +64,7 @@
               </svg>
             </div>
             <div class="form__group form__group-btn">
-              <button class="btn form__btn">Retour</button>
+              <button type="button" @click="router.back" class="btn form__btn">Retour</button>
               <button class="btn form__btn">Envoyer</button>
             </div>
           </div>
