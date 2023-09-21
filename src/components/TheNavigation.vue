@@ -1,239 +1,171 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+defineProps<{
+  menu: boolean
+}>()
 
-const menu = ref<boolean>(false)
 const emits = defineEmits<{
   (e: 'openLogin', status: boolean): void
+  (e: 'openMenu', status: boolean): void
 }>()
 </script>
 
 <template>
-  <div class="navigation">
-    <input
-      @click="(menu = !menu), emits('openLogin', false)"
-      type="checkbox"
-      class="navigation__checkbox"
-      id="navi-toggle"
-      :checked="menu"
-    />
-
-    <label for="navi-toggle" class="navigation__btn">
-      <span class="navigation__icon">&nbsp;</span>
-    </label>
+   <Teleport to="body" :disabled="!menu">
     <Transition mode="out-in" name="fade">
-      <div class="navigation__content" v-if="menu">
-        <div class="navigation__header">
-          <span class="navigation__header-title">Playground @pi</span>
-          <a href="mailto:test@email.com" class="navigation__header-link">
-            <svg class="navigation__header-icon">
-              <use xlink:href="@/components/icons/sprite.svg#icon-mail-envelope-closed"></use>
-            </svg>
-          </a>
-          <span class="navigation__header-line">&nbsp;</span>
-        </div>
-
-        <nav class="navigation__nav">
-          <ul class="navigation__nav-list">
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="menu = false"
-                to="/home#intro"
-                class="navigation__nav-link navigation__nav-link--main"
-                >Home</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink @click="menu = false" to="/home#discover" class="navigation__nav-link"
-                >Pratiquez en Conditions Réelles</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink @click="menu = false" to="/home#explore" class="navigation__nav-link"
-                >Explorez, Apprenez, Créez</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink @click="menu = false" to="/home#access" class="navigation__nav-link"
-                >Simple et accessible</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink @click="menu = false" to="/home#achieve" class="navigation__nav-link"
-                >Partagez Vos Réalisations</RouterLink
-              >
-            </li>
-          </ul>
-
-          <ul class="navigation__nav-list">
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="menu = false"
-                to="/apis"
-                class="navigation__nav-link navigation__nav-link--main"
-                >Apis</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-travel</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
-            </li>
-          </ul>
-
-          <ul class="navigation__nav-list">
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="menu = false"
-                to="/documentation"
-                class="navigation__nav-link navigation__nav-link--main"
-                >Documentation</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-travel</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
-            </li>
-          </ul>
-        </nav>
-
-        <div class="navigation__auth">
-          <RouterLink @click="menu = false" to="/signup" class="btn">Inscription</RouterLink>
-          <button
-            type="button"
-            @click="(menu = false), emits('openLogin', true)"
-            class="btn navigation__auth-btn"
-          >
-            Connexion
-          </button>
-        </div>
+    <div class="navigation" v-if="menu">
+      <div class="navigation__header">
+        <span class="navigation__header-title">Playground @pi</span>
+        <a href="mailto:test@email.com" class="navigation__header-link">
+          <svg class="navigation__header-icon">
+            <use xlink:href="@/components/icons/sprite.svg#icon-mail-envelope-closed"></use>
+          </svg>
+        </a>
+        <span class="navigation__header-line">&nbsp;</span>
       </div>
-    </Transition>
-  </div>
+
+      <nav class="navigation__nav">
+        <ul class="navigation__nav-list">
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/home#intro"
+              class="navigation__nav-link navigation__nav-link--main"
+              >Home</RouterLink
+            >
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/home#discover"
+              class="navigation__nav-link"
+              >Pratiquez en Conditions Réelles</RouterLink
+            >
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/home#explore"
+              class="navigation__nav-link"
+              >Explorez, Apprenez, Créez</RouterLink
+            >
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/home#access"
+              class="navigation__nav-link"
+              >Simple et accessible</RouterLink
+            >
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/home#achieve"
+              class="navigation__nav-link"
+              >Partagez Vos Réalisations</RouterLink
+            >
+          </li>
+        </ul>
+
+        <ul class="navigation__nav-list">
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/apis"
+              class="navigation__nav-link navigation__nav-link--main"
+              >Apis</RouterLink
+            >
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Api-travel</RouterLink>
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
+          </li>
+        </ul>
+
+        <ul class="navigation__nav-list">
+          <li class="navigation__nav-item">
+            <RouterLink
+              @click="emits('openMenu', false)"
+              to="/documentation"
+              class="navigation__nav-link navigation__nav-link--main"
+              >Documentation</RouterLink
+            >
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Doc Api-travel</RouterLink>
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
+          </li>
+
+          <li class="navigation__nav-item">
+            <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="navigation__auth">
+        <RouterLink @click="emits('openMenu', false)" to="/signup" class="btn"
+          >Inscription</RouterLink
+        >
+        <button
+          type="button"
+          @click="emits('openMenu', false), emits('openLogin', true)"
+          class="btn navigation__auth-btn"
+        >
+          Connexion
+        </button>
+      </div>
+    </div>
+  </Transition>
+  </Teleport>
+  
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/abstracts/mixins' as m;
 
 .navigation {
-  grid-column: 3/-1;
-  align-self: center;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  overflow-y: scroll;
+  top: 0;
+  left: 0;
 
-  &__checkbox {
-    display: none;
-  }
+  display: grid;
+  grid-template-rows: 1fr 2fr 1fr;
+  row-gap: 2rem;
+  align-items: center;
 
-  &__btn {
-    position: relative;
-    background-color: transparent;
-    height: 4rem;
-    width: 4rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    z-index: 3000;
-  }
+  background-color: var(--color-black-2);
+  backdrop-filter: blur(5px);
 
-  &__icon {
-    &-link {
-      width: 3.3rem;
-      height: 3.3rem;
-      margin-right: 1rem;
-    }
-  }
-
-  //ICON
-  &__icon {
-    position: relative;
-
-    &,
-    &::before,
-    &::after {
-      width: 3rem;
-      height: 3px;
-      background-color: var(--color-white);
-      display: inline-block;
-    }
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      transition: all 0.2s;
-    }
-
-    &::before {
-      top: -0.8rem;
-    }
-    &::after {
-      top: 0.8rem;
-    }
-  }
-
-  &__checkbox:checked + &__btn &__icon {
-    background-color: transparent;
-    position: fixed;
-    right: 2vw;
-    top: 5vh;
-  }
-
-  &__checkbox:checked + &__btn &__icon::before {
-    top: 0;
-    transform: rotate(135deg);
-  }
-
-  &__checkbox:checked + &__btn &__icon::after {
-    top: 0;
-    transform: rotate(-135deg);
-  }
-
-  &__content {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    overflow-y: scroll;
-    z-index: 2500;
-
-    display: grid;
-    grid-template-rows: 1fr 2fr 1fr;
-    row-gap: 2rem;
-    align-items: center;
-
-    background-color: var(--color-black-3);
-    backdrop-filter: blur(5px);
-
-    @include m.xl {
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: repeat(2, 1fr);
-    }
+  @include m.xl {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
   }
 
   &__header {

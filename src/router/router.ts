@@ -41,6 +41,36 @@ const router = createRouter({
       name: 'login',
       component: () => import('@/components/TheLogin.vue')
     },
+    
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('@/views/TheDashboardView.vue'),
+      children: [
+      
+        {
+          path: '/myProfile',
+          name: 'myProfile',
+          component: () => import('@/views/TheProfileView.vue')
+        },
+        {
+          path: '/users',
+          name: 'users',
+          component: () => import('@/views/TheUsersView.vue')
+        },
+        {
+          path: '/apiKeys',
+          name: 'apiKeys',
+          component: () => import('@/views/TheApiKeysView.vue')
+        },
+        {
+          path: '/logout',
+          name: 'logout',
+          component: () => import('@/components/TheLogout.vue')
+        }
+      ]
+    },
+
     {
       path: '/:notFound(.*)*',
       name: 'NotFound',

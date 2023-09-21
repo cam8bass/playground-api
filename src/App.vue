@@ -15,14 +15,23 @@ const navigation = reactive<{
 function updateOpenLogin(status: boolean): void {
   navigation.login = status
 }
+
+function updateOpenMenu(status: boolean): void {
+  navigation.menu = status
+}
 </script>
 
 <template>
   <div class="container">
-    <TheHeader class="header" @open-login="updateOpenLogin" />
-    <RouterView class="content" @openLogin="updateOpenLogin"> </RouterView>
+    <TheHeader
+      class="header"
+      @open-login="updateOpenLogin"
+      @openMenu="updateOpenMenu"
+      :menu="navigation.menu"
+    />
+    <RouterView class="content" @openLogin="updateOpenLogin" v-if="!navigation.menu"> </RouterView>
     <TheLogin @openLogin="updateOpenLogin" :openLogin="navigation.login" />
-    <TheFooter class="footer" />
+    <TheFooter class="footer" v-if="!navigation.menu" />
   </div>
 </template>
 
@@ -32,11 +41,12 @@ function updateOpenLogin(status: boolean): void {
 .container {
   display: grid;
   grid-template-rows: min-content 1fr min-content;
+  min-height: 100vh; // TODO: a voir
 }
 
 .content {
   position: relative;
-  min-height: 80vh; // TODO: A voir
+  // min-height: 80vh; // TODO: A voir
 }
 
 .header,
