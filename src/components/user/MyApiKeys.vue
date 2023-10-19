@@ -13,80 +13,159 @@
         >Nombre d'apis : <span class="myApiKeys__quantity--number">5</span></span
       >
 
-      <div class="myApiKeys__block">
-        <table class="myApiKeys__table">
-          <tr class="myApiKeys__table-row">
-            <th>Nom api</th>
+      <table class="table myApiKeys__table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Clé d'api</th>
+            <th>Création</th>
             <th>Expiration</th>
             <th>Activé</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
+            <th>Renouveller</th>
+            <th>Supprimer</th>
           </tr>
+        </thead>
 
-          <tr class="myApiKeys__table-row">
+        <tbody>
+          <tr>
             <td>Api-travel</td>
+            <td>tbJ8KNivtlhrqlcfOp/NNlyGcqfeYC4</td>
+            <td>16/08/2015</td>
             <td>16/08/2016</td>
             <td>oui</td>
             <td>
-              <button class="myApiKeys__table-btn">
-                <svg class="myApiKeys__table-icon" aria-label="Renouveller la clé d'api">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Renouveller la clé d'api">
                   <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
                 </svg>
               </button>
             </td>
 
             <td class="myApiKeys__table-data">
-              <button class="myApiKeys__table-btn">
-                <svg class="myApiKeys__table-icon" aria-label="Supprimer la clé d'api">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Supprimer la clé d'api">
                   <use xlink:href="@/components/icons/sprite.svg#icon-bin2"></use>
                 </svg>
               </button>
             </td>
           </tr>
 
-          <tr class="myApiKeys__table-row">
+          <tr>
             <td>Api-travel</td>
+            <td>tbJ8KNivtlhrqlcfOp/NNlyGcqfeYC4</td>
+            <td>16/08/2015</td>
             <td>16/08/2016</td>
             <td>oui</td>
             <td>
-              <button class="myApiKeys__table-btn">
-                <svg class="myApiKeys__table-icon" aria-label="Renouveller la clé d'api">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Renouveller la clé d'api">
                   <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
                 </svg>
               </button>
             </td>
 
             <td class="myApiKeys__table-data">
-              <button class="myApiKeys__table-btn">
-                <svg class="myApiKeys__table-icon" aria-label="Supprimer la clé d'api">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Supprimer la clé d'api">
                   <use xlink:href="@/components/icons/sprite.svg#icon-bin2"></use>
                 </svg>
               </button>
             </td>
           </tr>
 
-          <tr class="myApiKeys__table-row">
+          <tr>
             <td>Api-travel</td>
+            <td>tbJ8KNivtlhrqlcfOp/NNlyGcqfeYC4</td>
+            <td>16/08/2015</td>
             <td>16/08/2016</td>
             <td>oui</td>
             <td>
-              <button class="myApiKeys__table-btn">
-                <svg class="myApiKeys__table-icon" aria-label="Renouveller la clé d'api">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Renouveller la clé d'api">
                   <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
                 </svg>
               </button>
             </td>
 
             <td class="myApiKeys__table-data">
-              <button class="myApiKeys__table-btn">
-                <svg class="myApiKeys__table-icon" aria-label="Supprimer la clé d'api">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Supprimer la clé d'api">
                   <use xlink:href="@/components/icons/sprite.svg#icon-bin2"></use>
                 </svg>
               </button>
             </td>
           </tr>
-        </table>
-      </div>
+
+          <tr>
+            <td>Api-travel</td>
+            <td>tbJ8KNivtlhrqlcfOp/NNlyGcqfeYC4</td>
+            <td>16/08/2015</td>
+            <td>16/08/2016</td>
+            <td>oui</td>
+            <td>
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Renouveller la clé d'api">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
+                </svg>
+              </button>
+            </td>
+
+            <td class="myApiKeys__table-data">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Supprimer la clé d'api">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-bin2"></use>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>Api-travel</td>
+            <td>tbJ8KNivtlhrqlcfOp/NNlyGcqfeYC4</td>
+            <td>16/08/2015</td>
+            <td>16/08/2016</td>
+            <td>oui</td>
+            <td>
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Renouveller la clé d'api">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
+                </svg>
+              </button>
+            </td>
+
+            <td class="myApiKeys__table-data">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Supprimer la clé d'api">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-bin2"></use>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>Api-travel</td>
+            <td>tbJ8KNivtlhrqlcfOp/NNlyGcqfeYC4</td>
+            <td>16/08/2015</td>
+            <td>16/08/2016</td>
+            <td>oui</td>
+            <td>
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Renouveller la clé d'api">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
+                </svg>
+              </button>
+            </td>
+
+            <td class="myApiKeys__table-data">
+              <button class="table__btn">
+                <svg class="table__icon" aria-label="Supprimer la clé d'api">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-bin2"></use>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </article>
 </template>
@@ -128,34 +207,33 @@
       color: var(--color-purple-1);
     }
   }
-  &__block {
-    margin-top: 1rem;
-  }
 
   &__table {
-    border-collapse: separate;
-    border-spacing: 1rem;
-    text-align: justify;
-
-    &-btn {
-      background-color: transparent;
-      display: flex;
-    }
-
-    &-icon {
-      width: 2rem;
-      height: 2rem;
-      fill: var(--color-white);
-      transition: fill 0.4s;
-      &:hover,
-      &:active {
-        fill: var(--color-purple-1);
-      }
-    }
+    margin-top: 1rem;
   }
 }
 
+td,
 th {
-  font-weight: 100;
+  display: none;
+  @include m.lg {
+    display: table-cell;
+  }
+}
+
+th:nth-child(1),
+td:nth-child(1),
+th:nth-child(2),
+td:nth-child(2) {
+  display: table-cell;
+}
+
+@include m.md {
+  th:nth-child(6),
+  td:nth-child(6),
+  th:nth-child(7),
+  td:nth-child(7) {
+    display: table-cell;
+  }
 }
 </style>

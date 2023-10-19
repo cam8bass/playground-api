@@ -1,0 +1,22 @@
+// *** TRANSLATE LEFT ***
+.translateLeft-enter-active,
+.translateLeft-leave-active {
+  transition: all 0.4s ease;
+}
+
+.translateLeft-enter-from,
+.translateLeft-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+// *** FADE ***
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

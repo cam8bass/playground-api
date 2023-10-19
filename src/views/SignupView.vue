@@ -1,7 +1,89 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useField, useForm } from 'vee-validate'
+import { ref } from 'vue'
+import type { errorDevInterface, errorProdInterface, signupInterface } from '@/shared/interfaces'
+import type { signupFieldType } from '@/shared/types/types'
+
+import { signupSchema } from '@/shared/schema'
+import { useUserStore } from '@/stores'
 
 const router = useRouter()
+const userStore = useUserStore()
+const showPassword = ref<boolean>(false)
+const showPasswordConfirm = ref<boolean>(false)
+
+const props = defineProps<{
+  errors: errorDevInterface | errorProdInterface | null
+}>()
+
+
+const {
+  handleSubmit,
+  meta: formMeta,
+  isSubmitting,
+  resetForm
+} = useForm({ validationSchema: signupSchema })
+
+const {
+  value: inputFirstname,
+  errors: firstnameErrors,
+  errorMessage: firstnameErrorMessage,
+  handleBlur: handleBlurFirstname,
+  handleChange: handleChangeFirstname,
+  meta: firstnameMeta
+} = useField('firstname', '', { validateOnValueUpdate: false })
+
+const {
+  value: inputLastname,
+  errors: lastnameErrors,
+  errorMessage: lastnameErrorMessage,
+  handleBlur: handleBlurLastname,
+  handleChange: handleChangeLastname,
+  meta: lastnameMeta
+} = useField('lastname', '', { validateOnValueUpdate: false })
+
+const {
+  value: inputEmail,
+  errors: emailErrors,
+  errorMessage: emailErrorMessage,
+  handleBlur: handleBlurEmail,
+  handleChange: handleChangeEmail,
+  meta: emailMeta
+} = useField('email', '', { validateOnValueUpdate: false })
+
+const {
+  value: inputPassword,
+  errors: passwordErrors,
+  errorMessage: passwordErrorMessage,
+  handleBlur: handleBlurPassword,
+  handleChange: handleChangePassword,
+  meta: passwordMeta
+} = useField('password', '', { validateOnValueUpdate: false })
+
+const {
+  value: inputPasswordConfirm,
+  errors: passwordConfirmErrors,
+  errorMessage: passwordConfirmErrorMessage,
+  handleBlur: handleBlurPasswordConfirm,
+  handleChange: handleChangePasswordConfirm,
+  meta: passwordConfirmMeta
+} = useField('passwordConfirm', '', { validateOnValueUpdate: false })
+
+const onSubmit = handleSubmit(async (values: signupInterface, action) => {
+  await userStore.fetchSignup(values)
+
+  const errors = props.errors?.errors as Partial<signupInterface> | null
+    
+  if (errors) {
+    Object.entries(errors).forEach(([key, value]) => {
+      action.setFieldError(key as signupFieldType, value)
+    })
+  } else {
+    resetForm()
+    router.push('/home')
+  }
+})
 </script>
 
 <template>
@@ -9,63 +91,138 @@ const router = useRouter()
     <h1 class="section__title">Inscription</h1>
 
     <div class="section__content">
-      <form action="" class="form">
+      <form action="" @submit="onSubmit" class="form">
         <fieldset>
           <legend class="form__title">PLayground Api</legend>
           <div class="form__block">
             <div class="form__group">
-              <label for="firstname" class="form__label">Nom</label>
+              <label for="firstname" class="label form__label">Nom</label>
               <input
                 type="text"
                 id="firstname"
-                class="form__input"
+                class="input form__input"
                 placeholder="Entrez votre nom"
+                v-model="inputFirstname"
+                @blur="handleChangeFirstname"
+                @focus="handleBlurFirstname"
+                :class="{
+                  borderSuccess:
+                    firstnameMeta.touched && firstnameMeta.validated && firstnameMeta.valid,
+                  borderError:
+                    firstnameMeta.touched && firstnameMeta.validated && !firstnameMeta.valid
+                }"
               />
+              <span class="form__error" v-if="firstnameErrors">{{ firstnameErrorMessage }}</span>
             </div>
             <div class="form__group">
-              <label for="lastname" class="form__label">Prénom</label>
+              <label for="lastname" class="label form__label">Prénom</label>
               <input
                 type="text"
                 id="lastname"
-                class="form__input"
+                class="input form__input"
                 placeholder="Entrez votre prénom"
+                v-model="inputLastname"
+                @blur="handleChangeLastname"
+                @focus="handleBlurLastname"
+                :class="{
+                  borderSuccess:
+                    lastnameMeta.touched && lastnameMeta.validated && lastnameMeta.valid,
+                  borderError: lastnameMeta.touched && lastnameMeta.validated && !lastnameMeta.valid
+                }"
               />
+              <span class="form__error" v-if="lastnameErrors">{{ lastnameErrorMessage }}</span>
             </div>
             <div class="form__group">
-              <label for="email" class="form__label">Email</label>
-              <input type="email" id="email" class="form__input" placeholder="Entrez votre email" />
+              <label for="email" class="label form__label">Email</label>
+              <input
+                type="email"
+                id="email"
+                class="input form__input"
+                placeholder="Entrez votre email"
+                v-model="inputEmail"
+                @blur="handleChangeEmail"
+                @focus="handleBlurEmail"
+                :class="{
+                  borderSuccess: emailMeta.touched && emailMeta.validated && emailMeta.valid,
+                  borderError: emailMeta.touched && emailMeta.validated && !emailMeta.valid
+                }"
+              />
+              <span class="form__error" v-if="emailErrors">{{ emailErrorMessage }}</span>
             </div>
             <div class="form__group">
-              <label for="password" class="form__label">Mot de passe</label>
-              <div class="form__password">
-                <input
-                  type="password"
-                  id="password"
-                  class="form__input form__input-password"
-                  placeholder="Entrez votre password"
-                />
-              </div>
-              <svg class="form__icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-eye"></use>
-              </svg>
+              <label for="password" class="label form__label">Mot de passe</label>
+
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                id="password"
+                class="input form__input form__input-password"
+                placeholder="Entrez votre password"
+                v-model="inputPassword"
+                @blur="handleChangePassword"
+                @focus="handleBlurPassword"
+                :class="{
+                  borderSuccess:
+                    passwordMeta.touched && passwordMeta.validated && passwordMeta.valid,
+                  borderError: passwordMeta.touched && passwordMeta.validated && !passwordMeta.valid
+                }"
+              />
+              <span class="form__error" v-if="passwordErrors">{{ passwordErrorMessage }}</span>
+
+              <button class="form__btn" type="button" @click="showPassword = !showPassword">
+                <svg class="form__icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-eye"></use>
+                </svg>
+              </button>
             </div>
             <div class="form__group">
-              <label for="passwordConfirm" class="form__label">Confirmer mot de passe</label>
-              <div class="form__password">
-                <input
-                  type="password"
-                  id="passwordConfirm"
-                  class="form__input"
-                  placeholder="Confirmez votre password"
-                />
-              </div>
-              <svg class="form__icon">
-                <use xlink:href="@/components/icons/sprite.svg#icon-eye"></use>
-              </svg>
+              <label for="passwordConfirm" class="label form__label">Confirmer mot de passe</label>
+
+              <input
+                :type="showPasswordConfirm ? 'text' : 'password'"
+                id="passwordConfirm"
+                class="input form__input"
+                placeholder="Confirmez votre password"
+                v-model="inputPasswordConfirm"
+                @blur="handleChangePasswordConfirm"
+                @focus="handleBlurPasswordConfirm"
+                :class="{
+                  borderSuccess:
+                    passwordConfirmMeta.touched &&
+                    passwordConfirmMeta.validated &&
+                    passwordConfirmMeta.valid,
+                  borderError:
+                    passwordConfirmMeta.touched &&
+                    passwordConfirmMeta.validated &&
+                    !passwordConfirmMeta.valid
+                }"
+              />
+              <span class="form__error" v-if="passwordConfirmErrors">{{
+                passwordConfirmErrorMessage
+              }}</span>
+
+              <button
+                class="form__btn"
+                type="button"
+                @click="showPasswordConfirm = !showPasswordConfirm"
+              >
+                <svg class="form__icon">
+                  <use xlink:href="@/components/icons/sprite.svg#icon-eye"></use>
+                </svg>
+              </button>
             </div>
             <div class="form__group form__group-btn">
-              <button type="button" @click="router.back" class="btn form__btn">Retour</button>
-              <button class="btn form__btn">Envoyer</button>
+              <button type="button" @click="router.back" class="btn">Retour</button>
+              <button
+                type="submit"
+                class="btn"
+                :class="{
+                  btnSuccess: formMeta.touched && formMeta.valid,
+                  btnError: formMeta.touched && !formMeta.valid
+                }"
+                :disabled="isSubmitting"
+              >
+                Envoyer
+              </button>
             </div>
           </div>
         </fieldset>
@@ -83,6 +240,7 @@ const router = useRouter()
 
 <style scoped lang="scss">
 @use '@/assets/abstracts/mixins' as m;
+@import '@/assets/base/animation';
 .signup {
   display: grid;
   grid-template-rows: min-content 1fr;
@@ -113,77 +271,27 @@ fieldset {
 
   &__block {
     grid-row: 2/-1;
-    display: grid;
-    grid-template-rows: repeat(6, min-content);
-    row-gap: 1rem;
-    @include m.md {
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(4, min-content);
-    }
+   
+ 
   }
 
-  &__title {
-    display: contents;
-    font-family: var(--font-subtitle);
-    font-weight: 300;
-    font-size: 2rem;
-  }
 
-  &__group {
-    display: grid;
-    grid-template-rows: repeat(2, min-content);
-    grid-template-columns: 1fr min-content;
-    column-gap: 1rem;
-    &-btn {
-      margin-top: 1rem;
-      column-gap: 2rem;
-      grid-column: 1/-1;
-      justify-self: center;
-    }
+
+
+
+  &__error {
+    grid-row: 3/-1;
+    grid-column: 1/-1;
+    
   }
 
   &__label {
     grid-column: 1/-1;
-    display: block;
-    font-family: var(--font-subtext);
-    margin-bottom: 1rem;
   }
 
-  &__input {
-    border: none;
-    box-shadow: var(--boxshadow-black);
-    background-color: var(--color-black-2);
-    height: 3.5rem;
-    width: 100%;
-    color: var(--color-white);
-    padding-left: 1rem;
-    font-size: 1.6rem;
-    font-weight: 100;
 
-    &-password {
-    }
-  }
 
-  &__password {
-    display: flex;
-    align-items: center;
-  }
 
-  &__icon {
-    width: 3rem;
-    height: 3rem;
-    fill: var(--color-white);
-    transition: all 0.4s;
-
-    &:hover,
-    &:active {
-      transform: scale(1.1);
-      fill: var(--color-purple-1);
-    }
-  }
-
-  &__btn {
-  }
 }
 
 .description {

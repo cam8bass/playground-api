@@ -24,6 +24,7 @@
 <style scoped lang="scss">
 .deactivation {
   background-color: var(--color-black-2);
+  height: min-content;
   &__title {
   }
 

@@ -66,6 +66,7 @@
 
 .myAchieves {
   background-color: var(--color-black-2);
+
   &__title {
   }
 

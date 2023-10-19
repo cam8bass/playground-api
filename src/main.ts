@@ -1,35 +1,24 @@
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-
+import { createApp } from 'vue'
 import App from './App.vue'
+import dispatchError from './shared/errors/dispatchError.error'
 import router from './router/router'
+import { setMeta } from './shared/utils'
+import { appear } from './modules'
 
-import type { Directive, DirectiveBinding, VNode } from 'vue'
-
-export const appear: Directive = {
-  beforeMount(element: HTMLElement) {
-    element.style.visibility = 'hidden'
-  },
-  updated(element: HTMLElement, binding: DirectiveBinding<boolean>, node: VNode) {
-    if (!binding.value === !binding.oldValue || null === node.transition) {
-      return
-    }
-    if (!binding.value) {
-      node.transition.leave(element, () => {
-        element.style.visibility = 'hidden'
-      })
-      return
-    }
-    node.transition.beforeEnter(element)
-    element.style.visibility = ''
-    node.transition.enter(element)
-  }
-}
-
+const pinia = createPinia()
 const app = createApp(App)
 
-app.use(createPinia())
-app.use(router)
-.directive('appear', appear)
+app.config.errorHandler = (err) => {
+  console.log('je suis dans app.config.errorHandler')
+  dispatchError(err)
+}
+
+app.use(pinia)
+
+app.use(router).directive('appear', appear)
+setMeta(router)
+
+await router.isReady() // TODO: A voir
 
 app.mount('#app')

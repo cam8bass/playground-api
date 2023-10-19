@@ -1,21 +1,35 @@
 <script setup lang="ts">
 import TheNavigation from '@/components/TheNavigation.vue'
+import type {
+  modalInterface,
+  userBasicInfoInterface,
+  userCompleteInfoInterface
+} from '@/shared/interfaces'
+import type { modalType } from '@/shared/types/types'
+
 defineProps<{
   menu: boolean
+  user: userBasicInfoInterface | userCompleteInfoInterface | null
+  modal: modalInterface | null
 }>()
 const emits = defineEmits<{
   (e: 'openLogin', status: boolean): void
   (e: 'openMenu', status: boolean): void
+  (e: 'logout', modal: { type: modalType; title: string; message: string }): void
+  (e: 'cancel'): void
 }>()
 </script>
 
 <template>
   <header class="header">
     <div class="header__brand">
-      <RouterLink to="/home">
+      <RouterLink class="header__brand-link" to="/home">
         <img src="@/assets/img/logo.webp" alt="logo playground api" class="header__logo" />
       </RouterLink>
     </div>
+
+    <RouterLink v-if="user" class="header__account" to="/dashboard">Mon compte</RouterLink>
+
     <div class="header__navigation">
       <input
         @click="emits('openLogin', false), emits('openMenu', !menu)"
@@ -33,7 +47,11 @@ const emits = defineEmits<{
     <TheNavigation
       @openLogin="emits('openLogin', $event)"
       @openMenu="emits('openMenu', $event)"
+      @cancel="emits('cancel')"
+      @logout="emits('logout', $event)"
       :menu="menu"
+      :user="user"
+      :modal="modal"
     />
   </header>
 </template>
@@ -46,9 +64,15 @@ const emits = defineEmits<{
   box-shadow: var(--boxshadow-black);
   display: grid;
   grid-template-columns: min-content 1fr min-content;
-  align-content: center;
+
+  align-items: center;
+  column-gap: 2rem;
   &__brand {
     grid-column: 1/2;
+
+    &-link {
+      display: flex;
+    }
   }
 
   &__logo {
@@ -63,15 +87,32 @@ const emits = defineEmits<{
     }
   }
 
+  &__account {
+    grid-column: 2/3;
+    color: var(--color-white);
+    font-family: var(--font-subtitle);
+    // align-self: center;
+    justify-self: end;
+    transition: color 0.4s;
+
+    &:hover,
+    &:active {
+      color: var(--color-purple-1);
+    }
+  }
+
   &__navigation {
     grid-column: 3/-1;
-    align-self: center;
+    // align-self: center;
 
     &-checkbox {
       display: none;
     }
 
     &-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
       background-color: transparent;
       height: 4rem;
@@ -79,14 +120,6 @@ const emits = defineEmits<{
       cursor: pointer;
       transition: all 0.2s;
       z-index: 3000;
-    }
-
-    &-icon {
-      &-link {
-        width: 3.3rem;
-        height: 3.3rem;
-        margin-right: 1rem;
-      }
     }
 
     //ICON
@@ -121,8 +154,6 @@ const emits = defineEmits<{
     &-checkbox:checked + &-btn &-icon {
       background-color: transparent;
       position: fixed;
-      right: 2vw;
-      top: 5vh;
     }
 
     &-checkbox:checked + &-btn &-icon::before {

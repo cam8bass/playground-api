@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { protect } from '@/shared/utils'
+import { initAppStore, initPageProfile } from '@/stores'
+import type { routeMetaInterface } from '@/shared/interfaces'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,6 +14,7 @@ const router = createRouter({
       }
     }
   },
+
   routes: [
     {
       path: '',
@@ -24,49 +28,99 @@ const router = createRouter({
     {
       path: '/apis',
       name: 'apis',
-      component: () => import('@/views/ApiView.vue')
+      component: () => import('@/views/ApiView.vue'),
+      meta: {
+        title: 'Playground Api - Apis',
+        description: ''
+      }
     },
     {
       path: '/documentation',
       name: 'documentation',
-      component: () => import('@/views/DocumentationView.vue')
+      component: () => import('@/views/DocumentationView.vue'),
+      meta: {
+        title: 'Playground Api - Documentation',
+        description: ''
+      }
     },
     {
       path: '/signup',
       name: 'signup',
-      component: () => import('@/views/SignupView.vue')
+      component: () => import('@/views/SignupView.vue'),
+      meta: {
+        title: 'Playground Api - Inscription'
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/components/TheLogin.vue')
+      component: () => import('@/components/TheLogin.vue'),
+      meta: {}
     },
-    
     {
+      path: '/activationAccount/:token',
+      name: 'activationAccount',
+      component: () => import('@/views/ConfirmView.vue'),
+      meta: {
+        title: 'Playground Api - Activation de compte '
+      }
+    },
+    {
+      path: '/resetEmail/:token',
+      name: 'resetEmail',
+      component: () => import('@/views/ConfirmView.vue'),
+      meta: {
+        title: "Playground Api - Réinitialisation de l'e-mail"
+      }
+    },
+
+    {
+      beforeEnter: (to, from, next) => {
+        protect(to, from, next)
+      },
+
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/views/TheDashboardView.vue'),
+
+      meta: {
+        title: 'Playground Api - Dashboard',
+        requiresAuth: true,
+        role: ['user', 'admin']
+      } as routeMetaInterface,
+
       children: [
-      
         {
+          beforeEnter: [initPageProfile],
           path: '/myProfile',
           name: 'myProfile',
-          component: () => import('@/views/TheProfileView.vue')
+          component: () => import('@/views/TheProfileView.vue'),
+          meta: {
+            title: 'Playground Api - Mon profil',
+            requiresAuth: true,
+            role: ['user', 'admin']
+          } as routeMetaInterface
         },
         {
           path: '/users',
           name: 'users',
-          component: () => import('@/views/TheUsersView.vue')
+          component: () => import('@/views/TheUsersView.vue'),
+          meta: {
+            title: 'Playground Api - Liste utilisateurs ',
+            requiresAuth: true,
+            role: ['admin']
+          } as routeMetaInterface
         },
+
         {
           path: '/apiKeys',
           name: 'apiKeys',
-          component: () => import('@/views/TheApiKeysView.vue')
-        },
-        {
-          path: '/logout',
-          name: 'logout',
-          component: () => import('@/components/TheLogout.vue')
+          component: () => import('@/views/TheApiKeysView.vue'),
+          meta: {
+            title: 'Playground Api - Liste apis',
+            requiresAuth: true,
+            role: ['admin']
+          } as routeMetaInterface
         }
       ]
     },
@@ -74,9 +128,18 @@ const router = createRouter({
     {
       path: '/:notFound(.*)*',
       name: 'NotFound',
-      component: () => import('@/views/NotFoundView.vue')
+      component: () => import('@/views/NotFoundView.vue'),
+      meta: {
+        title: ''
+      }
     }
   ]
+})
+
+router.beforeEach(async (to, from, next) => {
+  await initAppStore()
+
+  next()
 })
 
 export default router

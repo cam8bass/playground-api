@@ -1,4 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { modalInterface } from '@/shared/interfaces/modal.interface'
+import type { modalType } from '@/shared/types/types'
+
+defineProps<{
+  modal: modalInterface | null
+}>()
+
+const emits = defineEmits<{
+  (e: 'logout', modal: { type: modalType; title: string; message: string }): void
+  (e: 'cancel'): void
+}>()
+</script>
 <template>
   <div class="dashboardHeader">
     <ul class="dashboardHeader-list">
@@ -53,14 +65,28 @@
       </li>
 
       <li class="dashboardHeader-item">
-        <RouterLink to="/logout" class="dashboardHeader-btn">
+        <button
+          type="button"
+          class="dashboardHeader-btn"
+          @click="
+            !modal
+              ? emits('logout', {
+                  type: 'logout',
+                  title: 'Deconnection',
+                  message: 'vous déconnecter ?'
+                })
+              : modal && modal.type === 'logout'
+              ? emits('cancel')
+              : ''
+          "
+        >
           <svg class="dashboardHeader-icon" aria-label="Se déconnecter">
             <use
               xlink:href="@/components/icons/sprite.svg#icon-exit"
               fill="url(#iconGradient)"
             ></use>
           </svg>
-        </RouterLink>
+        </button>
       </li>
     </ul>
   </div>
@@ -103,6 +129,11 @@
   &-icon {
     width: 3rem;
     height: 3rem;
+    transition: transform 0.4s;
+    &:hover,
+    &:active {
+      transform: scale(1.1);
+    }
     @include m.xl {
       width: 3.5rem;
       height: 3.5rem;

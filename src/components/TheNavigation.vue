@@ -1,152 +1,183 @@
 <script setup lang="ts">
+import type {
+  modalInterface,
+  userBasicInfoInterface,
+  userCompleteInfoInterface
+} from '@/shared/interfaces'
+import type { modalType } from '@/shared/types/types'
+
 defineProps<{
   menu: boolean
+  user: userBasicInfoInterface | userCompleteInfoInterface | null
+  modal: modalInterface | null
 }>()
 
 const emits = defineEmits<{
   (e: 'openLogin', status: boolean): void
   (e: 'openMenu', status: boolean): void
+  (e: 'logout', modal: { type: modalType; title: string; message: string }): void
+  (e: 'cancel'): void
 }>()
 </script>
 
 <template>
-   <Teleport to="body" :disabled="!menu">
-    <Transition mode="out-in" name="fade">
-    <div class="navigation" v-if="menu">
-      <div class="navigation__header">
-        <span class="navigation__header-title">Playground @pi</span>
-        <a href="mailto:test@email.com" class="navigation__header-link">
-          <svg class="navigation__header-icon">
-            <use xlink:href="@/components/icons/sprite.svg#icon-mail-envelope-closed"></use>
-          </svg>
-        </a>
-        <span class="navigation__header-line">&nbsp;</span>
+  <Teleport to="body" :disabled="!menu">
+    <Transition mode="out-in" name="translateLeft">
+      <div class="navigation" v-if="menu">
+        <div class="navigation__header">
+          <span class="navigation__header-title">Playground @pi</span>
+          <a href="mailto:test@email.com" class="navigation__header-link">
+            <svg class="navigation__header-icon">
+              <use xlink:href="@/components/icons/sprite.svg#icon-mail-envelope-closed"></use>
+            </svg>
+          </a>
+          <span class="navigation__header-line">&nbsp;</span>
+        </div>
+
+        <nav class="navigation__nav">
+          <ul class="navigation__nav-list">
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/home#intro"
+                class="navigation__nav-link navigation__nav-link--main"
+                >Home</RouterLink
+              >
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/home#discover"
+                class="navigation__nav-link"
+                >Pratiquez en Conditions Réelles</RouterLink
+              >
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/home#explore"
+                class="navigation__nav-link"
+                >Explorez, Apprenez, Créez</RouterLink
+              >
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/home#access"
+                class="navigation__nav-link"
+                >Simple et accessible</RouterLink
+              >
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/home#achieve"
+                class="navigation__nav-link"
+                >Partagez Vos Réalisations</RouterLink
+              >
+            </li>
+          </ul>
+
+          <ul class="navigation__nav-list">
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/apis"
+                class="navigation__nav-link navigation__nav-link--main"
+                >Apis</RouterLink
+              >
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Api-travel</RouterLink>
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
+            </li>
+          </ul>
+
+          <ul class="navigation__nav-list">
+            <li class="navigation__nav-item">
+              <RouterLink
+                @click="emits('openMenu', false)"
+                to="/documentation"
+                class="navigation__nav-link navigation__nav-link--main"
+                >Documentation</RouterLink
+              >
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Doc Api-travel</RouterLink>
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
+            </li>
+
+            <li class="navigation__nav-item">
+              <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="navigation__auth">
+          <RouterLink @click="emits('openMenu', false)" to="/signup" class="btn"
+            >Inscription</RouterLink
+          >
+          <button
+            v-if="!user"
+            type="button"
+            @click="emits('openMenu', false), emits('openLogin', true)"
+            class="btn navigation__auth-btn"
+          >
+            Connexion
+          </button>
+
+          <button
+            v-else
+            type="button"
+            @click="
+              emits('openMenu', false),
+                !modal
+                  ? emits('logout', {
+                      type: 'logout',
+                      title: 'Deconnection',
+                      message: 'vous déconnecter ?'
+                    })
+                  : modal && modal.type === 'logout'
+                  ? emits('cancel')
+                  : ''
+            "
+            class="btn navigation__auth-btn"
+          >
+            Deconnexion
+          </button>
+        </div>
       </div>
-
-      <nav class="navigation__nav">
-        <ul class="navigation__nav-list">
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/home#intro"
-              class="navigation__nav-link navigation__nav-link--main"
-              >Home</RouterLink
-            >
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/home#discover"
-              class="navigation__nav-link"
-              >Pratiquez en Conditions Réelles</RouterLink
-            >
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/home#explore"
-              class="navigation__nav-link"
-              >Explorez, Apprenez, Créez</RouterLink
-            >
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/home#access"
-              class="navigation__nav-link"
-              >Simple et accessible</RouterLink
-            >
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/home#achieve"
-              class="navigation__nav-link"
-              >Partagez Vos Réalisations</RouterLink
-            >
-          </li>
-        </ul>
-
-        <ul class="navigation__nav-list">
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/apis"
-              class="navigation__nav-link navigation__nav-link--main"
-              >Apis</RouterLink
-            >
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Api-travel</RouterLink>
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
-          </li>
-        </ul>
-
-        <ul class="navigation__nav-list">
-          <li class="navigation__nav-item">
-            <RouterLink
-              @click="emits('openMenu', false)"
-              to="/documentation"
-              class="navigation__nav-link navigation__nav-link--main"
-              >Documentation</RouterLink
-            >
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Doc Api-travel</RouterLink>
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
-          </li>
-
-          <li class="navigation__nav-item">
-            <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
-          </li>
-        </ul>
-      </nav>
-
-      <div class="navigation__auth">
-        <RouterLink @click="emits('openMenu', false)" to="/signup" class="btn"
-          >Inscription</RouterLink
-        >
-        <button
-          type="button"
-          @click="emits('openMenu', false), emits('openLogin', true)"
-          class="btn navigation__auth-btn"
-        >
-          Connexion
-        </button>
-      </div>
-    </div>
-  </Transition>
+    </Transition>
   </Teleport>
-  
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/abstracts/mixins' as m;
-
+@import '@/assets/base/animation';
 .navigation {
   width: 100%;
   height: 100vh;
@@ -154,7 +185,6 @@ const emits = defineEmits<{
   overflow-y: scroll;
   top: 0;
   left: 0;
-
   display: grid;
   grid-template-rows: 1fr 2fr 1fr;
   row-gap: 2rem;
@@ -290,16 +320,5 @@ const emits = defineEmits<{
       margin-left: 2rem;
     }
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.4s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
 }
 </style>

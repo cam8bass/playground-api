@@ -1,22 +1,25 @@
 <script setup lang="ts">
 import AnimatedComponent from '@/components/AnimatedComponent.vue'
+
+const emits = defineEmits<{
+  (e: 'openLogin', value: boolean): void
+}>()
 </script>
 
 <template>
   <main class="home">
-    <section class="home__section intro" id="intro"
-    >
-      <div class="section__content">
+    <section class="home__section intro" id="intro">
+      <div class="section__content intro__content">
         <AnimatedComponent animation-type="translateLeft">
           <div class="intro__describe">
             <div class="intro__describe-text">
               <p class="intro__describe-text--main">
-                API Playground, votre terrain d’entraînement pour maîtriser les appels API et créer
-                des sites web interactifs.
+                <strong>Api Playground</strong>, votre terrain d’entraînement pour maîtriser les
+                appels API et créer des sites web interactifs.
               </p>
               <p class="intro__describe-text--sub">
                 Que vous soyez novice en développement web en quête d’amélioration ou un passionné
-                de code en quête d’inspiration, API Playground est votre allié.
+                de code en quête d’inspiration, <strong>API Playground </strong>est votre allié.
               </p>
             </div>
             <RouterLink to="/apis" class="btn intro__describe-btn">Nos apis</RouterLink>
@@ -25,12 +28,12 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
         <AnimatedComponent animation-type="translateRight">
           <div class="intro__begin">
-            <h1 class="intro__begin-title">Commencer maintenant</h1>
+            <span class="intro__begin-title">Commencer maintenant</span>
             <div class="intro__begin-link">
               <RouterLink to="/signup" class="btn intro__begin-link--signup"
                 >Inscription</RouterLink
               >
-              <button @click="$emit('openLogin', true)" class="btn">Connexion</button>
+              <button @click="emits('openLogin', true)" class="btn">Connexion</button>
             </div>
           </div>
         </AnimatedComponent>
@@ -39,11 +42,11 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
     <AnimatedComponent animation-type="fade">
       <section class="home__section discover" id="discover">
-        <h1 class="section__title">Pratiquez en Conditions Réelles</h1>
+        <h2 class="section__title">Pratiquez en Conditions Réelles</h2>
 
         <div class="discover__content">
-          <div class="discover__cardBlock">
-            <div class="discover__card">
+          <ul class="discover__cardBlock">
+            <li class="discover__card">
               <h5 class="discover__card-title">Inscription facile</h5>
               <svg class="discover__card-icon">
                 <use xlink:href="@/components/icons/sprite.svg#icon-user-plus"></use>
@@ -52,9 +55,9 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
                 Rejoignez notre communauté en quelques clics avec une inscription rapide et
                 intuitive.
               </p>
-            </div>
+            </li>
 
-            <div class="discover__card">
+            <li class="discover__card">
               <h5 class="discover__card-title">Exploration immédiate</h5>
               <svg class="discover__card-icon">
                 <use xlink:href="@/components/icons/sprite.svg#icon-compass"></use>
@@ -62,9 +65,9 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
               <p class="discover__card-text">
                 Parcourez nos APIs dès votre arrivée, sans tracas ni complications.
               </p>
-            </div>
+            </li>
 
-            <div class="discover__card">
+            <li class="discover__card">
               <h5 class="discover__card-title">Documentation clair</h5>
               <svg class="discover__card-icon">
                 <use xlink:href="@/components/icons/sprite.svg#icon-document"></use>
@@ -72,18 +75,18 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
               <p class="discover__card-text">
                 Des informations claires et précises vous guident à chaque étape.
               </p>
-            </div>
-          </div>
+            </li>
+          </ul>
 
           <p class="discover__text discover__text-up">
-            Notre environnement de jeu vous permet de faire des appels réels à nos APIs, vous
-            donnant la possibilité de manipuler des données et de voir instantanément comment elles
-            réagissent.
+            Notre environnement de jeu vous permet de faire des <strong>appels réels</strong> à nos
+            APIs, vous donnant la possibilité de <strong>manipuler des données</strong> et de voir
+            instantanément comment elles réagissent. <br />
           </p>
 
           <p class="discover__text discover__text-down">
             C’est l’occasion idéale d’affiner vos compétences en communication entre le frontend et
-            le backend tout en gagnant en confiance.
+            le backend tout en gagnant en confiance.<br />
           </p>
         </div>
       </section>
@@ -91,7 +94,7 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
     <AnimatedComponent animation-type="fade">
       <section class="home__section explore" id="explore">
-        <h2 class="section__title">Explorez, Apprenez, Créez</h2>
+        <h3 class="section__title">Explorez, Apprenez, Créez</h3>
         <div class="section__content">
           <img
             src="@/assets/img/explore-img.webp"
@@ -102,13 +105,14 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
           <div class="explore__textBlock">
             <p class="explore__text">
               Découvrez un ensemble varié d’APIs soigneusement conçues pour vous offrir une
-              expérience d’apprentissage pratique. Chaque API est accompagnée d’une documentation
-              détaillée, vous guidant à travers les endpoints, les paramètres requis et les réponses
-              attendues.
+              expérience d’apprentissage pratique.<br />
+              Chaque <strong>API</strong> est accompagnée d’une
+              <strong>documentation détaillée</strong>, vous guidant à travers les endpoints, les
+              paramètres requis et les réponses attendues.<br />
             </p>
             <p class="explore__text">
               Vous pourrez ainsi apprendre en vous engageant directement dans la création de vos
-              propres projets front-end.
+              propres <em>projets front-end</em>.<br />
             </p>
           </div>
         </div>
@@ -117,14 +121,14 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
     <AnimatedComponent animation-type="fade">
       <section class="home__section access" id="access">
-        <h3 class="section__title">Simple et accessible</h3>
+        <h4 class="section__title">Simple et accessible</h4>
 
         <div class="section__content">
           <img src="@/assets/img/access-img.webp" alt="image" class="access__img" />
           <div class="access__block">
             <h6 class="access__subtitle">Créez et Accédez à Nos APIs en toute simplicité</h6>
 
-            <ul class="access__list">
+            <ol class="access__list">
               <li class="access__item">
                 <svg class="access__item-icon">
                   <use xlink:href="@/components/icons/sprite.svg#icon-check-circle"></use>
@@ -174,7 +178,7 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
                 <span class="access__item-text">Cliquez sur Ajouter une Nouvelle Clé</span>
               </li>
-            </ul>
+            </ol>
             <RouterLink to="/login" class="btn access__btn">Inscription</RouterLink>
           </div>
         </div>
@@ -183,18 +187,19 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
     <AnimatedComponent animation-type="fade">
       <section class="home__section achieve" id="achieve">
-        <h4 class="section__title">Partagez Vos Réalisations</h4>
+        <h5 class="section__title">Partagez Vos Réalisations</h5>
 
         <div class="section__content">
           <div class="achieve__textBlock">
             <p class="achieve__text">
-              Lorsque vous maîtrisez une API et créez quelque chose d’unique, partagez-le avec la
-              communauté ! La section <strong>Réalisations</strong> met en valeur vos projets
-              créatifs et vos applications construites à partir des APIs Playground.
+              Lorsque vous maîtrisez une <strong>API</strong> et créez quelque chose d’unique,
+              partagez-le avec la communauté ! La section <strong>Réalisations</strong> met en
+              valeur vos projets créatifs et vos applications construites à partir des APIs
+              Playground.<br />
             </p>
             <p class="achieve__text">
-              Rejoignez une communauté enthousiaste de développeurs partageant les mêmes idées et
-              inspirez-vous des réalisations des autres.
+              Rejoignez une <em>communauté enthousiaste de développeurs</em> partageant les mêmes
+              idées et inspirez-vous des réalisations des autres.<br />
             </p>
           </div>
 
@@ -281,6 +286,11 @@ import AnimatedComponent from '@/components/AnimatedComponent.vue'
 
 // *** SECTION INTRO ***
 .intro {
+  &__content {
+    @include m.xl {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
   &__describe {
     grid-row: 1/2;
     grid-column: 1/-1;
