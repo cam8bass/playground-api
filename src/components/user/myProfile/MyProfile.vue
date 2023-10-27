@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TheFormName from './myProfile/TheFormName.vue'
-import TheFormEmail from './myProfile/TheFormEmail.vue'
-import TheFormPassword from './myProfile/TheFormPassword.vue'
+import TheFormName from '@/components/user/myProfile/TheFormName.vue'
+import TheFormEmail from '@/components/user/myProfile/TheFormEmail.vue'
+import TheFormPassword from '@/components/user/myProfile/TheFormPassword.vue'
 import type { errorDevInterface, errorProdInterface, modalInterface } from '@/shared/interfaces'
 import type { modalType } from '@/shared/types/types'
 
@@ -43,11 +43,16 @@ const emits = defineEmits<{
     justify-items: center;
     row-gap: 2rem;
     margin: 2rem;
-    @include m.md {
+    @include m.lg {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(2, min-content);
       column-gap: 2rem;
+    }
+
+    @include m.xl {
+      grid-template-columns: repeat(2, max-content);
+      justify-content: center;
     }
   }
 
@@ -60,22 +65,22 @@ const emits = defineEmits<{
     flex-direction: column;
     box-shadow: var(--boxshadow-black);
     &--name {
-      @include m.md {
+      @include m.lg {
         grid-row: 1/2;
         grid-column: 1/2;
       }
     }
 
     &--email {
-      @include m.md {
+      @include m.lg {
         grid-row: 2/-1;
         grid-column: 1/2;
       }
     }
 
     &--password {
-      @include m.md {
-        grid-row: 1/2;
+      @include m.lg {
+        grid-row: 1/-1;
         grid-column: 2/-1;
       }
     }

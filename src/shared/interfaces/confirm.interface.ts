@@ -3,3 +3,8 @@ export interface confirmResetEmailInterface {
   newEmail: string
   password: string
 }
+
+export interface confirmResetPasswordInterface {
+  password: string
+  passwordConfirm: string
+}

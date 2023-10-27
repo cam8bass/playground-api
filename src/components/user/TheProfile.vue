@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import MyProfile from '@/components/user/MyProfile.vue'
-import MyAchieves from '@/components/user/MyAchieves.vue'
+import MyProfile from '@/components/user/myProfile/MyProfile.vue'
+
 import MyApiKeys from '@/components/user/MyApiKeys.vue'
-import AccountDeactivation from '@/components/user/AccountDeactivation.vue'
+import AccountDeactivation from '@/components/user/myProfile/AccountDeactivation.vue'
 import type { errorDevInterface, errorProdInterface, modalInterface } from '@/shared/interfaces'
 import type { modalType } from '@/shared/types/types'
 
@@ -13,7 +13,16 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   (e: 'requestChangeEmail', modal: { type: modalType; title: string; message: string }): void
+  (e: 'deactivation', modal: { type: modalType; title: string; message: string }): void
   (e: 'cancel'): void
+  (
+    e: 'renewalApiKey',
+    modal: { type: modalType; title: string; message: string; _id: string }
+  ): void
+  (
+    e: 'deleteSelectedApiKey',
+    modal: { type: modalType; title: string; message: string; _id: string }
+  ): void
 }>()
 </script>
 <template>
@@ -26,20 +35,22 @@ const emits = defineEmits<{
       @request-change-email="emits('requestChangeEmail', $event)"
     />
 
-    <MyAchieves class="profile__myAchieves" />
-    <MyApiKeys class="profile__myApiKeys" />
-    <AccountDeactivation class="profile__deactivation" />
+    <AccountDeactivation
+      class="profile__deactivation"
+      :modal="props.modal"
+      @deactivation="emits('deactivation', $event)"
+      @cancel="emits('cancel')"
+    />
   </div>
 </template>
 <style scoped lang="scss">
 @use '@/assets/abstracts/mixins' as m;
 @import '@/assets/abstracts/debug';
 .profile {
+  align-self: center;
   display: grid;
   grid-template-areas:
     'myProfile'
-    'myAchieves'
-    'myApiKeys'
     'deactivation';
   row-gap: 2rem;
   margin: 2rem 0;
@@ -49,26 +60,15 @@ const emits = defineEmits<{
   }
 
   @include m.xl {
-    grid-template-areas:
-      'myProfile myAchieves'
-      'myApiKeys deactivation';
-
-    row-gap: 4rem;
+    grid-template-areas: 'myProfile deactivation';
+    grid-template-columns: repeat(2, minmax(min-content, 70rem));
+    justify-content: center;
     column-gap: 4rem;
     margin: 4rem;
-    justify-content: center;
   }
 
   &__myProfile {
     grid-area: myProfile;
-  }
-
-  &__myAchieves {
-    grid-area: myAchieves;
-  }
-
-  &__myApiKeys {
-    grid-area: myApiKeys;
   }
 
   &__deactivation {

@@ -12,11 +12,11 @@ const router = useRouter()
 const userStore = useUserStore()
 const showPassword = ref<boolean>(false)
 const showPasswordConfirm = ref<boolean>(false)
+const formError = ref<string | null>(null)
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
-
 
 const {
   handleSubmit,
@@ -74,11 +74,14 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
   await userStore.fetchSignup(values)
 
   const errors = props.errors?.errors as Partial<signupInterface> | null
-    
+  formError.value = null
+
   if (errors) {
     Object.entries(errors).forEach(([key, value]) => {
       action.setFieldError(key as signupFieldType, value)
     })
+
+    if (errors.request) formError.value = errors.request
   } else {
     resetForm()
     router.push('/home')
@@ -91,10 +94,11 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
     <h1 class="section__title">Inscription</h1>
 
     <div class="section__content">
-      <form action="" @submit="onSubmit" class="form">
+      <form @submit="onSubmit" class="form">
         <fieldset>
           <legend class="form__title">PLayground Api</legend>
-          <div class="form__block">
+
+          <div class="form__content">
             <div class="form__group">
               <label for="firstname" class="label form__label">Nom</label>
               <input
@@ -112,8 +116,11 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                     firstnameMeta.touched && firstnameMeta.validated && !firstnameMeta.valid
                 }"
               />
-              <span class="form__error" v-if="firstnameErrors">{{ firstnameErrorMessage }}</span>
+              <span class="form__textError" v-if="firstnameErrors">{{
+                firstnameErrorMessage
+              }}</span>
             </div>
+
             <div class="form__group">
               <label for="lastname" class="label form__label">Prénom</label>
               <input
@@ -130,8 +137,9 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                   borderError: lastnameMeta.touched && lastnameMeta.validated && !lastnameMeta.valid
                 }"
               />
-              <span class="form__error" v-if="lastnameErrors">{{ lastnameErrorMessage }}</span>
+              <span class="form__textError" v-if="lastnameErrors">{{ lastnameErrorMessage }}</span>
             </div>
+
             <div class="form__group">
               <label for="email" class="label form__label">Email</label>
               <input
@@ -147,8 +155,9 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                   borderError: emailMeta.touched && emailMeta.validated && !emailMeta.valid
                 }"
               />
-              <span class="form__error" v-if="emailErrors">{{ emailErrorMessage }}</span>
+              <span class="form__textError" v-if="emailErrors">{{ emailErrorMessage }}</span>
             </div>
+
             <div class="form__group">
               <label for="password" class="label form__label">Mot de passe</label>
 
@@ -166,14 +175,19 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                   borderError: passwordMeta.touched && passwordMeta.validated && !passwordMeta.valid
                 }"
               />
-              <span class="form__error" v-if="passwordErrors">{{ passwordErrorMessage }}</span>
+              <span class="form__textError" v-if="passwordErrors">{{ passwordErrorMessage }}</span>
 
-              <button class="form__btn" type="button" @click="showPassword = !showPassword">
+              <button
+                class="form__btn form__btn-show"
+                type="button"
+                @click="showPassword = !showPassword"
+              >
                 <svg class="form__icon">
                   <use xlink:href="@/components/icons/sprite.svg#icon-eye"></use>
                 </svg>
               </button>
             </div>
+
             <div class="form__group">
               <label for="passwordConfirm" class="label form__label">Confirmer mot de passe</label>
 
@@ -196,12 +210,12 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                     !passwordConfirmMeta.valid
                 }"
               />
-              <span class="form__error" v-if="passwordConfirmErrors">{{
+              <span class="form__textError" v-if="passwordConfirmErrors">{{
                 passwordConfirmErrorMessage
               }}</span>
 
               <button
-                class="form__btn"
+                class="form__btn form__btn-show"
                 type="button"
                 @click="showPasswordConfirm = !showPasswordConfirm"
               >
@@ -210,11 +224,14 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                 </svg>
               </button>
             </div>
+
             <div class="form__group form__group-btn">
-              <button type="button" @click="router.back" class="btn">Retour</button>
+              <button type="button" @click="router.back" class="btn form__btn-return">
+                Retour
+              </button>
               <button
                 type="submit"
-                class="btn"
+                class="btn form__btn-submit"
                 :class="{
                   btnSuccess: formMeta.touched && formMeta.valid,
                   btnError: formMeta.touched && !formMeta.valid
@@ -224,6 +241,10 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
                 Envoyer
               </button>
             </div>
+          </div>
+
+          <div class="form__errors">
+            <span class="form__textError" v-if="formError">{{ formError }}</span>
           </div>
         </fieldset>
       </form>
@@ -253,45 +274,55 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
 
 fieldset {
   border: none;
-  display: grid;
-  grid-template-rows: min-content 1fr;
-  row-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
 }
 
 .form {
-  grid-row: 1/2;
   justify-self: center;
   align-self: center;
   margin: 2rem;
+  width: 80%;
 
   @include m.xl {
+    width: fit-content;
     grid-row: 1/-1;
     grid-column: 1/2;
   }
 
-  &__block {
-    grid-row: 2/-1;
-   
- 
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, min-content);
+    justify-content: center;
+    align-items: center;
+    row-gap: 2rem;
+
+    @include m.md {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, min-content);
+      column-gap: 2rem;
+    }
   }
 
+  &__group {
+    &-btn {
+      grid-row: 6/-1;
+      grid-column: 1/-1;
+      align-self: center;
+      justify-self: center;
 
-
-
-
-  &__error {
-    grid-row: 3/-1;
-    grid-column: 1/-1;
-    
+      @include m.md {
+        grid-row: 3/-1;
+        grid-column: 2/-1;
+      }
+    }
   }
 
-  &__label {
-    grid-column: 1/-1;
+  &__errors {
+    display: block;
   }
-
-
-
-
 }
 
 .description {

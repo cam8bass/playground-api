@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { userInterface } from '@/shared/interfaces'
 import type { modalInterface } from '@/shared/interfaces/modal.interface'
 import type { modalType } from '@/shared/types/types'
 
 defineProps<{
   modal: modalInterface | null
+  user: userInterface | null
 }>()
 
 const emits = defineEmits<{
@@ -12,11 +14,11 @@ const emits = defineEmits<{
 }>()
 </script>
 <template>
-  <div class="dashboardHeader">
+  <div class="dashboardHeader" v-if="user">
     <ul class="dashboardHeader-list">
       <li class="dashboardHeader-item">
-        <RouterLink to="/dashboard" class="dashboardHeader-btn">
-          <svg class="dashboardHeader-icon" aria-label="Retour au tableau de bord">
+        <RouterLink to="/home" class="dashboardHeader-btn">
+          <svg class="dashboardHeader-icon" aria-label="Retour à la page home">
             <defs>
               <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" style="stop-color: var(--color-icon-1)" />
@@ -42,7 +44,21 @@ const emits = defineEmits<{
         </RouterLink>
       </li>
 
-      <li class="dashboardHeader-item">
+      <li class="dashboardHeader-item" v-if="user.role === 'user'">
+        <RouterLink to="/myApikeys" class="dashboardHeader-btn">
+          <svg
+            class="dashboardHeader-icon"
+            aria-label="Accéder à la liste des clés d'API de l'utilisateur"
+          >
+            <use
+              xlink:href="@/components/icons/sprite.svg#icon-key"
+              fill="url(#iconGradient)"
+            ></use>
+          </svg>
+        </RouterLink>
+      </li>
+
+      <li class="dashboardHeader-item" v-if="user.role === 'admin'">
         <RouterLink to="/users" class="dashboardHeader-btn">
           <svg class="dashboardHeader-icon" aria-label="Accéder à la liste des utilisateurs">
             <use
@@ -53,7 +69,7 @@ const emits = defineEmits<{
         </RouterLink>
       </li>
 
-      <li class="dashboardHeader-item">
+      <li class="dashboardHeader-item" v-if="user.role === 'admin'">
         <RouterLink to="/apiKeys" class="dashboardHeader-btn">
           <svg class="dashboardHeader-icon" aria-label="Accéder à la liste des clés d'API">
             <use

@@ -7,7 +7,10 @@ defineProps<{
 const emits = defineEmits<{
   (e: 'logout'): void
   (e: 'requestChangeEmail'): void
+  (e: 'deactivation'): void
   (e: 'cancel'): void
+  (e: 'renewalApiKey', id: string): void
+  (e: 'deleteSelectedApiKey', id: string): void
 }>()
 </script>
 <template>
@@ -31,6 +34,28 @@ const emits = defineEmits<{
               v-if="modal.type === 'requestChangeEmail'"
               class="btn modal__btn--confirm"
               @click="emits('requestChangeEmail')"
+            >
+              Confirmer
+            </button>
+            <button
+              v-if="modal.type === 'deactivation'"
+              class="btn modal__btn--confirm"
+              @click="emits('deactivation')"
+            >
+              Confirmer
+            </button>
+
+            <button
+              v-if="modal.type === 'renewalApiKey' && modal._id"
+              class="btn modal__btn--confirm"
+              @click="emits('renewalApiKey', modal._id)"
+            >
+              Confirmer
+            </button>
+            <button
+              v-if="modal.type === 'deleteSelectedApiKey' && modal._id"
+              class="btn modal__btn--confirm"
+              @click="emits('deleteSelectedApiKey', modal._id)"
             >
               Confirmer
             </button>

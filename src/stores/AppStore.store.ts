@@ -2,12 +2,10 @@ import type { notificationInterface } from '@/shared/interfaces'
 import type { modalType, requestStatusType } from '@/shared/types/types'
 import { defineStore } from 'pinia'
 
-import { useUserStore } from '.'
 import type { modalInterface } from '@/shared/interfaces/modal.interface'
 
 interface AppStateInterface {
   loading: boolean
-  refresh: boolean
   notification: notificationInterface | null | null
   navigation: {
     login: boolean
@@ -20,7 +18,6 @@ interface AppStateInterface {
 export const useAppStore = defineStore('appStore', {
   state: (): AppStateInterface => ({
     loading: false,
-    refresh: false,
     notification: null,
     navigation: {
       login: false,
@@ -51,10 +48,6 @@ export const useAppStore = defineStore('appStore', {
 
     getLoading(): boolean {
       return this.loading
-    },
-
-    getRefresh(): boolean {
-      return this.refresh
     },
 
     getModal(): modalInterface | null {
@@ -92,11 +85,12 @@ export const useAppStore = defineStore('appStore', {
       this.notification = null
     },
 
-    updateModal(type: modalType | null, title: string, message: string) {
+    updateModal(type: modalType | null, title: string, message: string, _id?: string) {
       this.modal = {
         message,
         type,
-        title
+        title,
+        _id
       }
     },
     resetModal() {
@@ -104,17 +98,3 @@ export const useAppStore = defineStore('appStore', {
     }
   }
 })
-
-export async function initAppStore(): Promise<void> {
-  const appStore = useAppStore()
-  const userStore = useUserStore()
-
-  appStore.refresh = true
-
-  if (appStore.refresh) {
-    if (!userStore.user) {
-      await userStore.fetchisLoggedIn()
-      appStore.refresh = false
-    }
-  }
-}

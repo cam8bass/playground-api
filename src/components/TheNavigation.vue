@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import type {
-  modalInterface,
-  userBasicInfoInterface,
-  userCompleteInfoInterface
-} from '@/shared/interfaces'
+import type { modalInterface, userInterface } from '@/shared/interfaces'
 import type { modalType } from '@/shared/types/types'
 
 defineProps<{
   menu: boolean
-  user: userBasicInfoInterface | userCompleteInfoInterface | null
+  user: userInterface | null
   modal: modalInterface | null
 }>()
 

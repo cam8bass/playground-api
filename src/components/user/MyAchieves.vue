@@ -1,4 +1,4 @@
-<script setup lang="ts"></script>
+<!-- <script setup lang="ts"></script>
 <template>
   <article class="myAchieves">
     <h2 class="myAchieves__title section__title">Mes réalisations</h2>
@@ -141,4 +141,4 @@
     }
   }
 }
-</style>
+</style> -->

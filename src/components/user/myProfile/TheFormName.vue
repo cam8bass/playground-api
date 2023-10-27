@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import type {
+  errorDevInterface,
+  errorProdInterface,
+  nameSubmitInterface
+} from '@/shared/interfaces'
 import { profileNameSchema } from '@/shared/schema'
 import { useUserStore } from '@/stores'
 
 import { useField, useForm } from 'vee-validate'
+import { ref } from 'vue'
+
 const userStore = useUserStore()
+const formError = ref<string | null>(null)
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
@@ -41,7 +48,7 @@ const {
   initialValue: userStore.getCurrentUser?.lastname
 })
 
-const onSubmit = handleSubmit(async (values: { firstname?: string; lastname?: string }, action) => {
+const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
   if (userStore.getCurrentUser) {
     if (values.firstname === userStore.getCurrentUser.firstname) {
       delete values.firstname
@@ -55,12 +62,14 @@ const onSubmit = handleSubmit(async (values: { firstname?: string; lastname?: st
   if (values.firstname || values.lastname) {
     await userStore.fetchUpdateUser(values)
 
-    const errors = props.errors?.errors
+    const errors = props.errors?.errors as Partial<nameSubmitInterface>
 
     if (errors) {
       Object.entries(errors).forEach(([key, value]) => {
         action.setFieldError(key, value)
       })
+
+      if (errors.request) formError.value = errors.request
     } else {
       resetForm({
         values: {
@@ -74,82 +83,68 @@ const onSubmit = handleSubmit(async (values: { firstname?: string; lastname?: st
 </script>
 <template>
   <form @submit="onSubmit" class="form">
-    <div class="form__group">
-      <label for="firstname" class="label form__label">Nom</label>
-      <input
-        type="text"
-        id="firstname"
-        class="input form__input"
-        v-model="inputFirstname"
-        @blur="handleChangeFirstname"
-        @focus="handleBlurFirstname"
-        :class="{
-          borderSuccess: firstnameMeta.touched && firstnameMeta.validated && firstnameMeta.valid,
-          borderError: firstnameMeta.touched && firstnameMeta.validated && !firstnameMeta.valid
-        }"
-      />
-      <span class="form__error" v-if="firstnameErrors">{{ firstnameErrorMessage }}</span>
-    </div>
+    <div class="form__content">
+      <div class="form__group">
+        <label for="firstname" class="form__label">Nom</label>
+        <input
+          type="text"
+          id="firstname"
+          class="form__input"
+          v-model="inputFirstname"
+          @blur="handleChangeFirstname"
+          @focus="handleBlurFirstname"
+          :class="{
+            borderSuccess: firstnameMeta.touched && firstnameMeta.validated && firstnameMeta.valid,
+            borderError: firstnameMeta.touched && firstnameMeta.validated && !firstnameMeta.valid
+          }"
+        />
+        <span class="form__textError" v-if="firstnameErrors">{{ firstnameErrorMessage }}</span>
+      </div>
 
-    <div class="form__group">
-      <label for="lastname" class="label form__label">Prénom</label>
-      <input
-        type="text"
-        id="lastname"
-        class="input form__input"
-        v-model="inputLastname"
-        @blur="handleChangeLastname"
-        @focus="handleBlurLastname"
-        :class="{
-          borderSuccess: lastnameMeta.touched && lastnameMeta.validated && lastnameMeta.valid,
-          borderError: lastnameMeta.touched && lastnameMeta.validated && !lastnameMeta.valid
-        }"
-      />
-      <span class="form__error" v-if="lastnameErrors">{{ lastnameErrorMessage }}</span>
+      <div class="form__group">
+        <label for="lastname" class="form__label">Prénom</label>
+        <input
+          type="text"
+          id="lastname"
+          class="form__input"
+          v-model="inputLastname"
+          @blur="handleChangeLastname"
+          @focus="handleBlurLastname"
+          :class="{
+            borderSuccess: lastnameMeta.touched && lastnameMeta.validated && lastnameMeta.valid,
+            borderError: lastnameMeta.touched && lastnameMeta.validated && !lastnameMeta.valid
+          }"
+        />
+        <span class="form__textError" v-if="lastnameErrors">{{ lastnameErrorMessage }}</span>
+      </div>
+      <div class="form__group-btn">
+        <button
+          type="submit"
+          class="btn form__btn"
+          :class="{
+            btnSuccess: formNameMeta.touched && formNameMeta.valid,
+            btnError: formNameMeta.touched && !formNameMeta.valid
+          }"
+          :disabled="isSubmittingFormName || (!formNameMeta.touched && !formNameMeta.dirty)"
+        >
+          Modifier
+        </button>
+      </div>
     </div>
-
-    <button
-      type="submit"
-      class="btn form__btn"
-      :class="{
-        btnSuccess: formNameMeta.touched && formNameMeta.valid,
-        btnError: formNameMeta.touched && !formNameMeta.valid
-      }"
-      :disabled="isSubmittingFormName || (!formNameMeta.touched && !formNameMeta.dirty)"
-    >
-      Modifier
-    </button>
+    <div class="form__errors">
+      <span class="form__textError" v-if="formError">{{ formError }}</span>
+    </div>
   </form>
 </template>
 <style scoped lang="scss">
 @use '@/assets/abstracts/mixins' as m;
 .form {
-  &__group {
-    display: grid;
-    grid-template-rows: repeat(4, min-content);
-    grid-template-columns: 1fr min-content;
-  }
-
-  &__label {
-    grid-row: 1/2;
-  }
-
-  &__input {
-    grid-row: 2/3;
-    grid-column: 1/2;
-
-  }
-
-  &__error {
-    grid-row: 3/-1;
-    grid-column: 1/-1;
-    margin-bottom: 1rem;
-  }
-
-  &__btn {
-    align-self: center;
-    grid-column: 2/-1;
-    grid-row: 2/3;
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 1rem;
   }
 }
 </style>

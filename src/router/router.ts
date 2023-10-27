@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { protect } from '@/shared/utils'
-import { initAppStore, initPageProfile } from '@/stores'
+import { initUserStore } from '@/stores'
 import type { routeMetaInterface } from '@/shared/interfaces'
 
 const router = createRouter({
@@ -73,6 +73,22 @@ const router = createRouter({
         title: "Playground Api - Réinitialisation de l'e-mail"
       }
     },
+    {
+      path: '/resetPassword/:token',
+      name: 'resetPassword',
+      component: () => import('@/views/ConfirmView.vue'),
+      meta: {
+        title: 'Playground Api - Réinitialisation du mot de passe'
+      }
+    },
+    {
+      path: '/confirmRenewal/:token',
+      name: 'confirmRenewal',
+      component: () => import('@/views/ConfirmView.vue'),
+      meta: {
+        title: "Playground Api - Renouvellement clé d'api"
+      }
+    },
 
     {
       beforeEnter: (to, from, next) => {
@@ -88,17 +104,28 @@ const router = createRouter({
         requiresAuth: true,
         role: ['user', 'admin']
       } as routeMetaInterface,
+      redirect: '/myProfile',
 
       children: [
         {
-          beforeEnter: [initPageProfile],
           path: '/myProfile',
           name: 'myProfile',
-          component: () => import('@/views/TheProfileView.vue'),
+          component: () => import('@/components/user/TheProfile.vue'),
           meta: {
             title: 'Playground Api - Mon profil',
             requiresAuth: true,
             role: ['user', 'admin']
+          } as routeMetaInterface
+        },
+
+        {
+          path: '/myApiKeys',
+          name: 'myApiKeys',
+          component: () => import('@/components/user/MyApiKeys.vue'),
+          meta: {
+            title: "Playground Api - Mes clés d'apis",
+            requiresAuth: true,
+            role: ['user']
           } as routeMetaInterface
         },
         {
@@ -137,7 +164,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  await initAppStore()
+  await initUserStore()
 
   next()
 })

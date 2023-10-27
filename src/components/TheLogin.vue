@@ -1,30 +1,55 @@
 <script setup lang="ts">
-import type { errorDevInterface, errorProdInterface, loginInterface } from '@/shared/interfaces'
-import { loginSchema } from '@/shared/schema'
+import type {
+  errorDevInterface,
+  errorProdInterface,
+  forgotPasswordSubmitInterface,
+  loginInterface
+} from '@/shared/interfaces'
+
+import { forgotPasswordSchema, loginSchema } from '@/shared/schema'
 import type { loginFieldType } from '@/shared/types/types'
 import { useUserStore } from '@/stores'
 import { useField, useForm } from 'vee-validate'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const userStore = useUserStore()
+const login = ref<boolean>(true)
+const forgotpassword = ref<boolean>(false)
+const formError = ref<string | null>(null)
+
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
 
 const emits = defineEmits<{
   (e: 'openLogin', value: boolean): void
+  (e: 'resetError'): void
 }>()
 
-const formError = ref<string | null>(null)
+function resetFormErrors(): void {
+  emits('resetError')
+  formError.value = null
+  resetForm()
+}
+
+const validationSchema = computed(() => {
+  if (login.value) {
+    return loginSchema
+  } else {
+    return forgotPasswordSchema
+  }
+})
 
 const {
   handleSubmit,
   meta: formMeta,
   isSubmitting,
   resetForm
-} = useForm({ validationSchema: loginSchema })
+} = useForm({
+  validationSchema
+})
 
 const {
   value: inputEmail,
@@ -32,7 +57,6 @@ const {
   errorMessage: emailErrorMessage,
   handleBlur: handleBlurEmail,
   handleChange: handleChangeEmail,
-
   meta: emailMeta
 } = useField('email', '', { validateOnValueUpdate: false })
 
@@ -45,89 +69,171 @@ const {
   meta: passwordMeta
 } = useField('password', '', { validateOnValueUpdate: false })
 
-// TODO: A voir syncVmodel
-const onSubmit = handleSubmit(async (values: loginInterface, action) => {
-  await userStore.fetchLogin(values)
-  const errors = props.errors?.errors as Partial<loginInterface> | null
-  formError.value = null
+const onSubmit = handleSubmit(
+  async (values: loginInterface | forgotPasswordSubmitInterface, action) => {
+    if (login.value && !forgotpassword.value) {
+      await userStore.fetchLogin(values as loginInterface)
+    } else if (!login.value && forgotpassword.value) {
+      await userStore.fetchForgotPassword(values as forgotPasswordSubmitInterface)
+    }
 
-  if (errors) {
-    Object.entries(errors).forEach(([key, value]) => {
-      action.setFieldError(key as loginFieldType, value)
-    })
+    const errors = props.errors?.errors as
+      | Partial<loginInterface>
+      | Partial<forgotPasswordSubmitInterface>
+      | null
 
-    if (errors.request) formError.value = errors.request
-  } else {
-    emits('openLogin', false)
-    router.push('/dashboard')
+    formError.value = null
 
-    resetForm()
+    if (errors) {
+      Object.entries(errors).forEach(([key, value]) => {
+        action.setFieldError(key as loginFieldType, value)
+      })
+
+      if (errors.request) formError.value = errors.request
+    } else {
+      forgotpassword.value = false
+      emits('openLogin', false)
+      resetForm()
+
+      if (login.value && !forgotpassword.value) {
+        router.push('/dashboard')
+      }
+    }
   }
-})
+)
 </script>
 
 <template>
-  <form @submit="onSubmit" class="form">
-    <div class="form__group">
-      <label for="email" class="label section__label form__label">Email</label>
+  <div class="login">
+    <!-- LOGIN FORM -->
+    <Transition name="translateLeft" mode="out-in" @after-leave="forgotpassword = !forgotpassword">
+      <form @submit="onSubmit" class="form" v-if="login">
+        <div class="form__content">
+          <div class="form__group">
+            <label for="email" class="form__label">Email</label>
 
-      <input
-        type="email"
-        id="email"
-        class="input form__input"
-        placeholder="Entrez votre email"
-        v-model="inputEmail"
-        @blur="handleChangeEmail"
-        @focus="handleBlurEmail"
-        :class="{
-          borderSuccess: emailMeta.touched && emailMeta.validated && emailMeta.valid,
-          borderError: emailMeta.touched && emailMeta.validated && !emailMeta.valid
-        }"
-      />
-      <span class="form__error" v-if="emailErrors">{{ emailErrorMessage }}</span>
-    </div>
+            <input
+              type="email"
+              id="email"
+              class="form__input"
+              placeholder="Entrez votre email"
+              v-model="inputEmail"
+              @blur="handleChangeEmail"
+              @focus="handleBlurEmail"
+              :class="{
+                borderSuccess: emailMeta.touched && emailMeta.validated && emailMeta.valid,
+                borderError: emailMeta.touched && emailMeta.validated && !emailMeta.valid
+              }"
+            />
+            <span class="form__textError" v-if="emailErrors">{{ emailErrorMessage }}</span>
+          </div>
 
-    <div class="form__group">
-      <label for="password" class="label form__label">Mot de passe</label>
-      <input
-        type="password"
-        id="password"
-        class="input form__input"
-        placeholder="Entrez votre mot de passe"
-        v-model="inputPassword"
-        @blur="handleChangePassword"
-        @focus="handleBlurPassword"
-        :class="{
-          borderSuccess: passwordMeta.touched && passwordMeta.validated && passwordMeta.valid,
-          borderError: passwordMeta.touched && passwordMeta.validated && !passwordMeta.valid
-        }"
-      />
-      <span class="form__error" v-if="passwordErrors">{{ passwordErrorMessage }}</span>
-    </div>
+          <div class="form__group">
+            <label for="password" class="form__label">Mot de passe</label>
+            <input
+              type="password"
+              id="password"
+              class="form__input"
+              placeholder="Entrez votre mot de passe"
+              v-model="inputPassword"
+              @blur="handleChangePassword"
+              @focus="handleBlurPassword"
+              :class="{
+                borderSuccess: passwordMeta.touched && passwordMeta.validated && passwordMeta.valid,
+                borderError: passwordMeta.touched && passwordMeta.validated && !passwordMeta.valid
+              }"
+            />
+            <span class="form__textError" v-if="passwordErrors">{{ passwordErrorMessage }}</span>
+          </div>
 
-    <RouterLink to="/forgotPassword" class="form__link">Mot de passe oublié</RouterLink>
-    <div class="form__group">
-      <button type="button" @click="emits('openLogin', false)" class="form__btn btn">Retour</button>
-      <button
-        type="submit"
-        class="form__btn btn"
-        :class="{
-          btnSuccess: formMeta.touched && formMeta.valid,
-          btnError: formMeta.touched && !formMeta.valid
-        }"
-        :disabled="isSubmitting"
-      >
-        Connexion
-      </button>
-    </div>
-    <span class="form__error form__error-form" v-if="formError">{{ formError }}</span>
-  </form>
+          <div class="form__group form__group-btn">
+            <button
+              type="button"
+              @click="emits('openLogin', false), resetFormErrors()"
+              class="form__btn btn"
+            >
+              Retour
+            </button>
+            <button
+              type="submit"
+              class="form__btn btn"
+              :class="{
+                btnSuccess: formMeta.touched && formMeta.valid,
+                btnError: formMeta.touched && !formMeta.valid
+              }"
+              :disabled="isSubmitting"
+            >
+              Connexion
+            </button>
+          </div>
+        </div>
+
+        <button to="/forgotPassword" type="button" class="login__link" @click="login = !login">
+          Mot de passe oublié
+        </button>
+
+        <div class="form__errors">
+          <span class="form__textError" v-if="formError">{{ formError }}</span>
+        </div>
+      </form>
+    </Transition>
+
+    <!-- FORGOT PASSWORD FORM -->
+    <Transition name="translateLeft" mode="out-in" @after-leave="login = !login">
+      <form @submit="onSubmit" class="form" v-if="forgotpassword">
+        <div class="form__content">
+          <div class="form__group">
+            <label for="email" class="form__label">Email</label>
+
+            <input
+              type="email"
+              id="email"
+              class="form__input"
+              placeholder="Entrez votre email"
+              v-model="inputEmail"
+              @blur="handleChangeEmail"
+              @focus="handleBlurEmail"
+              :class="{
+                borderSuccess: emailMeta.touched && emailMeta.validated && emailMeta.valid,
+                borderError: emailMeta.touched && emailMeta.validated && !emailMeta.valid
+              }"
+            />
+            <span class="form__textError" v-if="emailErrors">{{ emailErrorMessage }}</span>
+          </div>
+          <div class="form__group form__group-btn">
+            <button
+              type="button"
+              @click="(forgotpassword = !forgotpassword), resetFormErrors()"
+              class="form__btn btn"
+            >
+              Retour
+            </button>
+            <button
+              type="submit"
+              class="form__btn btn"
+              :class="{
+                btnSuccess: formMeta.touched && formMeta.valid,
+                btnError: formMeta.touched && !formMeta.valid
+              }"
+              :disabled="isSubmitting"
+            >
+              Envoyer
+            </button>
+          </div>
+        </div>
+        <div class="form__errors">
+          <span class="form__textError" v-if="formError">{{ formError }}</span>
+        </div>
+      </form>
+    </Transition>
+  </div>
 </template>
 
 <style scoped lang="scss">
 @use '@/assets/abstracts/mixins' as m;
 @import '@/assets/base/animation';
-.form {
+
+.login {
   position: fixed;
   overflow-y: scroll;
   z-index: 1000;
@@ -136,57 +242,36 @@ const onSubmit = handleSubmit(async (values: loginInterface, action) => {
   height: 100vh;
   width: 100%;
   backdrop-filter: blur(5px);
-  align-content: center;
-  display: grid;
-  grid-template-rows: repeat(5, min-content);
-  justify-content: center;
-  align-items: center;
-  row-gap: 2rem;
   background-color: var(--color-black-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   @include m.xl {
     width: 30%;
   }
 
-  &__btn {
-    justify-self: center;
-
-    &:first-of-type {
-      margin-right: 2rem;
-    }
-  }
-
-  &__label {
-    grid-row: 1/2;
-    grid-column: 1/-1;
-  }
-
-  &__input {
-    grid-row: 2/3;
-    grid-column: 1/-1;
-  }
-  &__error {
-    grid-row: 3/-1;
-    grid-column: 1/-1;
-    margin-top: 1rem;
-
-    &-form {
-      grid-row: 5/-1;
-      grid-column: 1/-1;
-      justify-self: center;
-    }
-  }
-
   &__link {
+    margin-top: 1rem;
+    grid-row: 4/5;
     text-decoration: none;
     color: var(--color-white);
     font-weight: 100;
     font-size: 1.8rem;
     transition: color 0.2s;
+    background-color: transparent;
     &:hover,
     &:active {
       color: var(--color-purple-1);
     }
+  }
+}
+.form {
+  &__content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
   }
 }
 </style>

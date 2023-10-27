@@ -4,4 +4,5 @@ export interface modalInterface {
   type: modalType | null
   title: string | null
   message: string | null
+  _id?: string
 }

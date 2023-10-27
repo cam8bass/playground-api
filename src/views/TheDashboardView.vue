@@ -3,13 +3,28 @@ import DashboardHeader from '@/components/TheDashboardHeader.vue'
 
 import { useAppStore, useErrorStore } from '@/stores'
 import type { modalType } from '@/shared/types/types'
+import type { userInterface } from '@/shared/interfaces'
 
 const appStore = useAppStore()
+
 const errorStore = useErrorStore()
+
+defineProps<{
+  user: userInterface | null
+}>()
 
 const emits = defineEmits<{
   (e: 'logout', modal: { type: modalType; title: string; message: string }): void
   (e: 'requestChangeEmail', modal: { type: modalType; title: string; message: string }): void
+  (e: 'deactivation', modal: { type: modalType; title: string; message: string }): void
+  (
+    e: 'renewalApiKey',
+    modal: { type: modalType; title: string; message: string; _id: string }
+  ): void
+  (
+    e: 'deleteSelectedApiKey',
+    modal: { type: modalType; title: string; message: string; _id: string }
+  ): void
   (e: 'cancel'): void
 }>()
 </script>
@@ -17,19 +32,26 @@ const emits = defineEmits<{
   <main class="dashboard">
     <DashboardHeader
       class="dashboard__header"
-      @logout="emits('logout', $event)"
       :modal="appStore.getModal"
+      :user="user"
+      @logout="emits('logout', $event)"
       @cancel="emits('cancel')"
     />
 
     <RouterView class="dashboard__content" v-slot="{ Component, route }">
-      <component
-        :is="Component"
-        :key="route.fullPath"
-        :errors="errorStore.getError"
-        :modal="appStore.getModal"
-        @request-change-email="emits('requestChangeEmail', $event)"
-      />
+      <Transition name="translateLeft" mode="out-in" appear>
+        <component
+          :is="Component"
+          :key="route.fullPath"
+          :errors="errorStore.getError"
+          :modal="appStore.getModal"
+          @request-change-email="emits('requestChangeEmail', $event)"
+          @deactivation="emits('deactivation', $event)"
+          @cancel="emits('cancel')"
+          @renewal-api-key="emits('renewalApiKey', $event)"
+          @delete-selected-api-key="emits('deleteSelectedApiKey', $event)"
+        />
+      </Transition>
     </RouterView>
   </main>
 </template>
@@ -40,7 +62,7 @@ const emits = defineEmits<{
 .dashboard {
   display: grid;
   grid-template-rows: min-content 1fr;
-
+  height: 100%;
   @include m.xl {
     grid-template-columns: min-content 1fr;
     grid-template-rows: 1fr;

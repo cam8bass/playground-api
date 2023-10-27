@@ -4,7 +4,6 @@ import type { notificationInterface } from '@/shared/interfaces'
 defineProps<{
   notification: notificationInterface | null
 }>()
-
 </script>
 <template>
   <Transition name="translateLeft" mode="out-in">
@@ -13,12 +12,16 @@ defineProps<{
         class="notification__icon"
         :class="{
           'notification__icon--success': notification.type === 'success',
-          'notification__icon--fail': notification.type === 'fail'
+          'notification__icon--fail': notification.type === 'fail' || notification.type === 'error'
         }"
       >
         <use
           v-if="notification.type === 'success'"
-          xlink:href="@/components/icons/sprite.svg#icon-check"
+          xlink:href="@/components/icons/sprite.svg#icon-check-circle1"
+        ></use>
+        <use
+          v-else-if="notification.type === 'fail'"
+          xlink:href="@/components/icons/sprite.svg#icon-exclamation-circle"
         ></use>
         <use v-else xlink:href="@/components/icons/sprite.svg#icon-alert-triangle"></use>
       </svg>

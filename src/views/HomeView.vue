@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import AnimatedComponent from '@/components/AnimatedComponent.vue'
+import type { userInterface } from '@/shared/interfaces'
+import type { requestStatusType } from '@/shared/types/types'
 
 const emits = defineEmits<{
   (e: 'openLogin', value: boolean): void
+  (e: 'isLoggedIn', notification: { type: requestStatusType | null; message: string | null }): void
+}>()
+
+defineProps<{
+  user: userInterface | null
 }>()
 </script>
 
@@ -33,7 +40,19 @@ const emits = defineEmits<{
               <RouterLink to="/signup" class="btn intro__begin-link--signup"
                 >Inscription</RouterLink
               >
-              <button @click="emits('openLogin', true)" class="btn">Connexion</button>
+              <button
+                @click="
+                  !user
+                    ? emits('openLogin', true)
+                    : emits('isLoggedIn', {
+                        type: 'fail',
+                        message: 'Vous êtes déjà connecté'
+                      })
+                "
+                class="btn"
+              >
+                Connexion
+              </button>
             </div>
           </div>
         </AnimatedComponent>

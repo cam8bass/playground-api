@@ -7,7 +7,7 @@ import TheModal from './components/TheModal.vue'
 import { useAppStore, useErrorStore, useUserStore } from './stores'
 import TheLoading from './components/TheLoading.vue'
 import router from './router/router'
-import type { modalType } from './shared/types/types'
+import type { modalType, requestStatusType } from './shared/types/types'
 
 const userStore = useUserStore()
 const appStore = useAppStore()
@@ -30,6 +30,10 @@ function cancelModal(): void {
   appStore.resetModal()
 }
 
+function resetError(): void {
+  errorStore.resetError()
+}
+
 async function logout(): Promise<void> {
   await userStore.fetchLogout()
   appStore.resetModal()
@@ -41,8 +45,38 @@ async function fetchRequestChangeEmail(): Promise<void> {
   appStore.resetModal()
 }
 
-function updateModal(modal: { type: modalType | null; title: string; message: string }): void {
-  appStore.updateModal(modal.type, modal.title, modal.message)
+async function fetchDeactivationAccount(): Promise<void> {
+  await userStore.fetchDeactivationAccount()
+  appStore.resetModal()
+  userStore.resetUser()
+  router.push('/home')
+}
+
+async function fetchRenewalApiKey(idApi: string): Promise<void> {
+  await userStore.fetchRenewalApiKey(idApi)
+  appStore.resetModal()
+}
+
+async function fetchDeleteSelectedApiKey(idApi: string): Promise<void> {
+  await userStore.fetchDeleteSelectedApiKey(idApi)
+  appStore.resetModal()
+}
+
+function updateModal(modal: {
+  type: modalType | null
+  title: string
+  message: string
+  _id?: string
+}): void {
+  appStore.updateModal(modal.type, modal.title, modal.message, modal._id)
+}
+
+function updateNotification(notification: {
+  type: requestStatusType | null
+  message: string | null
+}) {
+  appStore.updateNotification(notification.type, notification.message)
+  appStore.updatePopup(true)
 }
 </script>
 
@@ -53,6 +87,7 @@ function updateModal(modal: { type: modalType | null; title: string; message: st
         v-if="appStore.navigation.login"
         :errors="errorStore.getError"
         @openLogin="updateLogin"
+        @reset-error="resetError"
       />
     </Transition>
 
@@ -72,24 +107,33 @@ function updateModal(modal: { type: modalType | null; title: string; message: st
     />
 
     <RouterView v-slot="{ Component, route }" class="content">
-      <Transition name="fade">
+      <Transition name="fade" mode="out-in" appear>
         <component
           :is="Component"
           :key="route.fullPath"
           :errors="errorStore.getError"
+          :user="userStore.getCurrentUser"
           @openLogin="updateLogin"
           @cancel="cancelModal"
           @logout="updateModal"
           @request-change-email="updateModal"
+          @deactivation="updateModal"
+          @isLoggedIn="updateNotification"
+          @renewal-api-key="updateModal"
+          @delete-selected-api-key="updateModal"
           v-if="!appStore.getMenu"
         />
       </Transition>
-    </RouterView>
+      </RouterView>
+
     <TheModal
       :modal="appStore.getModal"
       @cancel="cancelModal"
       @logout="logout"
       @request-change-email="fetchRequestChangeEmail"
+      @deactivation="fetchDeactivationAccount"
+      @renewal-api-key="fetchRenewalApiKey"
+      @delete-selected-api-key="fetchDeleteSelectedApiKey"
     />
     <TheFooter class="footer" v-if="!appStore.getMenu" />
   </div>
