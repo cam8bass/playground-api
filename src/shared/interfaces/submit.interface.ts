@@ -22,3 +22,8 @@ export interface requestCreateNewApiKeyInterface {
   apiName: apiNameType
   request?: string
 }
+
+export interface adminSubmitActiveApiKey {
+  active: string
+  request?: string
+}

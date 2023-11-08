@@ -10,3 +10,5 @@ export * from './message.interface'
 export * from './confirm.interface'
 export * from './submit.interface'
 export * from './apiKey.interface'
+export * from "./adminUsers.interface"
+export * from "./adminUpdateUser.interface"

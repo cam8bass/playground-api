@@ -69,88 +69,23 @@ const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, act
 </script>
 <template>
   <form @submit="onSubmit" class="formSelect">
-    <div class="formSelect__content">
-      <label for="apiName" class="formSelect__label form__label">Ajouter une api : </label>
-      <select id="apiName" v-model="inputApiName" class="formSelect__select">
-        <option selected value="Api-travel">Api-travel</option>
-        <option value="Api-test1">Api-test1</option>
-        <option value="Api-test2">Api-test2</option>
-      </select>
+    <label for="apiName" class="formSelect__label form__label">Ajouter une api :</label>
+    <select name="apiName" id="apiName" class="formSelect__select" v-model="inputApiName">
+      <option selected value="Api-travel">Api-travel</option>
+      <option value="Api-test1">Api-test1</option>
+      <option value="Api-test2">Api-test2</option>
+    </select>
 
-      <button type="submit" class="formSelect__btn" :disabled="isSubmitting">
-        <svg
-          class="form__icon"
-          :class="{
-            iconSuccess: formMeta.touched && formMeta.valid,
-            iconError: formMeta.touched && !formMeta.valid
-          }"
-        >
-          <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
-        </svg>
-      </button>
-      <span class="form__textError" v-if="apiNameErrors">{{
-        apiNameErrorMessage
-      }}</span>
-    </div>
-    <div class="formSelect__errors" v-if="formError">
-      <p class="form__textError">
-        {{ formError }}
-      </p>
-    </div>
+    <button type="submit" class="formSelect__btn" :disabled="isSubmitting">
+      <svg class="formSelect__icon">
+        <use xlink:href="@/components/icons/sprite.svg#icon-arrow-right-circle"></use>
+      </svg>
+    </button>
+    <span class="form__textError formSelect__textError" v-if="apiNameErrors">{{
+      apiNameErrorMessage
+    }}</span>
+
+    <span class="form__textError formSelect__textError" v-if="formError">{{ formError }}</span>
   </form>
 </template>
-<style lang="scss" scoped>
-.formSelect {
-  margin: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
-
-  &__content {
-    display: grid;
-    grid-template-columns: repeat(2, min-content);
-    grid-template-rows: repeat(2, min-content);
-    row-gap: 1rem;
-    column-gap: 2rem;
-  }
-
-  &__btn {
-    display: flex;
-    background-color: transparent;
-    grid-row: 2/-1;
-    grid-column: 2/-1;
-  }
-
-  &__select {
-    grid-row: 2/-1;
-    grid-column: 1/2;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 2px;
-    box-shadow: var(--boxshadow-black);
-    font-size: 1.6rem;
-    background-color: var(--color-purple-1);
-  }
-
-
-}
-
-.iconSuccess {
-  fill: var(--color-green-1);
-  transition: all 0.4s;
-  &:hover,
-  &:active {
-    fill: var(--color-green-2);
-  }
-}
-
-.iconError {
-  fill: var(--color-red-1);
-  transition: all 0.4s;
-
-  &:hover,
-  &:active {
-    fill: var(--color-red-2);
-  }
-}
-</style>
+<style lang="scss" scoped></style>

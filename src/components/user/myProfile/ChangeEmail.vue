@@ -1,0 +1,51 @@
+<script setup lang="ts">
+import { useAppStore, useCurrentUserStore } from '@/stores'
+
+const currentUserStore = useCurrentUserStore()
+const appStore = useAppStore()
+</script>
+<template>
+  <div class="email">
+    <span class="email__label"
+      >Email : <span class="email__text">{{ currentUserStore.getCurrentUser?.email }}</span></span
+    >
+
+    <button
+      type="button"
+      class="btn email__btn"
+      @click="
+        !appStore.getModal
+          ? appStore.updateModal({
+              type: 'requestChangeEmail',
+              title: 'Changement d\'adresse email',
+              message: 'changer votre adresse email ?'
+            })
+          : appStore.getModal && appStore.getModal.type === 'logout'
+          ? appStore.resetModal
+          : ''
+      "
+    >
+      Modifier
+    </button>
+  </div>
+</template>
+<style scoped lang="scss">
+@use '@/assets/style/abstracts/mixins' as m;
+.email {
+  row-gap: 2rem;
+
+  &__label {
+    font-family: var(--font-subtext);
+  }
+
+  &__text {
+    margin-left: 1rem;
+    font-family: var(--font-text);
+    color: var(--color-purple-1);
+  }
+
+  &__btn {
+    align-self: center;
+  }
+}
+</style>

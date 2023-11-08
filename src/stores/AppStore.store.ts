@@ -85,12 +85,17 @@ export const useAppStore = defineStore('appStore', {
       this.notification = null
     },
 
-    updateModal(type: modalType | null, title: string, message: string, _id?: string) {
+    updateModal(modal: {
+      type: modalType | null
+      title: string
+      message: string
+      id?: { idUser?: string; idApi?: string }
+    }) {
       this.modal = {
-        message,
-        type,
-        title,
-        _id
+        message: modal.message,
+        type: modal.type,
+        title: modal.title,
+        id: modal.id
       }
     },
     resetModal() {

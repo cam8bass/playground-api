@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '@/views/TheHome.vue'
 import { protect } from '@/shared/utils'
-import { initUserStore } from '@/stores'
+import { initUsersStore, initCurrentUserStore, useUsersStore } from '@/stores'
 import type { routeMetaInterface } from '@/shared/interfaces'
 
 const router = createRouter({
@@ -28,7 +28,7 @@ const router = createRouter({
     {
       path: '/apis',
       name: 'apis',
-      component: () => import('@/views/ApiView.vue'),
+      component: () => import('@/views/TheApi.vue'),
       meta: {
         title: 'Playground Api - Apis',
         description: ''
@@ -37,7 +37,7 @@ const router = createRouter({
     {
       path: '/documentation',
       name: 'documentation',
-      component: () => import('@/views/DocumentationView.vue'),
+      component: () => import('@/views/TheDocumentation.vue'),
       meta: {
         title: 'Playground Api - Documentation',
         description: ''
@@ -46,21 +46,16 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'signup',
-      component: () => import('@/views/SignupView.vue'),
+      component: () => import('@/views/TheSignup.vue'),
       meta: {
         title: 'Playground Api - Inscription'
       }
     },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/components/TheLogin.vue'),
-      meta: {}
-    },
+
     {
       path: '/activationAccount/:token',
       name: 'activationAccount',
-      component: () => import('@/views/ConfirmView.vue'),
+      component: () => import('@/views/TheConfirm.vue'),
       meta: {
         title: 'Playground Api - Activation de compte '
       }
@@ -68,7 +63,7 @@ const router = createRouter({
     {
       path: '/resetEmail/:token',
       name: 'resetEmail',
-      component: () => import('@/views/ConfirmView.vue'),
+      component: () => import('@/views/TheConfirm.vue'),
       meta: {
         title: "Playground Api - Réinitialisation de l'e-mail"
       }
@@ -76,7 +71,7 @@ const router = createRouter({
     {
       path: '/resetPassword/:token',
       name: 'resetPassword',
-      component: () => import('@/views/ConfirmView.vue'),
+      component: () => import('@/views/TheConfirm.vue'),
       meta: {
         title: 'Playground Api - Réinitialisation du mot de passe'
       }
@@ -84,7 +79,7 @@ const router = createRouter({
     {
       path: '/confirmRenewal/:token',
       name: 'confirmRenewal',
-      component: () => import('@/views/ConfirmView.vue'),
+      component: () => import('@/views/TheConfirm.vue'),
       meta: {
         title: "Playground Api - Renouvellement clé d'api"
       }
@@ -97,7 +92,7 @@ const router = createRouter({
 
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('@/views/TheDashboardView.vue'),
+      component: () => import('@/views/TheDashboard.vue'),
 
       meta: {
         title: 'Playground Api - Dashboard',
@@ -110,7 +105,7 @@ const router = createRouter({
         {
           path: '/myProfile',
           name: 'myProfile',
-          component: () => import('@/components/user/TheProfile.vue'),
+          component: () => import('@/views/user/MyProfile.vue'),
           meta: {
             title: 'Playground Api - Mon profil',
             requiresAuth: true,
@@ -121,7 +116,7 @@ const router = createRouter({
         {
           path: '/myApiKeys',
           name: 'myApiKeys',
-          component: () => import('@/components/user/MyApiKeys.vue'),
+          component: () => import('@/views/user/MyApiKeys.vue'),
           meta: {
             title: "Playground Api - Mes clés d'apis",
             requiresAuth: true,
@@ -129,11 +124,30 @@ const router = createRouter({
           } as routeMetaInterface
         },
         {
+          beforeEnter: [initUsersStore],
           path: '/users',
           name: 'users',
-          component: () => import('@/views/TheUsersView.vue'),
+          component: () => import('@/views/admin/AllUsers.vue'),
           meta: {
-            title: 'Playground Api - Liste utilisateurs ',
+            title: 'Playground Api - Liste utilisateurs',
+            requiresAuth: true,
+            role: ['admin']
+          } as routeMetaInterface
+        },
+
+        {
+          beforeEnter: async (to, from, next) => {
+            const { id } = to.params
+            const usersStore = useUsersStore()
+            await usersStore.fetchGetUser(id as string)
+            next()
+          },
+
+          path: '/users/:id',
+          name: 'user',
+          component: () => import('@/views/admin/UserProfile.vue'),
+          meta: {
+            title: 'Playground Api - Profil utilisateur',
             requiresAuth: true,
             role: ['admin']
           } as routeMetaInterface
@@ -142,7 +156,7 @@ const router = createRouter({
         {
           path: '/apiKeys',
           name: 'apiKeys',
-          component: () => import('@/views/TheApiKeysView.vue'),
+          component: () => import('@/views/admin/AllApiKeys.vue'),
           meta: {
             title: 'Playground Api - Liste apis',
             requiresAuth: true,
@@ -155,7 +169,7 @@ const router = createRouter({
     {
       path: '/:notFound(.*)*',
       name: 'NotFound',
-      component: () => import('@/views/NotFoundView.vue'),
+      component: () => import('@/views/TheNotFound.vue'),
       meta: {
         title: ''
       }
@@ -164,7 +178,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  await initUserStore()
+  await initCurrentUserStore()
 
   next()
 })

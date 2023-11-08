@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { modalInterface } from '@/shared/interfaces'
-import type { modalType } from '@/shared/types/types'
 
-defineProps<{
-  modal: modalInterface | null
-}>()
+import { useAppStore } from '@/stores'
 
-const emits = defineEmits<{
-  (e: 'deactivation', modal: { type: modalType; title: string; message: string }): void
-  (e: 'cancel'): void
-}>()
+const appStore = useAppStore()
+
+
+
+
 </script>
 <template>
   <div class="deactivation">
@@ -22,17 +19,19 @@ const emits = defineEmits<{
         après une période prolongée.
       </p>
 
+   
+
       <button
         class="deactivation__btn btn"
         @click="
-          !modal
-            ? emits('deactivation', {
+          !appStore.getModal
+            ? appStore.updateModal({
                 type: 'deactivation',
                 title: 'Désactivation de compte',
                 message: 'désactiver votre compte ?'
               })
-            : modal && modal.type === 'deactivation'
-            ? emits('cancel')
+            : appStore.getModal && appStore.getModal.type === 'deactivation'
+            ? appStore.resetModal
             : ''
         "
       >

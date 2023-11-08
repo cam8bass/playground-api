@@ -39,7 +39,6 @@ export async function sendRequest(
   } catch (e: any) {
     const errors = e as errorInterface
     errorStore.updateError(errors.statusCode, errors.status, errors.errors, errors.message)
-
     // TODO: Vérifider si le status de l'erreur est égale a 500, dans ce cas ouvir une modal avec la description de l'erreur et un boutton qui permet de retourner à la page home.
   } finally {
     appStore.updateLoading(false)
