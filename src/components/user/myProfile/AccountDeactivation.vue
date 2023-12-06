@@ -1,12 +1,7 @@
 <script setup lang="ts">
-
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
-
-
-
-
 </script>
 <template>
   <div class="deactivation">
@@ -18,8 +13,6 @@ const appStore = useAppStore()
         administrateurs se réservent le droit de supprimer définitivement les comptes désactivés
         après une période prolongée.
       </p>
-
-   
 
       <button
         class="deactivation__btn btn"

@@ -1,12 +1,24 @@
 import type { apiNameType } from '../types/types'
 
-export interface apiKeyInterface {
+
+
+export interface ApiKeyInterface  {
+  user: {
+    _id: string
+    email: string
+  }
+  apiKeys: [KeyInterface]
+  createAt: Date
   _id: string
-  active: boolean
+}
+
+export interface KeyInterface {
   apiName: apiNameType
   apiKey: string
   apiKeyExpire: Date
-  renewalToken?: string
-  renewalTokenExpire?: Date
+  active: boolean
+  renewalToken: string
+  renewalTokenExpire: Date
+  _id: string
   createAt: Date
 }

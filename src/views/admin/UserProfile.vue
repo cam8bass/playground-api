@@ -2,14 +2,45 @@
 import UserInfo from '@/components/admin/userProfile/UserInfo.vue'
 import UserDetail from '@/components/admin/userProfile/UserDetail.vue'
 import UserApiKey from '@/components/admin/userProfile/UserApiKey.vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import { computed, onMounted } from 'vue'
+import { useApiKeysStore, useCurrentUserStore, useUsersStore } from '@/stores'
 
 const router = useRouter()
+const route = useRoute()
+const currentUserStore = useCurrentUserStore()
+
+const usersStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useUsersStore()
+  }
+  return null
+})
+
+const apiKeysStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useApiKeysStore()
+  }
+  return null
+})
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
+
+const fetchUserProfile = async () => {
+  const { id } = route.params
+  if (usersStore.value) {
+    await usersStore.value.fetchAdminGetUser(id as string)
+
+    if (apiKeysStore.value && usersStore.value.getUser) {
+      await apiKeysStore.value.fetchAdminGetSelectedUserApiKeys(usersStore.value.getUser._id)
+    }
+  }
+}
+
+onMounted(fetchUserProfile)
 </script>
 <template>
   <div class="profile">

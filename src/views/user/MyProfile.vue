@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import MyAccount from '@/components/user/myProfile/MyAccount.vue'
-
 import AccountDeactivation from '@/components/user/myProfile/AccountDeactivation.vue'
 import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
+
 </script>
 <template>
   <div class="profile">

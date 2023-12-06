@@ -94,9 +94,15 @@ const onSubmit = handleSubmit(
     } else if (route.name === 'activationAccount') {
       await currentUserStore.fetchActivationAccountForm(values as loginInterface, token as string)
     } else if (route.name === 'resetPassword') {
-      await currentUserStore.fetchResetPassword(values as confirmResetPasswordInterface, token as string)
+      await currentUserStore.fetchResetPassword(
+        values as confirmResetPasswordInterface,
+        token as string
+      )
     } else if (route.name === 'confirmRenewal') {
-      await currentUserStore.fetchConfirmRenewalApiKey(values as loginInterface, token as string)
+      await currentUserStore.fetchUserConfirmRenewalApiKey(
+        values as loginInterface,
+        token as string
+      )
     }
 
     const errors = props.errors?.errors as Partial<loginInterface> | null
@@ -111,8 +117,6 @@ const onSubmit = handleSubmit(
       if (errors.request) formError.value = errors.request
     } else {
       resetForm()
-      // TODO: Voir dans le cas de reset password si je go vers dashboard
-      // TODO: voir dans le cas de l'activation de compte pour retourner sur dashboard et non sur home
 
       router.push('/dashboard')
     }
@@ -267,7 +271,8 @@ const onSubmit = handleSubmit(
 
   &__group {
     &-btn {
-      grid-row: 3/-1;
+      grid-row: auto;
+      // grid-row: 3/-1;
       grid-column: 1/-1;
       display: flex;
       justify-content: center;

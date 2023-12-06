@@ -1,36 +1,50 @@
 <script setup lang="ts">
 import AddApiKey from '@/components/shared-components/AddApiKey.vue'
 import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
-import { useUsersStore } from '@/stores'
+import { useApiKeysStore, useCurrentUserStore } from '@/stores'
 import UserApiKeysList from '@/components/shared-components/UserApiKeysList.vue'
+import { computed } from 'vue'
 
-const usersStore = useUsersStore()
+const currentUserStore = useCurrentUserStore()
+
+const apiKeysStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useApiKeysStore()
+  }
+  return null
+})
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
 </script>
 <template>
-  <div class="apiKey" v-if="usersStore.getUser">
+  <div class="apiKey">
     <h3 class="apiKey__title section__title">Clés d'api</h3>
 
     <AddApiKey :errors="props.errors" />
 
-    <div class="apiKey__content" v-if="usersStore.getUser">
+    <div class="apiKey__content">
       <div class="apiKey__info">
         <span class="apiKey__info-label"
           >Nombre d'apis :
-          <span class="apiKey__info-number">{{ usersStore.getUserApiKeyCount }}</span></span
+          <span class="apiKey__info-number">{{
+            apiKeysStore ? apiKeysStore.getUserApiKeysCount : 0
+          }}</span></span
         >
 
         <span class="apiKey__info-label"
           >Clés activées :
-          <span class="apiKey__info-number">{{ usersStore.getUserActiveApiKeyCount }}</span></span
+          <span class="apiKey__info-number">{{
+            apiKeysStore ? apiKeysStore.getUserActiveApiKeysCount : 0
+          }}</span></span
         >
 
         <span class="apiKey__info-label"
           >Clés en attente d'activation :
-          <span class="apiKey__info-number">{{ usersStore.getUserPendingApiKeyCount }}</span></span
+          <span class="apiKey__info-number">{{
+            apiKeysStore ? apiKeysStore.getUserPendingApiKeysCount : 0
+          }}</span></span
         >
       </div>
 

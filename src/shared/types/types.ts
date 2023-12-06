@@ -20,3 +20,10 @@ export type vueEnvType = 'production' | 'development'
 export type requestHttpType = 'GET' | 'POST' | 'PATCH' | 'DELETE'
 
 export type apiNameType = 'Api-travel' | 'Api-test1' | 'Api-test2'
+
+export type filterType = 'role' | 'email' | 'firstname' | 'lastname' | 'active' | 'accountLocked'
+
+export type sortFilterType = 'createAt' | '-createAt'
+
+
+export type parametersFilterType="role"|"active"|"accountLocked"|"accountDisable"

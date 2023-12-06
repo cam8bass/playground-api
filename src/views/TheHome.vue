@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AnimatedComponent from '@/components/common-components/AnimatedComponent.vue'
-import type { userInterface } from '@/shared/interfaces'
 import { useAppStore, useCurrentUserStore } from '@/stores'
 
 const appStore = useAppStore()
@@ -34,11 +33,17 @@ const currentUserStore = useCurrentUserStore()
               <RouterLink to="/signup" class="btn intro__begin-link--signup"
                 >Inscription</RouterLink
               >
-              <button v-if="!currentUserStore.getCurrentUser" @click="appStore.updateLogin(true)" class="btn">
+              <button
+                v-if="!currentUserStore.getCurrentUser"
+                @click="appStore.updateLogin(true)"
+                class="btn"
+              >
                 Connexion
               </button>
 
-              <RouterLink v-if="currentUserStore.getCurrentUser" to="/dashboard" class="btn">Mon compte</RouterLink>
+              <RouterLink v-if="currentUserStore.getCurrentUser" to="/dashboard" class="btn"
+                >Mon compte</RouterLink
+              >
             </div>
           </div>
         </AnimatedComponent>

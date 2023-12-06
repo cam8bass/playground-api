@@ -3,15 +3,26 @@ import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
 import UserApiKeysList from '@/components/shared-components/UserApiKeysList.vue'
 import { useCurrentUserStore } from '@/stores'
 import AddApiKey from '@/components/shared-components/AddApiKey.vue'
+import { onMounted } from 'vue'
 
 const currentUserStore = useCurrentUserStore()
+
+const fetchCurrentUserApiKeys = async () => {
+  const refresh = currentUserStore.getRefresh
+  if (refresh) {
+    await currentUserStore.fetchUserGetMyApiKeys()
+    currentUserStore.updateRefresh(false)
+  }
+}
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
+
+onMounted(fetchCurrentUserApiKeys)
 </script>
 <template>
-  <article class="myApiKeys" v-if="currentUserStore.getCurrentUser">
+  <article class="myApiKeys">
     <h3 class="section__title">Mes clés d'apis</h3>
 
     <div class="myApiKeys__content">

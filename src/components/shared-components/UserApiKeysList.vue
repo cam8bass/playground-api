@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useUsersStore, useCurrentUserStore, useAppStore } from '@/stores'
+import { useUsersStore, useCurrentUserStore, useAppStore, useApiKeysStore } from '@/stores'
 import { formatDate } from '@/shared/utils'
 import { computed } from 'vue'
 import ActiveApiKey from '@/components/admin/userProfile/ActiveApiKey.vue'
 
-const currentUserStore = useCurrentUserStore()
 const appStore = useAppStore()
+const currentUserStore = useCurrentUserStore()
 
 const usersStore = computed(() => {
   if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
@@ -15,16 +15,14 @@ const usersStore = computed(() => {
 })
 
 const userApiKeys = computed(() => {
-  if (
-    currentUserStore.getCurrentUser &&
-    currentUserStore.getCurrentUser.role === 'admin' &&
-    usersStore.value
-  ) {
-    return usersStore.value.getUserApiKeys
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    const apiKeysStore = useApiKeysStore()
+    return apiKeysStore.getKeys
   } else {
-    return currentUserStore.getUserApiKey
+    return currentUserStore.getKeys
   }
 })
+
 </script>
 <template>
   <div class="apiKey">
@@ -39,11 +37,11 @@ const userApiKeys = computed(() => {
           <span class="apiKey__text">{{ apiKey.apiKey ?? 'En attente de validation' }}</span>
         </li>
 
-        <li class="apiKey__item">
+        <li class="apiKey__item" v-if="apiKey.createAt">
           Création : <span class="apiKey__text">{{ formatDate(apiKey.createAt) }}</span>
         </li>
 
-        <li class="apiKey__item">
+        <li class="apiKey__item" v-if="apiKey.apiKeyExpire">
           Expiration : <span class="apiKey__text">{{ formatDate(apiKey.apiKeyExpire) }}</span>
         </li>
 

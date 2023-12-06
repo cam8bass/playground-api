@@ -5,7 +5,7 @@ import type {
   requestCreateNewApiKeyInterface
 } from '@/shared/interfaces'
 import { addApiKeySchema } from '@/shared/schema'
-import { useCurrentUserStore, useUsersStore } from '@/stores'
+import { useApiKeysStore, useCurrentUserStore, useUsersStore } from '@/stores'
 import { useForm, useField } from 'vee-validate'
 import { computed, ref } from 'vue'
 
@@ -14,6 +14,7 @@ const props = defineProps<{
 }>()
 
 const currentUserStore = useCurrentUserStore()
+
 const usersStore = computed(() => {
   if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
     return useUsersStore()
@@ -21,14 +22,16 @@ const usersStore = computed(() => {
   return null
 })
 
+const apiKeysStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useApiKeysStore()
+  }
+  return null
+})
+
 const formError = ref<string | null>(null)
 
-const {
-  handleSubmit,
-  meta: formMeta,
-  isSubmitting,
-  resetForm
-} = useForm({ validationSchema: addApiKeySchema })
+const { handleSubmit, isSubmitting, resetForm } = useForm({ validationSchema: addApiKeySchema })
 
 const {
   value: inputApiName,
@@ -41,14 +44,15 @@ const {
 const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, action) => {
   if (value.apiName) {
     if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'user') {
-      await currentUserStore.fetchRequestCreateNewApiKey(value)
+      await currentUserStore.fetchUserRequestCreateNewApiKey(value)
     } else if (
       currentUserStore.getCurrentUser &&
       currentUserStore.getCurrentUser.role === 'admin' &&
       usersStore.value &&
-      usersStore.value.getUser
+      usersStore.value.getUser &&
+      apiKeysStore.value
     ) {
-      await usersStore.value.fetchAdminCreateApiKey(value.apiName, usersStore.value.getUser._id)
+      await apiKeysStore.value.fetchAdminCreateApiKey(value.apiName, usersStore.value.getUser._id)
     }
 
     const errors = props.errors?.errors as Partial<requestCreateNewApiKeyInterface> | null

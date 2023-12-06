@@ -10,6 +10,18 @@
   opacity: 0;
 }
 
+// *** TRANSLATE RIGHT ***
+.translateRight-enter-active,
+.translateRight-leave-active {
+  transition: all 0.4s ease;
+}
+
+.translateRight-enter-from,
+.translateRight-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
 // *** FADE ***
 .fade-enter-active,
 .fade-leave-active {
@@ -20,3 +32,18 @@
 .fade-leave-to {
   opacity: 0;
 }
+
+// *** TRANSLATE DOWN ***
+.translateDown-enter-active,
+.translateDown-leave-active {
+  transition: all 0.4s ease;
+}
+
+.translateDown-enter-from,
+.translateDown-leave-to {
+  transform: translateY(-10%);
+  opacity: 0;
+
+}
+
+

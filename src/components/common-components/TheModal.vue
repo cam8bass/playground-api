@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { useAppStore, useCurrentUserStore, useUsersStore } from '@/stores'
+import { useApiKeysStore, useAppStore, useCurrentUserStore, useUsersStore } from '@/stores'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const appStore = useAppStore()
 const currentUserStore = useCurrentUserStore()
+
+const apiKeysStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useApiKeysStore()
+  }
+  return null
+})
 
 const usersStore = computed(() => {
   if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
@@ -16,19 +23,36 @@ const router = useRouter()
 
 async function logout(): Promise<void> {
   await currentUserStore.fetchLogout()
+  if (
+    currentUserStore.getCurrentUser &&
+    currentUserStore.getCurrentUser.role === 'admin' &&
+    usersStore.value
+  ) {
+    usersStore.value.resetUsersStore()
+  }
+
+  if (
+    currentUserStore.getCurrentUser &&
+    currentUserStore.getCurrentUser.role === 'admin' &&
+    apiKeysStore.value
+  ) {
+    apiKeysStore.value.resetApiKeysStore()
+  }
+  currentUserStore.resetCurrentUserStore()
   appStore.resetModal()
   router.push('/home')
 }
 
 async function fetchRenewalApiKey(id: { idApi: string }): Promise<void> {
-  await currentUserStore.fetchRenewalApiKey(id.idApi)
+  await currentUserStore.fetchUserRequestRenewalApiKey(id.idApi)
+
   appStore.resetModal()
 }
 
 async function fetchDeactivationAccount(): Promise<void> {
   await currentUserStore.fetchDeactivationAccount()
   appStore.resetModal()
-  currentUserStore.resetUser()
+  currentUserStore.resetCurrentUserStore()
   router.push('/home')
 }
 
@@ -38,13 +62,13 @@ async function fetchRequestChangeEmail(): Promise<void> {
 }
 
 async function fetchDeleteSelectedApiKey(id: { idApi: string }): Promise<void> {
-  await currentUserStore.fetchDeleteSelectedApiKey(id.idApi)
+  await currentUserStore.fetchUserDeleteSelectedApiKey(id.idApi)
   appStore.resetModal()
 }
 
 async function fetchAdminDeleteSelectedUser(id: { idUser: string }) {
   if (usersStore.value) {
-    await usersStore.value.fetchDeleteUser(id.idUser)
+    await usersStore.value.fetchAdminDeleteUser(id.idUser)
     appStore.resetModal()
     router.back()
   }
@@ -54,8 +78,8 @@ async function fetchAdminDeleteSelectedApiKey(id: {
   idUser: string
   idApi: string
 }): Promise<void> {
-  if (usersStore.value) {
-    await usersStore.value.fetchAdminDeleteSelectedApiKey(id.idUser, id.idApi)
+  if (apiKeysStore.value) {
+    await apiKeysStore.value.fetchAdminDeleteSelectedApiKey(id.idUser, id.idApi)
     appStore.resetModal()
   }
 }

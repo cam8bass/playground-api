@@ -20,7 +20,10 @@ export const protect = (
       if (!currentUserStore.getCurrentUser.active) {
         appStore.updateNotification('fail', notificationMessage.NOTIFICATION_ACCOUNT_INACTIVE)
         appStore.updatePopup(true)
-      } else if (currentUserStore.getCurrentUser.accountLockedExpire) {
+      } else if (
+        currentUserStore.getCurrentUser.accountLockedExpire &&
+        currentUserStore.getCurrentUser.accountLocked
+      ) {
         appStore.updateNotification('fail', notificationMessage.NOTIFICATION_ACCOUNT_LOCKED)
         appStore.updatePopup(true)
       } else if (!meta.role.includes(currentUserStore.getCurrentUser.role)) {

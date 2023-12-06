@@ -3,15 +3,15 @@ import type { requestStatusType } from '../types/types'
 
 export interface jsonResponseInterface {
   status: requestStatusType
-  token?: string
   notification?: notificationInterface
   data?: any
   results?: number
+  limit?: number
 }
 
 export interface jsonResponseOptionsInterface {
-  token?: string
   notification?: notificationInterface
   data?: any
   results?: number
+  limit?: number
 }

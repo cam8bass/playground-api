@@ -79,39 +79,6 @@ const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
     }
   }
 })
-
-// const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
-//   if (currentUserStore.getCurrentUser) {
-//     if (values.firstname === currentUserStore.getCurrentUser.firstname) {
-//       delete values.firstname
-//     }
-
-//     if (values.lastname === currentUserStore.getCurrentUser.lastname) {
-//       delete values.lastname
-//     }
-//   }
-
-//   if (values.firstname || values.lastname) {
-//     await currentUserStore.fetchUpdateUser(values)
-
-//     const errors = props.errors?.errors as Partial<nameSubmitInterface>
-
-//     if (errors) {
-//       Object.entries(errors).forEach(([key, value]) => {
-//         action.setFieldError(key, value)
-//       })
-
-//       if (errors.request) formError.value = errors.request
-//     } else {
-//       resetForm({
-//         values: {
-//           firstname: currentUserStore.getCurrentUser?.firstname,
-//           lastname: currentUserStore.getCurrentUser?.lastname
-//         }
-//       })
-//     }
-//   }
-// })
 </script>
 <template>
   <form @submit="onSubmit" class="form">

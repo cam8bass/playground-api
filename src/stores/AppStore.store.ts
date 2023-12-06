@@ -1,4 +1,4 @@
-import type { notificationInterface } from '@/shared/interfaces'
+import type { FiltersInterface, notificationInterface } from '@/shared/interfaces'
 import type { modalType, requestStatusType } from '@/shared/types/types'
 import { defineStore } from 'pinia'
 
@@ -7,12 +7,15 @@ import type { modalInterface } from '@/shared/interfaces/modal.interface'
 interface AppStateInterface {
   loading: boolean
   notification: notificationInterface | null | null
+  modal: modalInterface | null
+
   navigation: {
     login: boolean
     menu: boolean
     popup: boolean
+    menuFilter: boolean
   }
-  modal: modalInterface | null
+  showFilters: FiltersInterface
 }
 
 export const useAppStore = defineStore('appStore', {
@@ -22,7 +25,14 @@ export const useAppStore = defineStore('appStore', {
     navigation: {
       login: false,
       menu: false,
-      popup: false
+      popup: false,
+      menuFilter: true
+    },
+    showFilters: {
+      fields: false,
+      limit: false,
+      parameters: false,
+      sort: false
     },
     modal: null
   }),
@@ -33,6 +43,9 @@ export const useAppStore = defineStore('appStore', {
 
     getLogin(): boolean {
       return this.navigation.login
+    },
+    getMenuFilter(): boolean {
+      return this.navigation.menuFilter
     },
 
     getpopup(): boolean {
@@ -55,6 +68,9 @@ export const useAppStore = defineStore('appStore', {
         return this.modal
       }
       return null
+    },
+    getShowFilters(): FiltersInterface {
+      return this.showFilters
     }
   },
   actions: {
@@ -72,6 +88,9 @@ export const useAppStore = defineStore('appStore', {
 
     updatePopup(status: boolean): void {
       this.navigation.popup = status
+    },
+    updateMenuFilter(status: boolean): void {
+      this.navigation.menuFilter = status
     },
 
     updateNotification(type: requestStatusType | null, message: string | null): void {
@@ -100,6 +119,14 @@ export const useAppStore = defineStore('appStore', {
     },
     resetModal() {
       this.modal = null
+    },
+    updateShowFilters(filters: Partial<FiltersInterface>): void {
+      this.showFilters = {
+        fields: filters.fields ?? this.showFilters.fields,
+        limit: filters.limit ?? this.showFilters.limit,
+        parameters: filters.parameters ?? this.showFilters.parameters,
+        sort: filters.sort ?? this.showFilters.sort
+      }
     }
   }
 })

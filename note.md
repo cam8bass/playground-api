@@ -1,156 +1,145 @@
-<script lang="ts" setup>
-import type {
-  errorDevInterface,
-  errorProdInterface,
-  requestCreateNewApiKeyInterface
-} from '@/shared/interfaces'
-import { addApiKeySchema } from '@/shared/schema'
-import { useCurrentUserStore, useUsersStore } from '@/stores'
-import { useForm, useField } from 'vee-validate'
-import { computed, ref } from 'vue'
+<script setup lang="ts">
+import type { parametersFilterType } from '@/shared/types/types'
+import { ref } from 'vue'
+/**
+ * A reactive variable that stores the currently selected filter parameters.
+ * The key of the record is the name of the parameter, and the value is the selected value.
+ */
+const checkedValues = ref<Record<string, string>>({})
 
-const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+const emits = defineEmits<{
+  (e: 'updateParameters', value: {}): void
 }>()
 
-const currentUserStore = useCurrentUserStore()
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
+/**
+ * A function that updates the selected filter parameters.
+ * @param key The name of the parameter to update.
+ * @param event The event that triggered the update.
+ */
 
-const formError = ref<string | null>(null)
-
-const {
-  handleSubmit,
-  meta: formMeta,
-  isSubmitting,
-  resetForm
-} = useForm({ validationSchema: addApiKeySchema })
-
-const {
-  value: inputApiName,
-  errors: apiNameErrors,
-  errorMessage: apiNameErrorMessage
-} = useField('apiName', '', {
-  validateOnValueUpdate: false
-})
-
-const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, action) => {
-  if (value.apiName) {
-    if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'user') {
-      await currentUserStore.fetchRequestCreateNewApiKey(value)
-    } else if (
-      currentUserStore.getCurrentUser &&
-      currentUserStore.getCurrentUser.role === 'admin' &&
-      usersStore.value &&
-      usersStore.value.getUser
-    ) {
-      await usersStore.value.fetchAdminCreateApiKey(value.apiName, usersStore.value.getUser._id)
-    }
-
-    const errors = props.errors?.errors as Partial<requestCreateNewApiKeyInterface> | null
-
-    formError.value = null
-
-    if (errors) {
-      Object.entries(errors).forEach(([key, value]) => {
-        action.setFieldError(key, value)
-      })
-
-      if (errors.request) formError.value = errors.request
-    } else {
-      resetForm()
-    }
-  }
-})
+const updateCheckedValues = (key: parametersFilterType, event: Event) => {
+  const target = event.target as HTMLInputElement
+  checkedValues.value[key] = target.value
+  emits('updateParameters', checkedValues.value)
+}
 </script>
 <template>
-  <form @submit="onSubmit" class="formSelect">
-    <div class="formSelect__content">
-      <label for="apiName" class="formSelect__label form__label">Ajouter une api : </label>
-      <select id="apiName" v-model="inputApiName" class="formSelect__select">
-        <option selected value="Api-travel">Api-travel</option>
-        <option value="Api-test1">Api-test1</option>
-        <option value="Api-test2">Api-test2</option>
-      </select>
+  <div class="filter">
+    <div class="filter__group">
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="role"
+          id="userRole"
+          class="filter__checkbox"
+          value="user"
+          @change="updateCheckedValues('role', $event)"
+        />
+        <label for="userRole" class="form__label">Rôle utilisateur</label>
+      </div>
 
-      <button type="submit" class="formSelect__btn" :disabled="isSubmitting">
-        <svg
-          class="form__icon"
-          :class="{
-            iconSuccess: formMeta.touched && formMeta.valid,
-            iconError: formMeta.touched && !formMeta.valid
-          }"
-        >
-          <use xlink:href="@/components/icons/sprite.svg#icon-plus-circle"></use>
-        </svg>
-      </button>
-      <span class="form__textError" v-if="apiNameErrors">{{
-        apiNameErrorMessage
-      }}</span>
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="role"
+          id="adminRole"
+          class="filter__checkbox"
+          value="admin"
+          @change="updateCheckedValues('role', $event)"
+        />
+        <label for="adminRole" class="form__label">Rôle administrateur</label>
+      </div>
+
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="active"
+          id="activeTrue"
+          class="filter__checkbox"
+          value="true"
+          @change="updateCheckedValues('active', $event)"
+        />
+        <label for="activeTrue" class="form__label">Compte activé</label>
+      </div>
+
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="active"
+          id="activeFalse"
+          class="filter__checkbox"
+          value="false"
+          @change="updateCheckedValues('active', $event)"
+        />
+        <label for="activeFalse" class="form__label">Compte désactivé</label>
+      </div>
+
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="accountLocked"
+          id="accountLockedTrue"
+          class="filter__checkbox"
+          value="true"
+          @change="updateCheckedValues('accountLocked', $event)"
+        />
+        <label for="accountLockedTrue" class="form__label">Compte bloqué</label>
+      </div>
+
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="accountLocked"
+          id="accountLockedFalse"
+          class="filter__checkbox"
+          value="false"
+          @change="updateCheckedValues('accountLocked', $event)"
+        />
+        <label for="accountLockedFalse" class="form__label">Compte non bloqué</label>
+      </div>
+
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="accountDisable"
+          id="accountDisableTrue"
+          class="filter__checkbox"
+          value="true"
+          @change="updateCheckedValues('accountDisable', $event)"
+        />
+        <label for="accountDisableTrue" class="form__label">Compte suspendu</label>
+      </div>
+
+      <div class="filter__block">
+        <input
+          type="radio"
+          name="accountDisable"
+          id="accountDisableFalse"
+          class="filter__checkbox"
+          value="false"
+          @change="updateCheckedValues('accountDisable', $event)"
+        />
+        <label for="accountDisableFalse" class="form__label">Compte non suspendu</label>
+      </div>
     </div>
-    <div class="formSelect__errors" v-if="formError">
-      <p class="form__textError">
-        {{ formError }}
-      </p>
-    </div>
-  </form>
+  </div>
 </template>
 <style lang="scss" scoped>
-.formSelect {
-  margin: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
-
-  &__content {
-    display: grid;
-    grid-template-columns: repeat(2, min-content);
-    grid-template-rows: repeat(2, min-content);
-    row-gap: 1rem;
-    column-gap: 2rem;
-  }
-
-  &__btn {
+.filter {
+  &__group {
     display: flex;
-    background-color: transparent;
-    grid-row: 2/-1;
-    grid-column: 2/-1;
+    flex-direction: column;
+    row-gap: 1rem;
   }
 
-  &__select {
-    grid-row: 2/-1;
-    grid-column: 1/2;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 2px;
-    box-shadow: var(--boxshadow-black);
-    font-size: 1.6rem;
-    background-color: var(--color-purple-1);
+  &__block {
+    display: flex;
+    column-gap: 1rem;
   }
 
-
-}
-
-.iconSuccess {
-  fill: var(--color-green-1);
-  transition: all 0.4s;
-  &:hover,
-  &:active {
-    fill: var(--color-green-2);
-  }
-}
-
-.iconError {
-  fill: var(--color-red-1);
-  transition: all 0.4s;
-
-  &:hover,
-  &:active {
-    fill: var(--color-red-2);
+  &__checkbox {
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }
 </style>

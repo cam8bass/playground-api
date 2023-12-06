@@ -1,12 +1,19 @@
 <script lang="ts" setup>
 import type { adminSubmitActiveApiKey } from '@/shared/interfaces'
 import { activeApiKeySchema } from '@/shared/schema'
-import { useCurrentUserStore, useErrorStore, useUsersStore } from '@/stores'
+import { useApiKeysStore, useCurrentUserStore, useErrorStore, useUsersStore } from '@/stores'
 import { useForm, useField } from 'vee-validate'
 import { computed, ref } from 'vue'
 
 const errorStore = useErrorStore()
 const currentUserStore = useCurrentUserStore()
+
+const apiKeysStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useApiKeysStore()
+  }
+  return null
+})
 
 const usersStore = computed(() => {
   if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
@@ -33,9 +40,14 @@ const onSubmit = handleSubmit(async (value: adminSubmitActiveApiKey, action) => 
     currentUserStore.getCurrentUser &&
     currentUserStore.getCurrentUser.role === 'admin' &&
     usersStore.value &&
-    usersStore.value.getUser
+    usersStore.value.getUser &&
+    apiKeysStore.value
   ) {
-    await usersStore.value.fetchActiveApiKey(value, usersStore.value.getUser._id, props.idApi)
+    await apiKeysStore.value.fetchAdminActiveApiKey(
+      value,
+      usersStore.value.getUser._id,
+      props.idApi
+    )
   }
 
   const errors = errorStore.getError?.errors as Partial<adminSubmitActiveApiKey> | null

@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useApiKeysStore } from '@/stores'
+
+const apiKeysStore = useApiKeysStore()
+</script>
 <template>
   <div class="apiKeys__list list">
     <div class="list__content">
@@ -20,10 +24,10 @@
         <router-link to="'/apiKeys/' " class="list__link">Details</router-link>
       </div>
     </div>
-    <div class="list__pagination">
-      <buttton class="btn list__pagination-return">Précédent</buttton>
-      <buttton class="btn list__pagination-next">Suivant</buttton>
-    </div>
+    <!-- <div class="list__pagination">
+      <button class="btn list__pagination-return">Précédent</button>
+      <button class="btn list__pagination-next">Suivant</button>
+    </div> -->
   </div>
 </template>
 <style scoped lang="scss"></style>

@@ -6,10 +6,11 @@ import {
   type passwordSubmitInterface,
   type nameSubmitInterface,
   type forgotPasswordSubmitInterface,
-  type requestCreateNewApiKeyInterface,
-  type apiKeyInterface,
   type userInterface,
-  type jsonResponseInterface
+  type jsonResponseInterface,
+  type ApiKeyInterface,
+  type requestCreateNewApiKeyInterface,
+  type KeyInterface
 } from '@/shared/interfaces'
 import { defineStore } from 'pinia'
 
@@ -18,14 +19,23 @@ import type { Ref } from 'vue'
 
 interface CurrentUserStateInterface {
   user: userInterface | null
-  refresh: boolean
+  apiKey: ApiKeyInterface | null
+  refresh: {
+    user: boolean
+    apiKey: boolean
+  }
 }
 
 export const useCurrentUserStore = defineStore('currentUserStore', {
   state: (): CurrentUserStateInterface => ({
     user: null,
-    refresh: true
+    apiKey: null,
+    refresh: {
+      user: true,
+      apiKey: true
+    }
   }),
+
   getters: {
     getCurrentUser(): userInterface | null {
       if (this.user) {
@@ -33,38 +43,46 @@ export const useCurrentUserStore = defineStore('currentUserStore', {
       }
       return null
     },
-
-    getNumberOfApiKey(): number {
-      if (this.user && 'apiKeys' in this.user && this.user.apiKeys) {
-        return this.user.apiKeys.length
-      }
-      return 0
-    },
-
-    getUserApiKey(): [apiKeyInterface] | null {
-      if (this.user && 'apiKeys' in this.user && this.user.apiKeys) {
-        return this.user.apiKeys
+    getKeys(): KeyInterface[] | null {
+      if (this.apiKey) {
+        return this.apiKey.apiKeys
       }
       return null
+    },
+
+    getUserApiKeys(): ApiKeyInterface | null {
+      if (this.apiKey) return this.apiKey
+      return null
+    },
+    getRefresh(): { user: boolean; apiKey: boolean } {
+      return this.refresh
+    },
+    getNumberOfApiKey(): number {
+      if (this.apiKey) {
+        return this.apiKey.apiKeys.length
+      }
+      return 0
     }
   },
   actions: {
-    async fetchGetUser(): Promise<void> {
-      const devUrl = '/playground-connect/v1/users/me'
-      const { data } = await sendRequest(devUrl, 'GET')
+    // User profile
 
-      if (data.value && data.value.data && data.value.status === 'success') {
-        this.user = data.value.data as userInterface
+    async fetchGetUser(): Promise<void> {
+      if (this.getRefresh.user) {
+        const devUrl = '/playground-connect/v1/users/me'
+        const { data } = await sendRequest(devUrl, 'GET')
+
+        if (data.value && data.value.data && data.value.status === 'success') {
+          this.user = data.value.data as userInterface
+        }
       }
+
+      this.updateRefresh({ user: false })
     },
 
     async fetchLogout(): Promise<void> {
-      const currentUserStore = useCurrentUserStore()
-
       const devUrl = '/playground-connect/v1/users/logout'
       await sendRequest(devUrl, 'GET')
-
-      currentUserStore.resetUser()
     },
 
     async fetchSignup(values: signupInterface): Promise<void> {
@@ -76,20 +94,25 @@ export const useCurrentUserStore = defineStore('currentUserStore', {
       const devUrl = '/playground-connect/v1/users/login'
       const { data } = await sendRequest(devUrl, 'POST', values)
 
-      if (data.value && data.value.status === 'success') {
-        this.refresh = true
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.user = data.value.data
       }
     },
 
     async fetchActivationAccountForm(values: loginInterface, token: string): Promise<void> {
       const devUrl = `/playground-connect/v1/users/activationAccount/${token}`
-      await sendRequest(devUrl, 'PATCH', values)
+      const { data } = await sendRequest(devUrl, 'PATCH', values)
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.user = data.value.data
+      }
     },
 
     async fetchUpdateUser(values: nameSubmitInterface): Promise<void> {
       const devUrl = '/playground-connect/v1/users/updateProfile'
       const { data } = await sendRequest(devUrl, 'PATCH', values)
-      await this.reloadUser(data)
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.user = data.value.data
+      }
     },
     async fetchUpdatePassword(values: passwordSubmitInterface): Promise<void> {
       const devUrl = '/playground-connect/v1/users/updatePassword'
@@ -104,7 +127,10 @@ export const useCurrentUserStore = defineStore('currentUserStore', {
 
     async fetchResetEmail(values: confirmResetEmailInterface, token: string): Promise<void> {
       const devUrl = `/playground-connect/v1/users/resetEmail/${token}`
-      await sendRequest(devUrl, 'PATCH', values)
+      const { data } = await sendRequest(devUrl, 'PATCH', values)
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.user = data.value.data
+      }
     },
 
     async fetchForgotPassword(values: forgotPasswordSubmitInterface): Promise<void> {
@@ -122,40 +148,69 @@ export const useCurrentUserStore = defineStore('currentUserStore', {
       await sendRequest(devUrl, 'DELETE')
     },
 
-    resetUser() {
-      this.user = null
-    },
-
     async reloadUser(data: Ref<jsonResponseInterface | null>): Promise<void> {
       if (data.value && data.value.status === 'success') {
-        this.refresh = true
+        this.refresh.user = true
         await initCurrentUserStore()
       }
     },
 
-    // API KEY
+    // User apiKeys
 
-    async fetchRequestCreateNewApiKey(value: requestCreateNewApiKeyInterface): Promise<void> {
+    async fetchUserGetMyApiKeys(): Promise<void> {
+      if (this.getRefresh.apiKey) {
+        const devUrl = '/playground-connect/v1/apiKeys/'
+        const { data } = await sendRequest(devUrl, 'GET')
+        if (data.value && data.value.status === 'success' && data.value.data) {
+          this.apiKey = data.value.data
+        }
+      }
+
+      this.updateRefresh({ apiKey: false })
+    },
+    async fetchUserRequestCreateNewApiKey(value: requestCreateNewApiKeyInterface): Promise<void> {
       const devUrl = '/playground-connect/v1/apiKeys'
       const { data } = await sendRequest(devUrl, 'POST', value)
-      await this.reloadUser(data)
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.apiKey = data.value.data
+      }
     },
 
-    async fetchRenewalApiKey(idApi: string): Promise<void> {
+    async fetchUserDeleteSelectedApiKey(idApi: string): Promise<void> {
+      const devUrl = `/playground-connect/v1/apiKeys/deleteApiKey/${idApi}`
+      const { data } = await sendRequest(devUrl, 'DELETE')
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.apiKey = data.value.data
+      }
+    },
+
+    async fetchUserRequestRenewalApiKey(idApi: string): Promise<void> {
       const devUrl = `/playground-connect/v1/apiKeys/renewal/${idApi}`
       await sendRequest(devUrl, 'PATCH')
     },
 
-    async fetchConfirmRenewalApiKey(values: loginInterface, token: string): Promise<void> {
+    async fetchUserConfirmRenewalApiKey(values: loginInterface, token: string): Promise<void> {
       const devUrl = `/playground-connect/v1/apiKeys/confirmRenewal/${token}`
       const { data } = await sendRequest(devUrl, 'PATCH', values)
-      await this.reloadUser(data)
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.apiKey = data.value.data
+      }
     },
 
-    async fetchDeleteSelectedApiKey(idApi: string) {
-      const devUrl = `/playground-connect/v1/apiKeys/deleteApiKey/${idApi}`
-      const { data } = await sendRequest(devUrl, 'DELETE')
-      await this.reloadUser(data)
+    // Other
+
+    resetCurrentUserStore(): void {
+      this.user = null
+      this.apiKey = null
+      this.refresh = {
+        user: true,
+        apiKey: true
+      }
+    },
+
+    updateRefresh(refresh: { user?: boolean; apiKey?: boolean }): void {
+      this.refresh.user = refresh.user ?? this.refresh.user
+      this.refresh.apiKey = refresh.apiKey ?? this.refresh.apiKey
     }
   }
 })
@@ -163,8 +218,5 @@ export const useCurrentUserStore = defineStore('currentUserStore', {
 export async function initCurrentUserStore(): Promise<void> {
   const currentUserStore = useCurrentUserStore()
 
-  if (currentUserStore.refresh) {
-    await currentUserStore.fetchGetUser()
-  }
-  currentUserStore.refresh = false
+  await currentUserStore.fetchGetUser()
 }

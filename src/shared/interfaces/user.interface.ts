@@ -1,4 +1,3 @@
-import type { apiKeyInterface } from '.'
 import type { userRoleType } from '../types/types'
 
 export interface userInterface {
@@ -8,11 +7,11 @@ export interface userInterface {
   email: string
   active: boolean
   role: userRoleType
+  accountLocked: boolean
   accountLockedExpire?: Date
   emailChangeAt?: Date
   passwordChangeAt?: Date
   activationAccountAt?: Date
   disableAccountAt?: Date
   createAt?: Date
-  apiKeys?: [apiKeyInterface]
 }

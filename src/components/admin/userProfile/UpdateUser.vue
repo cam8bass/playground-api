@@ -113,8 +113,6 @@ const onSubmit = handleSubmit(async (values: AdminUpdateUserInterface, action) =
         })
 
         if (errors.request) formError.value = errors.request
-      } else {
-        resetForm()
       }
     }
   }

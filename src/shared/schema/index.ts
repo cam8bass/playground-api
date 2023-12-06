@@ -7,3 +7,5 @@ export * from './forgotPassword.schema'
 export * from './addApiKey.schema'
 export * from './activeApiKey.schema'
 export * from './adminUpdateUser.schema'
+export * from './usersLimit.schema'
+export * from "./usersSearchSchema.schema"

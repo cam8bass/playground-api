@@ -12,3 +12,5 @@ export * from './submit.interface'
 export * from './apiKey.interface'
 export * from "./adminUsers.interface"
 export * from "./adminUpdateUser.interface"
+export * from "./adminQuery.interface"
+export * from "./filters.interface"

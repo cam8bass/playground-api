@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/TheHome.vue'
 import { protect } from '@/shared/utils'
-import { initUsersStore, initCurrentUserStore, useUsersStore } from '@/stores'
+import { initCurrentUserStore } from '@/stores'
 import type { routeMetaInterface } from '@/shared/interfaces'
 
 const router = createRouter({
@@ -124,7 +124,6 @@ const router = createRouter({
           } as routeMetaInterface
         },
         {
-          beforeEnter: [initUsersStore],
           path: '/users',
           name: 'users',
           component: () => import('@/views/admin/AllUsers.vue'),
@@ -136,13 +135,6 @@ const router = createRouter({
         },
 
         {
-          beforeEnter: async (to, from, next) => {
-            const { id } = to.params
-            const usersStore = useUsersStore()
-            await usersStore.fetchGetUser(id as string)
-            next()
-          },
-
           path: '/users/:id',
           name: 'user',
           component: () => import('@/views/admin/UserProfile.vue'),

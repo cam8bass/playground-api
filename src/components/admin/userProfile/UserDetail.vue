@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { formatDate } from '@/shared/utils'
-import { useUsersStore } from '@/stores'
+import { useCurrentUserStore, useUsersStore } from '@/stores'
+import { computed } from 'vue'
 
-const usersStore = useUsersStore()
+const currentUserStore = useCurrentUserStore()
+
+const usersStore = computed(() => {
+  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
+    return useUsersStore()
+  }
+  return null
+})
 </script>
 <template>
-  <div class="detail" v-if="usersStore.getUser">
+  <div class="detail" v-if="usersStore && usersStore.getUser">
     <h2 class="detail__title section__title">Détails</h2>
 
     <div class="detail__content">
@@ -13,9 +21,7 @@ const usersStore = useUsersStore()
         <li class="detail__item">
           <span class="form__label detail__label">Changement email : </span>
           <span class="detail__text">{{
-            usersStore.getUser.emailChangeAt
-              ? formatDate(usersStore.getUser.emailChangeAt)
-              : 'Non'
+            usersStore.getUser.emailChangeAt ? formatDate(usersStore.getUser.emailChangeAt) : 'Non'
           }}</span>
         </li>
         <li class="detail__item">
