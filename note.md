@@ -1,145 +1,115 @@
 <script setup lang="ts">
-import type { parametersFilterType } from '@/shared/types/types'
-import { ref } from 'vue'
-/**
- * A reactive variable that stores the currently selected filter parameters.
- * The key of the record is the name of the parameter, and the value is the selected value.
- */
-const checkedValues = ref<Record<string, string>>({})
+import UsersList from '@/components/admin/allUsers/UsersList.vue'
+import UsersFilter from '@/components/admin/allUsers/UsersFilter.vue'
+import BtnFilter from '@/components/shared-components/BtnFilter.vue'
 
-const emits = defineEmits<{
-  (e: 'updateParameters', value: {}): void
-}>()
+import { useAppStore } from '@/stores'
 
-/**
- * A function that updates the selected filter parameters.
- * @param key The name of the parameter to update.
- * @param event The event that triggered the update.
- */
+const appStore = useAppStore()
 
-const updateCheckedValues = (key: parametersFilterType, event: Event) => {
-  const target = event.target as HTMLInputElement
-  checkedValues.value[key] = target.value
-  emits('updateParameters', checkedValues.value)
+function updateShowFilter() {
+  appStore.updateMenuFilter(!appStore.getMenuFilter)
 }
+
 </script>
 <template>
-  <div class="filter">
-    <div class="filter__group">
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="role"
-          id="userRole"
-          class="filter__checkbox"
-          value="user"
-          @change="updateCheckedValues('role', $event)"
-        />
-        <label for="userRole" class="form__label">Rôle utilisateur</label>
-      </div>
+  <div class="users">
+    <div class="users__content">
+      <h1 class="users__title">Utilisateurs</h1>
+      <BtnFilter
+        :showFilter="appStore.getMenuFilter"
+        @updateShowFilter="updateShowFilter"
+        class="users__btnFilter"
+      />
+      
 
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="role"
-          id="adminRole"
-          class="filter__checkbox"
-          value="admin"
-          @change="updateCheckedValues('role', $event)"
-        />
-        <label for="adminRole" class="form__label">Rôle administrateur</label>
-      </div>
+      <Transition name="translateDown" mode="out-in" appear>
+        <UsersFilter class="users__filter" v-show="appStore.getMenuFilter" />
+      </Transition>
 
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="active"
-          id="activeTrue"
-          class="filter__checkbox"
-          value="true"
-          @change="updateCheckedValues('active', $event)"
-        />
-        <label for="activeTrue" class="form__label">Compte activé</label>
-      </div>
-
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="active"
-          id="activeFalse"
-          class="filter__checkbox"
-          value="false"
-          @change="updateCheckedValues('active', $event)"
-        />
-        <label for="activeFalse" class="form__label">Compte désactivé</label>
-      </div>
-
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="accountLocked"
-          id="accountLockedTrue"
-          class="filter__checkbox"
-          value="true"
-          @change="updateCheckedValues('accountLocked', $event)"
-        />
-        <label for="accountLockedTrue" class="form__label">Compte bloqué</label>
-      </div>
-
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="accountLocked"
-          id="accountLockedFalse"
-          class="filter__checkbox"
-          value="false"
-          @change="updateCheckedValues('accountLocked', $event)"
-        />
-        <label for="accountLockedFalse" class="form__label">Compte non bloqué</label>
-      </div>
-
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="accountDisable"
-          id="accountDisableTrue"
-          class="filter__checkbox"
-          value="true"
-          @change="updateCheckedValues('accountDisable', $event)"
-        />
-        <label for="accountDisableTrue" class="form__label">Compte suspendu</label>
-      </div>
-
-      <div class="filter__block">
-        <input
-          type="radio"
-          name="accountDisable"
-          id="accountDisableFalse"
-          class="filter__checkbox"
-          value="false"
-          @change="updateCheckedValues('accountDisable', $event)"
-        />
-        <label for="accountDisableFalse" class="form__label">Compte non suspendu</label>
-      </div>
+      <UsersList class="users__list" :class="!appStore.getMenuFilter ? 'hideOptions' : ''" />
     </div>
   </div>
 </template>
-<style lang="scss" scoped>
-.filter {
-  &__group {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
+<style scoped lang="scss">
+@use '@/assets/style/abstracts/mixins' as m;
+
+.users {
+  &__title {
+    grid-area: title;
+    grid-column: 2/-1;
+    grid-row: 1/2;
+    padding: 1rem 2rem;
+    align-self: center;
+    justify-self: flex-end;
+    font-size: 1.8rem;
+    font-family: var(--font-subtitle);
+    font-weight: 300;
   }
 
-  &__block {
-    display: flex;
-    column-gap: 1rem;
+  &__content {
+    display: grid;
+    grid-template-areas:
+      'btnFilter title'
+      'filter filter'
+      'list list';
+    grid-template-rows: min-content min-content 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    margin: 2rem;
+    background-color: var(--color-black-2);
+
+    @include m.lg {
+      grid-template-areas:
+        'btnFilter title'
+        'filter list';
+      grid-template-columns: max-content 1fr;
+      grid-template-rows: min-content 1fr;
+      column-gap: 1rem;
+      margin: 4rem;
+    }
   }
 
-  &__checkbox {
-    width: 1.6rem;
-    height: 1.6rem;
+  &__filter {
+    grid-area: filter;
+  }
+
+  &__list {
+    grid-area: list;
+  }
+
+  &__btnFilter {
+    grid-area: btnFilter;
+  }
+}
+
+.hideOptions {
+  grid-column: 1/-1;
+
+  grid-row: 2/-1;
+  animation: fullList-mob 0.8s ease;
+  @include m.lg {
+    grid-column: 1/-1;
+    animation: fullList-desk 0.8s ease;
+  }
+}
+
+@keyframes fullList-desk {
+  0% {
+    transform: translateX(20%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes fullList-mob {
+  0% {
+    transform: translateY(20%);
+  }
+
+  100% {
+    transform: translateY(0%);
   }
 }
 </style>

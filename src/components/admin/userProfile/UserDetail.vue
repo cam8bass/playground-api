@@ -1,60 +1,54 @@
 <script setup lang="ts">
+import type { AdminUsersInterface } from '@/shared/interfaces'
 import { formatDate } from '@/shared/utils'
-import { useCurrentUserStore, useUsersStore } from '@/stores'
-import { computed } from 'vue'
 
-const currentUserStore = useCurrentUserStore()
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
+const props = defineProps<{
+  selectedUser: AdminUsersInterface | null
+}>()
 </script>
 <template>
-  <div class="detail" v-if="usersStore && usersStore.getUser">
-    <h2 class="detail__title section__title">Détails</h2>
+  <div class="detail" v-if="props.selectedUser">
+    <h3 class="detail__title section__title">Détails</h3>
 
     <div class="detail__content">
       <ol class="detail__list">
         <li class="detail__item">
           <span class="form__label detail__label">Changement email : </span>
           <span class="detail__text">{{
-            usersStore.getUser.emailChangeAt ? formatDate(usersStore.getUser.emailChangeAt) : 'Non'
+            props.selectedUser.emailChangeAt ? formatDate(props.selectedUser.emailChangeAt) : 'Non'
           }}</span>
         </li>
         <li class="detail__item">
           <span class="form__label detail__label">Changement mot de passe : </span>
           <span class="detail__text">{{
-            usersStore.getUser.passwordChangeAt
-              ? formatDate(usersStore.getUser.passwordChangeAt)
+            props.selectedUser.passwordChangeAt
+              ? formatDate(props.selectedUser.passwordChangeAt)
               : 'Non'
           }}</span>
         </li>
         <li class="detail__item">
           <span class="form__label detail__label">Activation du compte : </span>
           <span class="detail__text">{{
-            usersStore.getUser.activationAccountAt
-              ? formatDate(usersStore.getUser.activationAccountAt)
+            props.selectedUser.activationAccountAt
+              ? formatDate(props.selectedUser.activationAccountAt)
               : 'Non'
           }}</span>
         </li>
         <li class="detail__item">
           <span class="form__label detail__label"> Création du compte : </span>
-          <span class="detail__text">{{ formatDate(usersStore.getUser.createAt!) }}</span>
+          <span class="detail__text">{{ formatDate(props.selectedUser.createAt!) }}</span>
         </li>
         <li class="detail__item">
           <span class="form__label detail__label"> Désactivation du compte : </span>
           <span class="detail__text">{{
-            usersStore.getUser.disableAccountAt
-              ? formatDate(usersStore.getUser.disableAccountAt)
+            props.selectedUser.disableAccountAt
+              ? formatDate(props.selectedUser.disableAccountAt)
               : 'Non'
           }}</span>
         </li>
         <li class="detail__item">
           <span class="form__label detail__label">Connexion échoué : </span>
-          <span class="detail__text">{{ usersStore.getUser.loginFailures }}</span>
+          <span class="detail__text">{{ props.selectedUser.loginFailures }}</span>
         </li>
       </ol>
     </div>

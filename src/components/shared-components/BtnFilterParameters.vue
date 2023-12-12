@@ -8,7 +8,12 @@ const emits = defineEmits<{
 }>()
 </script>
 <template>
-  <button class="btnFilter" @click="emits('updateShowFilterParameters')">
+  <button
+    class="btnFilter"
+    @click="emits('updateShowFilterParameters')"
+    aria-label="Afficher le filtre des critères"
+    title="Afficher le filtre des critères"
+  >
     <span for="sort" class="btnFilter__text">
       Critère :
       <svg class="btnFilter__icon">

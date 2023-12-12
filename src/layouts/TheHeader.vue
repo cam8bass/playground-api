@@ -9,7 +9,7 @@ const currentUserStore = useCurrentUserStore()
 <template>
   <header class="header">
     <div class="header__brand">
-      <RouterLink class="header__brand-link" to="/home">
+      <RouterLink class="header__brand-link" to="/home" title="Retour à la page home">
         <img src="@/assets/img/logo.webp" alt="logo playground api" class="header__logo" />
       </RouterLink>
     </div>
@@ -44,9 +44,9 @@ const currentUserStore = useCurrentUserStore()
   box-shadow: var(--boxshadow-black);
   display: grid;
   grid-template-columns: min-content 1fr min-content;
-
   align-items: center;
   column-gap: 2rem;
+
   &__brand {
     grid-column: 1/2;
 
@@ -71,7 +71,6 @@ const currentUserStore = useCurrentUserStore()
     grid-column: 2/3;
     color: var(--color-white);
     font-family: var(--font-subtitle);
-    // align-self: center;
     justify-self: end;
     transition: color 0.4s;
 
@@ -83,7 +82,6 @@ const currentUserStore = useCurrentUserStore()
 
   &__navigation {
     grid-column: 3/-1;
-    // align-self: center;
 
     &-checkbox {
       display: none;

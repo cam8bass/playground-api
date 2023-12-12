@@ -81,8 +81,9 @@ const onSubmit = handleSubmit(async (values: passwordSubmitInterface, action) =>
 })
 </script>
 <template>
-  <form @submit="onSubmit" class="form">
-    <div class="form__content">
+  <form @submit="onSubmit" class="form formPassword">
+    <h3 class="component__subtitle">Mot de passe</h3>
+    <div class="formPassword__content">
       <div class="form__group">
         <label for="password" class="form__label">Mot de passe</label>
         <input
@@ -200,17 +201,14 @@ const onSubmit = handleSubmit(async (values: passwordSubmitInterface, action) =>
 </template>
 <style scoped lang="scss">
 @use '@/assets/style/abstracts/mixins' as m;
-.form {
-  align-self: center;
-
+.formPassword {
   &__content {
+    margin-top: 2rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     row-gap: 1rem;
   }
-
-
 }
 </style>

@@ -2,13 +2,18 @@
 import UserInfo from '@/components/admin/userProfile/UserInfo.vue'
 import UserDetail from '@/components/admin/userProfile/UserDetail.vue'
 import UserApiKey from '@/components/admin/userProfile/UserApiKey.vue'
-import { useRoute, useRouter } from 'vue-router'
-import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import BtnReturn from '@/components/shared-components/BtnReturn.vue'
+import { useRoute } from 'vue-router'
+import type {
+  errorDevInterface,
+  errorProdInterface,
+  updateModalInterface
+} from '@/shared/interfaces'
 import { computed, onMounted } from 'vue'
-import { useApiKeysStore, useCurrentUserStore, useUsersStore } from '@/stores'
+import { useApiKeysStore, useCurrentUserStore, useUsersStore, useAppStore } from '@/stores'
 
-const router = useRouter()
 const route = useRoute()
+const appStore = useAppStore()
 const currentUserStore = useCurrentUserStore()
 
 const usersStore = computed(() => {
@@ -29,6 +34,14 @@ const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
 
+function updateModal(modal: updateModalInterface): void {
+  appStore.updateModal(modal)
+}
+
+function resetModal(): void {
+  appStore.resetModal()
+}
+
 const fetchUserProfile = async () => {
   const { id } = route.params
   if (usersStore.value) {
@@ -43,78 +56,61 @@ const fetchUserProfile = async () => {
 onMounted(fetchUserProfile)
 </script>
 <template>
-  <div class="profile">
-    <div class="profile__btn">
-      <button type="button" class="profile__btn-return" @click="router.back()">
-        <svg class="profile__btn-icon">
-          <use xlink:href="@/components/icons/sprite.svg#icon-arrow-left-circle"></use>
-        </svg>
+  <div class="profile" v-if="usersStore">
+    <h1 class="section__title profile__title">
+      Profil de l'utilisateur
 
-        Retour
-      </button>
+      <BtnReturn />
+    </h1>
+    <div class="profile__content">
+      <UserInfo
+        class="profile__info"
+        :selectedUser="usersStore.getUser"
+        :modal="appStore.getModal"
+        @updateModal="updateModal($event)"
+        @resetModal="resetModal"
+      />
+      <UserDetail class="profile__detail" :selectedUser="usersStore.getUser" />
+      <UserApiKey
+        v-if="apiKeysStore"
+        class="profile__apiKey"
+        :errors="props.errors"
+        :apiKeysCount="apiKeysStore?.getUserApiKeysCount"
+        :activeApiKeysCount="apiKeysStore?.getUserActiveApiKeysCount"
+        :pendingApiKeysCount="apiKeysStore?.getUserPendingApiKeysCount"
+      />
     </div>
-    <UserInfo class="profile__info" />
-    <UserDetail class="profile__detail" />
-    <UserApiKey class="profile__apiKey" :errors="props.errors" />
   </div>
 </template>
 <style lang="scss" scoped>
 @use '@/assets/style/abstracts/mixins' as m;
 @import '@/assets/style/abstracts/debug.scss';
 .profile {
-  display: grid;
-  grid-template-areas:
-    'btn'
-    'info'
-    'detail'
-    'apiKey';
-  grid-template-rows: repeat(4, min-content);
-  row-gap: 2rem;
-
-  @include m.xl {
+  background-color: var(--color-black-2);
+  &__content {
+    padding: 2rem;
+    display: grid;
     grid-template-areas:
-      'btn btn'
-      'info apiKey'
-      'detail apiKey';
-    grid-template-columns: max-content 1fr;
+      'info'
+      'detail'
+      'apiKey';
     grid-template-rows: repeat(3, min-content);
-    column-gap: 4rem;
-    margin: 4rem;
+
+    gap: 2rem;
+
+    @include m.xl {
+      grid-template-areas:
+        'info apiKey'
+        'detail apiKey';
+      grid-template-columns: max-content 1fr;
+      grid-template-rows: repeat(2, min-content);
+    }
   }
-  &__btn {
-    grid-column: 1/-1;
-    grid-row: 1/2;
-    grid-area: btn;
-    // padding: 2rem;
 
-    &-icon {
-      transition: fill 0.4s;
-      fill: var(--color-white);
-      height: 3rem;
-      width: 3rem;
-    }
-
-    &-return {
-      font-family: var(--font-subtitle);
-      font-weight: 400;
-      transition: color 0.4s;
-      background-color: transparent;
-      display: flex;
-      align-items: center;
-      column-gap: 1rem;
-      color: var(--color-white);
-      font-size: 1.6rem;
-    }
-
-    &:hover &-return,
-    &:active &-return {
-      color: var(--color-purple-1);
-    }
-
-    &:hover &-icon,
-    &:active &-icon {
-      fill: var(--color-purple-1);
-    }
+  &__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   &__info {

@@ -16,7 +16,7 @@ const usersSortFilterSchema = toTypedSchema(
   z.object(filters.reduce((prev, curr) => ({ ...prev, [`${curr}Sort`]: z.literal(curr) }), {}))
 )
 
-const { resetForm } = useForm({ validationSchema: usersSortFilterSchema })
+const { resetForm, meta, errors } = useForm({ validationSchema: usersSortFilterSchema })
 
 const radio = filters.map((filter) => {
   const { value, handleChange } = useField(`${filter}Sort`, '', { validateOnValueUpdate: false })
@@ -25,6 +25,7 @@ const radio = filters.map((filter) => {
 
 const emits = defineEmits<{
   (e: 'updateSort', value: sortFilterType | null): void
+  (e: 'updateBtnDisable', value: boolean): void
 }>()
 </script>
 <template>
@@ -33,19 +34,29 @@ const emits = defineEmits<{
       <li class="filter__block" v-for="{ filter, handleChange } in radio" :key="filter">
         <input
           type="radio"
-          :name="`${filter}Sort`"
+          name="sort"
           :id="`${filter}Sort`"
           :value="filter"
           class="filter__radio"
-          @change="emits('updateSort', filter)"
+          @change="
+            emits('updateSort', filter),
+              meta.dirty && Object.keys(errors).length === 0
+                ? emits('updateBtnDisable', false)
+                : emits('updateBtnDisable', true)
+          "
           @focus="handleChange"
         />
-        <label for="createAt" class="form__label">{{ filters_fr[filter] }}</label>
+        <label :for="`${filter}Sort`" class="form__label">{{ filters_fr[filter] }}</label>
       </li>
     </ul>
     <button
       class="filter__btn"
-      @click="uncheckInputs('.filter__radio'), emits('updateSort', null), resetForm()"
+      @click="
+        uncheckInputs('.filter__radio'),
+          emits('updateSort', null),
+          resetForm(),
+          emits('updateBtnDisable', false)
+      "
     >
       reset
     </button>

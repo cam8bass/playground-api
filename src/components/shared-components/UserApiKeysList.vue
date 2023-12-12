@@ -22,35 +22,34 @@ const userApiKeys = computed(() => {
     return currentUserStore.getKeys
   }
 })
-
 </script>
 <template>
-  <div class="apiKey">
-    <div class="apiKey__group" v-for="apiKey in userApiKeys" :key="apiKey._id">
-      <ul class="apiKey__list">
-        <li class="apiKey__item">
-          Nom : <span class="apiKey__text">{{ apiKey.apiName }}</span>
+  <div class="apiKeyList">
+    <div class="apiKeyList__group" v-for="apiKey in userApiKeys" :key="apiKey._id">
+      <ul class="apiKeyList__list">
+        <li class="apiKeyList__item">
+          Nom : <span class="apiKeyList__text">{{ apiKey.apiName }}</span>
         </li>
 
-        <li class="apiKey__item">
+        <li class="apiKeyList__item">
           Clé d'api :
-          <span class="apiKey__text">{{ apiKey.apiKey ?? 'En attente de validation' }}</span>
+          <span class="apiKeyList__text">{{ apiKey.apiKey ?? 'En attente de validation' }}</span>
         </li>
 
-        <li class="apiKey__item" v-if="apiKey.createAt">
-          Création : <span class="apiKey__text">{{ formatDate(apiKey.createAt) }}</span>
+        <li class="apiKeyList__item" v-if="apiKey.createAt">
+          Création : <span class="apiKeyList__text">{{ formatDate(apiKey.createAt) }}</span>
         </li>
 
-        <li class="apiKey__item" v-if="apiKey.apiKeyExpire">
-          Expiration : <span class="apiKey__text">{{ formatDate(apiKey.apiKeyExpire) }}</span>
+        <li class="apiKeyList__item" v-if="apiKey.apiKeyExpire">
+          Expiration : <span class="apiKeyList__text">{{ formatDate(apiKey.apiKeyExpire) }}</span>
         </li>
 
-        <li class="apiKey__item">
-          Activé : <span class="apiKey__text">{{ apiKey.active ? 'Oui' : 'Non' }}</span>
+        <li class="apiKeyList__item">
+          Activé : <span class="apiKeyList__text">{{ apiKey.active ? 'Oui' : 'Non' }}</span>
         </li>
 
         <li
-          class="apiKey__item"
+          class="apiKeyList__item"
           v-if="
             currentUserStore.getCurrentUser &&
             currentUserStore.getCurrentUser.role === 'admin' &&
@@ -60,14 +59,14 @@ const userApiKeys = computed(() => {
           <ActiveApiKey :idApi="apiKey._id" />
         </li>
       </ul>
-      <div class="apiKey__btn">
+      <div class="apiKeyList__btn">
         <button
           v-if="
             apiKey.active &&
             currentUserStore.getCurrentUser &&
             currentUserStore.getCurrentUser.role === 'user'
           "
-          class="apiKey__btn-btn apiKey__btn-renewal btn"
+          class="btn"
           @click="
             !appStore.getModal
               ? appStore.updateModal({
@@ -86,7 +85,7 @@ const userApiKeys = computed(() => {
 
         <button
           v-if="currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'user'"
-          class="apiKey__btn-btn apiKey__btn-delete btn"
+          class="btn"
           @click="
             !appStore.getModal
               ? appStore.updateModal({
@@ -110,7 +109,7 @@ const userApiKeys = computed(() => {
             usersStore &&
             usersStore.getUser
           "
-          class="apiKey__btn-btn apiKey__btn-delete btn"
+          class="btn"
           @click="
             !appStore.getModal
               ? appStore.updateModal({
@@ -136,7 +135,7 @@ const userApiKeys = computed(() => {
 <style lang="scss" scoped>
 @use '@/assets/style/abstracts/mixins' as m;
 
-.apiKey {
+.apiKeyList {
   margin: 2rem 0;
   display: flex;
   flex-direction: column;
@@ -190,15 +189,6 @@ const userApiKeys = computed(() => {
       row-gap: 2rem;
       column-gap: 0;
       justify-content: center;
-    }
-
-    &-btn {
-    }
-
-    &-renewal {
-    }
-
-    &-delete {
     }
   }
 }

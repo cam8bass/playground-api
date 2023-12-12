@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { usersLimitSchema } from '@/shared/schema'
 import { useField } from 'vee-validate'
 
@@ -15,6 +14,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   (e: 'updateLimit', limit: number): void
+  (e: 'updateBtnDisable', value: boolean): void
 }>()
 
 const {
@@ -22,7 +22,8 @@ const {
   errors: limitErrors,
   errorMessage: limitErrorMessage,
   handleBlur: handleBlurLimit,
-  handleChange: handleChangeLimit
+  handleChange: handleChangeLimit,
+  meta: limitMeta
 } = useField(
   'limit',
   (value) => {
@@ -38,16 +39,10 @@ const {
   },
   {
     validateOnValueUpdate: false,
-    initialValue: props.limitPerPage
+    initialValue: 0
+    // initialValue: props.limitPerPage
   }
 )
-
-/**
- * Create a reactive variable to store the limit value
- *  @typeDef Ref{number} limit - The reactive variable to store the limit value
- */
-
-const limit = ref<number>(props.limitPerPage ?? 10)
 </script>
 <template>
   <Transition name="translateDown" mode="out-in">
@@ -69,12 +64,15 @@ const limit = ref<number>(props.limitPerPage ?? 10)
           @blur="handleChangeLimit"
           @focus="handleBlurLimit"
           @input="
-            limit <= 0
-              ? (limit = 1)
-              : limit > props.results
-              ? (limit = props.results)
-              : (limit = ($event.target as HTMLInputElement).valueAsNumber),
-              emits('updateLimit', limit)
+            inputLimit <= 0
+              ? (inputLimit = 1)
+              : inputLimit > props.results
+              ? (inputLimit = props.results)
+              : (inputLimit = ($event.target as HTMLInputElement).valueAsNumber),
+              emits('updateLimit', inputLimit),
+              limitMeta.dirty && limitMeta.valid
+                ? emits('updateBtnDisable', false)
+                : emits('updateBtnDisable', true)
           "
         />
 

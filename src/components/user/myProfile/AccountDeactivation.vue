@@ -5,8 +5,7 @@ const appStore = useAppStore()
 </script>
 <template>
   <div class="deactivation">
-    <h4 class="section__title">Désactivation de compte</h4>
-
+    <h4 class="component__subtitle">Désactivation de compte</h4>
     <div class="deactivation__content">
       <p class="deactivation__text">
         Pour désactiver votre compte, il suffit de vous reconnecter avec vos identifiants. Nos
@@ -35,17 +34,15 @@ const appStore = useAppStore()
 </template>
 <style scoped lang="scss">
 .deactivation {
-  // align-self: center;
-  background-color: var(--color-black-2);
-  height: min-content;
-
   &__content {
-    margin: 2rem;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
   }
 
-  &__text {
-    max-width: 60rem;
-    margin-bottom: 2rem;
+  &__btn {
+    align-self: center;
   }
 }
 </style>

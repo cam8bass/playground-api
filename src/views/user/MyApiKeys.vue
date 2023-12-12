@@ -11,7 +11,7 @@ const fetchCurrentUserApiKeys = async () => {
   const refresh = currentUserStore.getRefresh
   if (refresh) {
     await currentUserStore.fetchUserGetMyApiKeys()
-    currentUserStore.updateRefresh(false)
+    currentUserStore.updateRefresh({apiKey: false})
   }
 }
 

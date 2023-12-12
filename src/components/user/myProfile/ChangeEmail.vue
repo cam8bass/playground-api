@@ -6,34 +6,43 @@ const appStore = useAppStore()
 </script>
 <template>
   <div class="email">
-    <span class="email__label"
-      >Email : <span class="email__text">{{ currentUserStore.getCurrentUser?.email }}</span></span
-    >
+    <h3 class="component__subtitle">Adresse email</h3>
 
-    <button
-      type="button"
-      class="btn email__btn"
-      @click="
-        !appStore.getModal
-          ? appStore.updateModal({
-              type: 'requestChangeEmail',
-              title: 'Changement d\'adresse email',
-              message: 'changer votre adresse email ?'
-            })
-          : appStore.getModal && appStore.getModal.type === 'logout'
-          ? appStore.resetModal
-          : ''
-      "
-    >
-      Modifier
-    </button>
+    <div class="email__content">
+      <span class="email__label"
+        >Email : <span class="email__text">{{ currentUserStore.getCurrentUser?.email }}</span></span
+      >
+
+      <button
+        type="button"
+        class="btn email__btn"
+        @click="
+          !appStore.getModal
+            ? appStore.updateModal({
+                type: 'requestChangeEmail',
+                title: 'Changement d\'adresse email',
+                message: 'changer votre adresse email ?'
+              })
+            : appStore.getModal && appStore.getModal.type === 'logout'
+            ? appStore.resetModal
+            : ''
+        "
+      >
+        Modifier
+      </button>
+    </div>
   </div>
 </template>
 <style scoped lang="scss">
 @use '@/assets/style/abstracts/mixins' as m;
 .email {
-  row-gap: 2rem;
-
+  &__content {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 2rem;
+  }
   &__label {
     font-family: var(--font-subtext);
   }

@@ -2,6 +2,17 @@
 import UpdateUser from '@/components/admin/userProfile/UpdateUser.vue'
 import InfoList from '@/components/admin/userProfile/InfoList.vue'
 import { ref } from 'vue'
+import type { AdminUsersInterface, modalInterface, updateModalInterface } from '@/shared/interfaces'
+
+const props = defineProps<{
+  selectedUser: AdminUsersInterface | null
+  modal: modalInterface | null
+}>()
+
+const emits = defineEmits<{
+  (e: 'updateModal', modal: updateModalInterface): void
+  (e: 'resetModal'): void
+}>()
 
 const modifyUser = ref<boolean>(false)
 
@@ -11,10 +22,17 @@ function updateModifyUser(value: boolean): void {
 </script>
 <template>
   <div class="info">
-    <h1 class="info__title section__title">Info</h1>
+    <h2 class="info__title section__title">Info</h2>
 
     <Transition name="fade" mode="out-in" appear v-if="!modifyUser">
-      <InfoList :modifyUser="modifyUser" @modifyUser="updateModifyUser" />
+      <InfoList
+        :modifyUser="modifyUser"
+        :selectedUser="props.selectedUser"
+        :modal="$props.modal"
+        @modifyUser="updateModifyUser"
+        @updateModal="emits('updateModal', $event)"
+        @resetModal="emits('resetModal')"
+      />
     </Transition>
 
     <Transition name="fade" mode="out-in" appear v-if="modifyUser">

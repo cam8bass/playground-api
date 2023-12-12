@@ -260,6 +260,7 @@ const onSubmit = handleSubmit(
   justify-content: center;
   background-color: var(--color-black-3);
   padding: 2rem;
+  height: 100%;
 
   &__content {
     display: grid;

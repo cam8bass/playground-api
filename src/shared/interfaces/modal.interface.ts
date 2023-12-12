@@ -9,3 +9,11 @@ export interface modalInterface {
     idApi?: string
   }
 }
+
+
+export interface updateModalInterface {
+  type: modalType | null
+  title: string
+  message: string
+  id?: { idUser?: string; idApi?: string }
+}

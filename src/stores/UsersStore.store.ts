@@ -2,6 +2,7 @@ import type {
   AdminQueryInterface,
   AdminUpdateUserInterface,
   AdminUsersInterface,
+  AdminUsersStatsInterface,
   jsonResponseInterface
 } from '@/shared/interfaces'
 import { formatQueryString, sendRequest } from '@/shared/utils'
@@ -18,6 +19,7 @@ interface UsersStateInterface {
     totalPage: number
     limitPerPage: number
   }
+  stats: AdminUsersStatsInterface | null
   results: number
   refresh: boolean
 }
@@ -35,7 +37,8 @@ export const useUsersStore = defineStore('UsersStore', {
       fields: null,
       sort: null,
       parameters: null
-    }
+    },
+    stats: null
   }),
   getters: {
     getAllUsers(): AdminUsersInterface[] | null {
@@ -79,20 +82,16 @@ export const useUsersStore = defineStore('UsersStore', {
       return this.page.totalPage
     },
 
+    getUsersStats(): AdminUsersStatsInterface | null {
+      return this.stats
+    },
+
     getCurrentPage(): number {
       return this.page.currentPage
     },
-    // TODO: voir pour vérifier si la requete a deja été envoyé avec les valeurs passé en query, alors on ne reinitialise pas la page et on ne reinitialise pas la requete
+  
 
-    checkIsDefaultQuery(): boolean {
-      return (
-        this.query.search === '' &&
-        this.query.limit === 10 &&
-        this.query.fields === null &&
-        this.query.sort === null &&
-        this.query.parameters === null
-      )
-    }
+  
   },
   actions: {
     // USERS
@@ -100,7 +99,6 @@ export const useUsersStore = defineStore('UsersStore', {
     async fetchAdminGetAllUsers(): Promise<void> {
       if (this.query.search) {
         this.resetUsersStore()
-
         this.refresh = true
       }
 
@@ -177,6 +175,17 @@ export const useUsersStore = defineStore('UsersStore', {
         this.user = data.value.data
       }
     },
+
+    async fetchDashboardUsersInfo(): Promise<void> {
+      const devUrl = '/playground-connect/v1/admin/dashboardUsers'
+
+      const { data } = await sendRequest(devUrl, 'GET')
+
+      if (data.value && data.value.status === 'success' && data.value.data) {
+        this.stats = data.value.data
+      }
+    },
+
     async fetchAmdinCreateUser() {},
 
     async reloadAllUsers(data: Ref<jsonResponseInterface | null>): Promise<void> {
@@ -227,13 +236,14 @@ export const useUsersStore = defineStore('UsersStore', {
       this.page.limitPerPage = value
     },
 
+
     updateQuery(query: Partial<AdminQueryInterface>): void {
       this.query = {
-        search: query.search ? query.search : '',
-        limit: query.limit ? query.limit : 10,
-        fields: query.fields ? query.fields : null,
-        sort: query.sort === null ? query.sort : query.sort ? query.sort : null,
-        parameters: query.parameters ? query.parameters : null
+        search: query.search !== undefined ? query.search : this.query.search,
+        limit: query.limit !== undefined ? query.limit : this.query.limit,
+        fields: query.fields !== undefined ? query.fields : this.query.fields,
+        sort: query.sort !== undefined ? query.sort : this.query.sort,
+        parameters: query.parameters !== undefined ? query.parameters : this.query.parameters
       }
     }
   }

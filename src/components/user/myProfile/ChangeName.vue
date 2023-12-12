@@ -81,8 +81,9 @@ const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
 })
 </script>
 <template>
-  <form @submit="onSubmit" class="form">
-    <div class="form__content">
+  <form @submit="onSubmit" class="form formName">
+    <h2 class="component__subtitle">Informations</h2>
+    <div class="formName__content">
       <div class="form__group">
         <label for="lastname" class="form__label">Nom</label>
         <input
@@ -137,11 +138,11 @@ const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
 </template>
 <style scoped lang="scss">
 @use '@/assets/style/abstracts/mixins' as m;
-.form {
+.formName {
   &__content {
+    margin-top: 2rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     row-gap: 1rem;
   }

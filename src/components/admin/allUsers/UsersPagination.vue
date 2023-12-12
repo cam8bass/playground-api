@@ -99,13 +99,5 @@ function previousPage(): void {
   }
 }
 
-.btn-disable {
-  fill: var(--color-gray-2);
 
-  cursor: not-allowed;
-  &:hover,
-  &:active {
-    fill: currentColor;
-  }
-}
 </style>

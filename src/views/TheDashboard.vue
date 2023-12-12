@@ -9,9 +9,14 @@ const errorStore = useErrorStore()
   <main class="dashboard">
     <DashboardHeader class="dashboard__header" />
 
-    <RouterView class="dashboard__content" v-slot="{ Component, route }">
+    <RouterView v-slot="{ Component, route }">
       <Transition name="translateLeft" mode="out-in" appear>
-        <component :is="Component" :key="route.fullPath" :errors="errorStore.getError" />
+        <component
+          class="dashboard__content"
+          :is="Component"
+          :key="route.fullPath"
+          :errors="errorStore.getError"
+        />
       </Transition>
     </RouterView>
 
@@ -25,10 +30,10 @@ const errorStore = useErrorStore()
 .dashboard {
   display: grid;
   grid-template-rows: min-content 1fr;
-  min-height: 100%;
+  grid-template-rows: 1fr;
+
   @include m.xl {
     grid-template-columns: min-content 1fr;
-    grid-template-rows: 1fr;
   }
 
   &__header {
@@ -42,6 +47,11 @@ const errorStore = useErrorStore()
 
   &__content {
     grid-row: 2/-1;
+    height: 80vh;
+    overflow-y: scroll;
+    max-width: 250rem;
+    width: 100%;
+    justify-self: center;
 
     @include m.xl {
       grid-row: 1/-1;

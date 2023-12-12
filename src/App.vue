@@ -23,10 +23,10 @@ const errorStore = useErrorStore()
     <ThePopup />
 
     <TheHeader class="header" />
-
-    <RouterView v-slot="{ Component, route }" class="content">
+    <RouterView v-slot="{ Component, route }">
       <Transition name="fade" mode="out-in" appear>
         <component
+          class="content"
           :is="Component"
           :key="route.fullPath"
           :errors="errorStore.getError"
@@ -43,12 +43,13 @@ const errorStore = useErrorStore()
 
 <style lang="scss">
 @use '@/assets/style/abstracts/mixins' as m;
-@import '@/assets/style/base.scss';
-@import '@/assets/style/base/animation';
+@import '@/assets/style/main.scss';
+
 .container {
   display: grid;
-  grid-template-rows: min-content 1fr min-content;
-  min-height: 100vh; // TODO: a voir
+  grid-template-rows: minmax(min-content, 10vh) minmax(80vh, 1fr) minmax(min-content, 10vh);
+  min-height: 100vh;
+  overflow: auto;
 }
 
 .content {

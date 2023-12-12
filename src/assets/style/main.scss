@@ -1,0 +1,17 @@
+// *** BASE ***
+@import '@/assets/style/base/base.scss';
+@import '@/assets/style/base/animation.scss';
+
+// ** ABSTRACTS ***
+@import '@/assets/style/abstracts/mixins.scss';
+@import '@/assets/style/abstracts/debug.scss';
+@import '@/assets/style/abstracts/variables.scss';
+
+// *** COMPONENTS ***
+@import '@/assets/style/components/btn.scss';
+@import '@/assets/style/components/form.scss';
+@import '@/assets/style/components/section.scss';
+@import '@/assets/style/components/list.scss';
+@import '@/assets/style/components/formSelect.scss';
+@import '@/assets/style/components/filter.scss';
+@import '@/assets/style/components/border.scss';

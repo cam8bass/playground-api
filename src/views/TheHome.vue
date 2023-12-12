@@ -22,7 +22,9 @@ const currentUserStore = useCurrentUserStore()
                 de code en quête d’inspiration, <strong>API Playground </strong>est votre allié.
               </p>
             </div>
-            <RouterLink to="/apis" class="btn intro__describe-btn">Nos apis</RouterLink>
+            <RouterLink to="/apis" class="btn intro__describe-btn" title="Nos apis"
+              >Nos apis</RouterLink
+            >
           </div>
         </AnimatedComponent>
 
@@ -30,10 +32,11 @@ const currentUserStore = useCurrentUserStore()
           <div class="intro__begin">
             <span class="intro__begin-title">Commencer maintenant</span>
             <div class="intro__begin-link">
-              <RouterLink to="/signup" class="btn intro__begin-link--signup"
+              <RouterLink to="/signup" class="btn intro__begin-link--signup" title="Inscription"
                 >Inscription</RouterLink
               >
               <button
+                title="Connexion"
                 v-if="!currentUserStore.getCurrentUser"
                 @click="appStore.updateLogin(true)"
                 class="btn"
@@ -41,7 +44,11 @@ const currentUserStore = useCurrentUserStore()
                 Connexion
               </button>
 
-              <RouterLink v-if="currentUserStore.getCurrentUser" to="/dashboard" class="btn"
+              <RouterLink
+                v-if="currentUserStore.getCurrentUser"
+                to="/dashboard"
+                class="btn"
+                title="Mon compte"
                 >Mon compte</RouterLink
               >
             </div>
@@ -265,7 +272,7 @@ const currentUserStore = useCurrentUserStore()
   display: grid;
   grid-template-rows: minmax(min-content, 90vh) repeat(4, min-content);
   justify-content: center;
-
+  height: 100%;
   @include m.xl {
     &::before {
       content: '';

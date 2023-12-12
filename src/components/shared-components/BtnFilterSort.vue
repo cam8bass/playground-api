@@ -13,7 +13,12 @@ const emits = defineEmits<{
          * @click - Event handler for toggling the visibility of the sort filters.
          * @showFilters.sort - Boolean value indicating whether the sort filters are visible or not. 
         -->
-  <button class="btnFilter" @click="emits('updateShowFilterSort')">
+  <button
+    class="btnFilter"
+    @click="emits('updateShowFilterSort')"
+    aria-label="Afficher le filtre de trie"
+    title="Afficher le filtre de trie"
+  >
     <span for="sort" class="btnFilter__text">
       Date de création :
       <svg class="btnFilter__icon">
@@ -26,6 +31,4 @@ const emits = defineEmits<{
     </span>
   </button>
 </template>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

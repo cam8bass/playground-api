@@ -9,7 +9,8 @@ import { useField, useForm } from 'vee-validate'
 const checkedValues = ref<string[]>([])
 
 const emits = defineEmits<{
-  (e: 'updateFilter', value: string[] | null): void
+  (e: 'updateFields', value: string[] | null): void
+  (e: 'updateBtnDisable', value: boolean): void
 }>()
 
 const filters = ['role', 'email', 'lastname', 'firstname', 'active', 'accountLocked'] as const
@@ -27,7 +28,7 @@ const usersFieldsFilterSchema = toTypedSchema(
   z.object(filters.reduce((prev, curr) => ({ ...prev, [`${curr}Filter`]: z.literal(curr) }), {}))
 )
 
-const { resetForm } = useForm({ validationSchema: usersFieldsFilterSchema })
+const { resetForm, meta, errors } = useForm({ validationSchema: usersFieldsFilterSchema })
 
 const fields = filters.map((filter) => {
   const { value, handleChange } = useField(`${filter}Filter`, '', {
@@ -49,7 +50,7 @@ const updateCheckedValues = (value: filterType, event: Event) => {
     }
   }
 
-  emits('updateFilter', checkedValues.value)
+  emits('updateFields', checkedValues.value)
 }
 
 function resetCheckedValues() {
@@ -66,7 +67,12 @@ function resetCheckedValues() {
           :id="`${filter}Filter`"
           class="filter__checkbox"
           :value="filter"
-          @change="updateCheckedValues(filter, $event)"
+          @change="
+            updateCheckedValues(filter, $event),
+              meta.dirty && Object.keys(errors).length === 0
+                ? emits('updateBtnDisable', false)
+                : emits('updateBtnDisable', true)
+          "
           @focus="handleChange"
         />
         <label :for="`${filter}Filter`" class="form__label">{{ filters_fr[filter] }}</label>
@@ -77,9 +83,10 @@ function resetCheckedValues() {
       type="button"
       @click="
         uncheckInputs('.filter__checkbox'),
-          emits('updateFilter', null),
+          emits('updateFields', null),
           resetCheckedValues(),
-          resetForm()
+          resetForm(),
+          emits('updateBtnDisable', false)
       "
     >
       Reset

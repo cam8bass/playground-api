@@ -19,6 +19,6 @@ app.use(pinia)
 app.use(router).directive('appear', appear)
 setMeta(router)
 
-await router.isReady() // TODO: A voir
+await router.isReady() 
 
 app.mount('#app')

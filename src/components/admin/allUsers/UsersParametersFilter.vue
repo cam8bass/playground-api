@@ -9,6 +9,7 @@ const checkedValues = ref<Record<string, string>>({})
 
 const emits = defineEmits<{
   (e: 'updateParameters', value: {} | null): void
+  (e: 'updateBtnDisable', value: boolean): void
 }>()
 
 const filters: Record<string, string[] | boolean[]> = {
@@ -41,7 +42,7 @@ const parametersFilterSchema = toTypedSchema(
   )
 )
 
-const { resetForm } = useForm({ validationSchema: parametersFilterSchema })
+const { resetForm, meta, errors } = useForm({ validationSchema: parametersFilterSchema })
 
 const fields = Object.entries(filters).map(([group, values]) => {
   const groupFields = values.map((value: string | boolean) => {
@@ -75,7 +76,12 @@ function resetCheckedValues() {
           :id="`${group}${value}`"
           class="filter__checkbox"
           :value="value"
-          @change="updateCheckedValues(group, $event)"
+          @change="
+            updateCheckedValues(group, $event),
+              meta.dirty && Object.keys(errors).length === 0
+                ? emits('updateBtnDisable', false)
+                : emits('updateBtnDisable', true)
+          "
           @focus="handleChange"
         />
         <label :for="`${group}${value}`" class="form__label"
@@ -94,7 +100,8 @@ function resetCheckedValues() {
         uncheckInputs('.filter__checkbox'),
           emits('updateParameters', null),
           resetCheckedValues(),
-          resetForm()
+          resetForm(),
+          emits('updateBtnDisable', false)
       "
     >
       Reset

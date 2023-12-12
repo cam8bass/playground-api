@@ -219,6 +219,7 @@ const onSubmit = handleSubmit(
 
 <style scoped lang="scss">
 @use '@/assets/style/abstracts/mixins' as m;
+
 @import '@/assets/style/base/animation';
 
 .login {

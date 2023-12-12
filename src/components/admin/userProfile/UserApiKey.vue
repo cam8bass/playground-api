@@ -1,26 +1,18 @@
 <script setup lang="ts">
 import AddApiKey from '@/components/shared-components/AddApiKey.vue'
 import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
-import { useApiKeysStore, useCurrentUserStore } from '@/stores'
 import UserApiKeysList from '@/components/shared-components/UserApiKeysList.vue'
-import { computed } from 'vue'
-
-const currentUserStore = useCurrentUserStore()
-
-const apiKeysStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useApiKeysStore()
-  }
-  return null
-})
 
 const props = defineProps<{
+  apiKeysCount: number
+  activeApiKeysCount: number
+  pendingApiKeysCount: number
   errors: errorDevInterface | errorProdInterface | null
 }>()
 </script>
 <template>
   <div class="apiKey">
-    <h3 class="apiKey__title section__title">Clés d'api</h3>
+    <h4 class="apiKey__title section__title">Clés d'api</h4>
 
     <AddApiKey :errors="props.errors" />
 
@@ -29,21 +21,21 @@ const props = defineProps<{
         <span class="apiKey__info-label"
           >Nombre d'apis :
           <span class="apiKey__info-number">{{
-            apiKeysStore ? apiKeysStore.getUserApiKeysCount : 0
+            props.apiKeysCount ? props.apiKeysCount : 0
           }}</span></span
         >
 
         <span class="apiKey__info-label"
           >Clés activées :
           <span class="apiKey__info-number">{{
-            apiKeysStore ? apiKeysStore.getUserActiveApiKeysCount : 0
+            props.activeApiKeysCount ? props.activeApiKeysCount : 0
           }}</span></span
         >
 
         <span class="apiKey__info-label"
           >Clés en attente d'activation :
           <span class="apiKey__info-number">{{
-            apiKeysStore ? apiKeysStore.getUserPendingApiKeysCount : 0
+            props.pendingApiKeysCount ? props.pendingApiKeysCount : 0
           }}</span></span
         >
       </div>
@@ -58,7 +50,6 @@ const props = defineProps<{
 .apiKey {
   padding: 2rem;
   background-color: var(--color-black-2);
-  height: 70rem; // TODO: A VOIR
   overflow-y: scroll;
   &__title {
     margin: 0;

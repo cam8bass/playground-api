@@ -9,7 +9,12 @@ const emits = defineEmits<{
 </script>
 <template>
   <div class="btnFilter">
-    <button class="btnFilter__btn" @click="emits('updateShowFilter')">
+    <button
+      class="btnFilter__btn"
+      @click="emits('updateShowFilter')"
+      aria-label="Afficher les filtres"
+      title="Afficher les filtres"
+    >
       <h3 class="btnFilter__title">Filtres</h3>
       <svg class="btnFilter__icon">
         <use
@@ -23,10 +28,10 @@ const emits = defineEmits<{
 </template>
 <style lang="scss" scoped>
 .btnFilter {
-  grid-area: filter;
   display: flex;
   align-items: center;
   padding: 1rem 2rem;
   align-self: center;
+  background-color: var(--color-black-2);
 }
 </style>

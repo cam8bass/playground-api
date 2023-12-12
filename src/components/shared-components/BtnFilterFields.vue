@@ -7,7 +7,13 @@ const emits = defineEmits<{
 }>()
 </script>
 <template>
-  <button type="button" class="btnFilter" @click="emits('updateShowFilterFields')">
+  <button
+    type="button"
+    class="btnFilter"
+    @click="emits('updateShowFilterFields')"
+    aria-label="Afficher les filtres de sélection de champs"
+    title="Afficher les filtres de sélection de champs"
+  >
     <span for="filter" class="btnFilter__text">
       Afficher les champs :
       <svg class="btnFilter__icon">

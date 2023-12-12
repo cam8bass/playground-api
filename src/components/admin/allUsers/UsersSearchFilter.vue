@@ -4,6 +4,10 @@ import { usersSearchSchema } from '@/shared/schema'
 
 const emits = defineEmits<{
   (e: 'updateSearch', value: string): void
+
+  (e: 'fetchAllUsersWithQuerySearch'): void
+
+  (e: 'updateBtnDisable', value: boolean): void
 }>()
 
 const {
@@ -13,17 +17,7 @@ const {
   handleBlur: handleBlurSearch,
   handleChange: handleChangeSearch,
   meta: searchMeta
-  // validate: validateSearch
 } = useField('search', usersSearchSchema, { validateOnValueUpdate: false })
-
-// const handleInput = async () => {
-//   await validateSearch()
-//   if (searchMeta.valid) {
-//     emits('updateSearch', inputSearch.value)
-//   } else {
-//     emits('updateSearch', '')
-//   }
-// }
 
 const handleInput = () => {
   emits('updateSearch', inputSearch.value)
@@ -47,7 +41,17 @@ const handleInput = () => {
           borderSuccess: searchMeta.touched && searchMeta.validated && searchMeta.valid,
           borderError: searchMeta.touched && searchMeta.validated && !searchMeta.valid
         }"
-        @input="handleInput"
+        @input="
+          handleInput,
+            searchMeta.dirty && searchMeta.valid
+              ? emits('updateBtnDisable', false)
+              : emits('updateBtnDisable', true)
+        "
+        @keyup.enter="
+          searchMeta.touched && searchMeta.dirty && searchMeta.valid
+            ? emits('fetchAllUsersWithQuerySearch')
+            : ''
+        "
       />
       <span class="form__textError search__textError" v-if="searchErrors">{{
         searchErrorMessage

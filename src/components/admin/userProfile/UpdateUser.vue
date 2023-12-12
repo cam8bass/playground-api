@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AdminUpdateUserInterface, userInterface } from '@/shared/interfaces'
+import type { AdminUpdateUserInterface } from '@/shared/interfaces'
 import { adminUpdateUserSchema } from '@/shared/schema'
 import { submitFilter } from '@/shared/utils'
 import { useCurrentUserStore, useErrorStore, useUsersStore } from '@/stores'

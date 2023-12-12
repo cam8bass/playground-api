@@ -8,7 +8,12 @@ const emits = defineEmits<{
 }>()
 </script>
 <template>
-  <button class="btnFilter" @click="emits('updateShowFilterLimit')">
+  <button
+    class="btnFilter"
+    @click="emits('updateShowFilterLimit')"
+    aria-label="Afficher le filtre de limitation d'éléments"
+    title="Afficher le filtre de limitation d'éléments"
+  >
     <label for="limit" class="btnFilter__text"
       >Élements par page :
       <svg class="btnFilter__icon">

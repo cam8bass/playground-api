@@ -8,7 +8,7 @@ const currentUserStore = useCurrentUserStore()
   <div class="dashboardHeader" v-if="currentUserStore.getCurrentUser">
     <ul class="dashboardHeader-list">
       <li class="dashboardHeader-item">
-        <RouterLink to="/home" class="dashboardHeader-btn">
+        <RouterLink to="/myDashboard" class="dashboardHeader-btn" title="Retour à la page home">
           <svg class="dashboardHeader-icon" aria-label="Retour à la page home">
             <defs>
               <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -25,7 +25,7 @@ const currentUserStore = useCurrentUserStore()
       </li>
 
       <li class="dashboardHeader-item">
-        <RouterLink to="/myProfile" class="dashboardHeader-btn">
+        <RouterLink to="/myProfile" class="dashboardHeader-btn" title="Voir votre profil personnel">
           <svg class="dashboardHeader-icon" aria-label="Voir votre profil personnel">
             <use
               xlink:href="@/components/icons/sprite.svg#icon-user-circle-o"
@@ -36,7 +36,7 @@ const currentUserStore = useCurrentUserStore()
       </li>
 
       <li class="dashboardHeader-item" v-if="currentUserStore.getCurrentUser.role === 'user'">
-        <RouterLink to="/myApikeys" class="dashboardHeader-btn">
+        <RouterLink to="/myApikeys" class="dashboardHeader-btn" title="Accéder à mes clés d'API">
           <svg class="dashboardHeader-icon" aria-label="Accéder à mes clés d'API">
             <use
               xlink:href="@/components/icons/sprite.svg#icon-key"
@@ -47,7 +47,11 @@ const currentUserStore = useCurrentUserStore()
       </li>
 
       <li class="dashboardHeader-item" v-if="currentUserStore.getCurrentUser.role === 'admin'">
-        <RouterLink to="/users" class="dashboardHeader-btn">
+        <RouterLink
+          to="/users"
+          class="dashboardHeader-btn"
+          title="Accéder à la liste des utilisateurs"
+        >
           <svg class="dashboardHeader-icon" aria-label="Accéder à la liste des utilisateurs">
             <use
               xlink:href="@/components/icons/sprite.svg#icon-group"
@@ -58,7 +62,11 @@ const currentUserStore = useCurrentUserStore()
       </li>
 
       <li class="dashboardHeader-item" v-if="currentUserStore.getCurrentUser.role === 'admin'">
-        <RouterLink to="/apiKeys" class="dashboardHeader-btn">
+        <RouterLink
+          to="/apiKeys"
+          class="dashboardHeader-btn"
+          title="Accéder à la liste des clés d'API"
+        >
           <svg class="dashboardHeader-icon" aria-label="Accéder à la liste des clés d'API">
             <use
               xlink:href="@/components/icons/sprite.svg#icon-key"
@@ -70,6 +78,7 @@ const currentUserStore = useCurrentUserStore()
 
       <li class="dashboardHeader-item">
         <button
+          title="Se déconnecter"
           type="button"
           class="dashboardHeader-btn"
           @click="
@@ -106,9 +115,9 @@ const currentUserStore = useCurrentUserStore()
   );
   box-shadow: var(--boxshadow-black);
   padding: 1rem 0;
-
   @include m.xl {
     padding: 0 1rem;
+    height: 100%;
   }
 
   &-list {

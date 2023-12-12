@@ -1,8 +1,11 @@
-import type { FiltersInterface, notificationInterface } from '@/shared/interfaces'
-import type { modalType, requestStatusType } from '@/shared/types/types'
+import type {
+  ShowInterface,
+  modalInterface,
+  notificationInterface,
+  updateModalInterface
+} from '@/shared/interfaces'
+import type { requestStatusType } from '@/shared/types/types'
 import { defineStore } from 'pinia'
-
-import type { modalInterface } from '@/shared/interfaces/modal.interface'
 
 interface AppStateInterface {
   loading: boolean
@@ -15,7 +18,7 @@ interface AppStateInterface {
     popup: boolean
     menuFilter: boolean
   }
-  showFilters: FiltersInterface
+  show: ShowInterface
 }
 
 export const useAppStore = defineStore('appStore', {
@@ -26,13 +29,14 @@ export const useAppStore = defineStore('appStore', {
       login: false,
       menu: false,
       popup: false,
-      menuFilter: true
+      menuFilter: false
     },
-    showFilters: {
+    show: {
       fields: false,
       limit: false,
       parameters: false,
-      sort: false
+      sort: false,
+      overview: false
     },
     modal: null
   }),
@@ -69,8 +73,8 @@ export const useAppStore = defineStore('appStore', {
       }
       return null
     },
-    getShowFilters(): FiltersInterface {
-      return this.showFilters
+    getShow(): ShowInterface {
+      return this.show
     }
   },
   actions: {
@@ -104,12 +108,7 @@ export const useAppStore = defineStore('appStore', {
       this.notification = null
     },
 
-    updateModal(modal: {
-      type: modalType | null
-      title: string
-      message: string
-      id?: { idUser?: string; idApi?: string }
-    }) {
+    updateModal(modal: updateModalInterface): void {
       this.modal = {
         message: modal.message,
         type: modal.type,
@@ -120,12 +119,13 @@ export const useAppStore = defineStore('appStore', {
     resetModal() {
       this.modal = null
     },
-    updateShowFilters(filters: Partial<FiltersInterface>): void {
-      this.showFilters = {
-        fields: filters.fields ?? this.showFilters.fields,
-        limit: filters.limit ?? this.showFilters.limit,
-        parameters: filters.parameters ?? this.showFilters.parameters,
-        sort: filters.sort ?? this.showFilters.sort
+    updateShow(filters: Partial<ShowInterface>): void {
+      this.show = {
+        fields: filters.fields ?? this.show.fields,
+        limit: filters.limit ?? this.show.limit,
+        parameters: filters.parameters ?? this.show.parameters,
+        sort: filters.sort ?? this.show.sort,
+        overview: filters.overview ?? this.show.overview
       }
     }
   }

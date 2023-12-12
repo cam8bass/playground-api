@@ -1,0 +1,75 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-text);
+  font-size: 1.6rem;
+  background-image: linear-gradient(
+    to right bottom,
+    var(--background-color-primary-1),
+    var(--color-black)
+  );
+  color: var(--color-white);
+}
+
+button {
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+ol {
+  list-style: none;
+}
+
+input {
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+strong {
+  font-family: var(--font-text);
+  font-weight: 100;
+}
+
+em {
+  font-family: var(--font-text);
+  font-weight: 100;
+  font-style: normal;
+}
+
+.component__subtitle {
+  font-family: var(--font-subtitle);
+  font-size: 1.8rem;
+  font-weight: 300;
+  position: relative;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-purple-1);
+  width: 80%;
+  @include m.lg {
+    font-size: 2rem;
+  }
+}

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+/**
+ * This component is responsible for animating a target element when it becomes visible in the viewport.
+ */
 
-defineProps<{
+const props = defineProps<{
   animationType: string
 }>()
 
@@ -25,7 +28,7 @@ onMounted(() => {
 </script>
 <template>
   <Transition
-    :name="animationType"
+    :name="props.animationType"
     mode="out-in"
     v-appear="animate"
     class="animated-component"
@@ -104,6 +107,4 @@ onMounted(() => {
 .opacity-leave-to {
   opacity: 1;
 }
-
-
 </style>
