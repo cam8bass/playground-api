@@ -5,7 +5,6 @@ export interface errorInterface {
   status: requestStatusType
   message: string
   errors: object
-
 }
 
 export interface errorDevInterface {

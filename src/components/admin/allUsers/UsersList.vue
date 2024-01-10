@@ -1,24 +1,21 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import ThePagination from '@/components/shared-components/ThePagination.vue'
 
-import UsersPagination from './UsersPagination.vue'
 import type { AdminUsersInterface } from '@/shared/interfaces'
 
 const emits = defineEmits<{
-  (e: 'initGetAllUsers'): void
+  (e: 'nextPage'): void
+  (e: 'prevPage'): void
 }>()
 
 const props = defineProps<{
   allUsers: AdminUsersInterface[] | null
+  currentPage: number
+  totalPages: number
 }>()
-
-onMounted(() => emits('initGetAllUsers'))
 </script>
 <template>
   <div class="usersList list">
-    <!-- Pagination -->
-    <UsersPagination />
-
     <!-- Users list -->
     <div class="list__content">
       <div class="list__group" v-for="user in props.allUsers" :key="user._id">
@@ -42,7 +39,7 @@ onMounted(() => emits('initGetAllUsers'))
           <li class="list__item" v-if="user.role">
             Rôle : <span class="list__text">{{ user.role }}</span>
           </li>
-          <!-- TODO: Voir pour ne pas afficher active  que si active est pas du tout dans l'object user -->
+
           <li class="list__item" v-if="user.hasOwnProperty('active')">
             Activé : <span class="list__text">{{ user.active ? 'oui' : 'non' }}</span>
           </li>
@@ -56,8 +53,14 @@ onMounted(() => emits('initGetAllUsers'))
         <router-link :to="'/users/' + user._id" class="list__link">Details</router-link>
       </div>
     </div>
+    <!-- Pagination -->
+    <ThePagination
+      :currentPage="props.currentPage"
+      :totalPages="props.totalPages"
+      @nextPage="emits('nextPage')"
+      @prevPage="emits('prevPage')"
+    />
   </div>
-
 </template>
 <style scoped lang="scss">
 @use '@/assets/style/abstracts/mixins' as m;

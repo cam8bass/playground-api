@@ -8,6 +8,7 @@
   border: 1px solid var(--color-white);
   box-shadow: var(--boxshadow-black);
   display: inline-block;
+  border-radius: 0.2rem;
 
   &:hover,
   &:active {
@@ -95,3 +96,26 @@
     fill: currentColor;
   }
 }
+
+.btn-small {
+  background-color: var(--color-gray-1);
+  color: var(--color-white);
+  font-family: var(--font-subtitle);
+  font-weight: 400;
+  font-size: 1.6rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-white);
+  box-shadow: var(--boxshadow-black);
+  display: inline-block;
+  border-radius: 0.2rem;
+
+  &:hover,
+  &:active {
+    background-color: var(--color-purple-1);
+    color: var(--color-gray-1);
+    border-color: var(--color-purple-1);
+    transition: all 0.4s;
+  }
+}
+
+

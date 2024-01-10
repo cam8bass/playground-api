@@ -5,29 +5,14 @@ import type {
   requestCreateNewApiKeyInterface
 } from '@/shared/interfaces'
 import { addApiKeySchema } from '@/shared/schema'
-import { useApiKeysStore, useCurrentUserStore, useUsersStore } from '@/stores'
+import { initStore } from '@/shared/utils'
+
 import { useForm, useField } from 'vee-validate'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
-
-const currentUserStore = useCurrentUserStore()
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
-
-const apiKeysStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useApiKeysStore()
-  }
-  return null
-})
 
 const formError = ref<string | null>(null)
 
@@ -42,17 +27,21 @@ const {
 })
 
 const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, action) => {
+  const stores = initStore('userStore', 'usersStore', 'apiKeysStore')
+
+  if (!stores.userStore || !stores.apiKeysStore) return
+
   if (value.apiName) {
-    if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'user') {
-      await currentUserStore.fetchUserRequestCreateNewApiKey(value)
+    if (stores.userStore.getCurrentUser && stores.userStore.getCurrentUser.role === 'user') {
+      await stores.apiKeysStore.fetchUserRequestCreateNewApiKey(value)
     } else if (
-      currentUserStore.getCurrentUser &&
-      currentUserStore.getCurrentUser.role === 'admin' &&
-      usersStore.value &&
-      usersStore.value.getUser &&
-      apiKeysStore.value
+      stores.userStore.getCurrentUser &&
+      stores.userStore.getCurrentUser.role === 'admin' &&
+      stores.usersStore &&
+      stores.apiKeysStore &&
+      stores.usersStore.getUser
     ) {
-      await apiKeysStore.value.fetchAdminCreateApiKey(value.apiName, usersStore.value.getUser._id)
+      await stores.apiKeysStore.fetchAdminCreateApiKey(value.apiName, stores.usersStore.getUser._id)
     }
 
     const errors = props.errors?.errors as Partial<requestCreateNewApiKeyInterface> | null

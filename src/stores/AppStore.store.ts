@@ -1,23 +1,21 @@
-import type {
-  ShowInterface,
-  modalInterface,
-  notificationInterface,
-  updateModalInterface
+import {
+  DEFAULT_NAVIGAION,
+  DEFAULT_SHOW,
+  type NavigationInterface,
+  type modalInterface,
+  type updateModalInterface,
+  type NotificationAppInterface,
+  type ShowInterface
 } from '@/shared/interfaces'
-import type { requestStatusType } from '@/shared/types/types'
+
 import { defineStore } from 'pinia'
 
 interface AppStateInterface {
   loading: boolean
-  notification: notificationInterface | null | null
+  notification: NotificationAppInterface | null
   modal: modalInterface | null
+  navigation: NavigationInterface
 
-  navigation: {
-    login: boolean
-    menu: boolean
-    popup: boolean
-    menuFilter: boolean
-  }
   show: ShowInterface
 }
 
@@ -25,38 +23,17 @@ export const useAppStore = defineStore('appStore', {
   state: (): AppStateInterface => ({
     loading: false,
     notification: null,
-    navigation: {
-      login: false,
-      menu: false,
-      popup: false,
-      menuFilter: false
-    },
-    show: {
-      fields: false,
-      limit: false,
-      parameters: false,
-      sort: false,
-      overview: false
-    },
+    navigation: { ...DEFAULT_NAVIGAION },
+
+    show: { ...DEFAULT_SHOW },
     modal: null
   }),
   getters: {
-    getMenu(): boolean {
-      return this.navigation.menu
+    getNavigation(): NavigationInterface {
+      return this.navigation
     },
 
-    getLogin(): boolean {
-      return this.navigation.login
-    },
-    getMenuFilter(): boolean {
-      return this.navigation.menuFilter
-    },
-
-    getpopup(): boolean {
-      return this.navigation.popup
-    },
-
-    getNotificationMessage(): notificationInterface | null {
+    getNotificationAppMessage(): NotificationAppInterface | null {
       if (this.notification) {
         return this.notification
       }
@@ -73,6 +50,7 @@ export const useAppStore = defineStore('appStore', {
       }
       return null
     },
+
     getShow(): ShowInterface {
       return this.show
     }
@@ -82,29 +60,21 @@ export const useAppStore = defineStore('appStore', {
       this.loading = status
     },
 
-    updateLogin(status: boolean): void {
-      this.navigation.login = status
-    },
-
-    updateMenu(status: boolean): void {
-      this.navigation.menu = status
-    },
-
-    updatePopup(status: boolean): void {
-      this.navigation.popup = status
-    },
-    updateMenuFilter(status: boolean): void {
-      this.navigation.menuFilter = status
-    },
-
-    updateNotification(type: requestStatusType | null, message: string | null): void {
-      this.notification = {
-        type,
-        message
+    updateNavigation(menu: Partial<NavigationInterface>): void {
+      this.navigation = {
+        login: menu.login ?? this.navigation.login,
+        menu: menu.menu ?? this.navigation.menu,
+        popup: menu.popup ?? this.navigation.popup,
+        menuFilter: menu.menuFilter ?? this.navigation.menuFilter,
+        notification: menu.notification ?? this.navigation.notification
       }
     },
 
-    resetNotification() {
+    updateNotificationApp(notification: NotificationAppInterface): void {
+      this.notification = notification
+    },
+
+    resetNotificationApp() {
       this.notification = null
     },
 
@@ -119,14 +89,18 @@ export const useAppStore = defineStore('appStore', {
     resetModal() {
       this.modal = null
     },
-    updateShow(filters: Partial<ShowInterface>): void {
+
+    updateShow(show: Partial<ShowInterface>): void {
       this.show = {
-        fields: filters.fields ?? this.show.fields,
-        limit: filters.limit ?? this.show.limit,
-        parameters: filters.parameters ?? this.show.parameters,
-        sort: filters.sort ?? this.show.sort,
-        overview: filters.overview ?? this.show.overview
+        fields: show.fields ?? this.show.fields,
+        limit: show.limit ?? this.show.limit,
+        parameters: show.parameters ?? this.show.parameters,
+        sort: show.sort ?? this.show.sort,
+        overview: show.overview ?? this.show.overview,
+        notificationMore: show.notificationMore ?? this.show.notificationMore
       }
     }
   }
 })
+
+export type AppStore = ReturnType<typeof useAppStore>

@@ -1,38 +1,25 @@
-<script setup lang="ts">
-import type { AdminUsersStatsInterface } from '@/shared/interfaces'
-
-import { onMounted } from 'vue'
-const props = defineProps<{
-  stats: AdminUsersStatsInterface | null
-}>()
-
-const emits = defineEmits<{
-  (e: 'initOverview'): void
-}>()
-
-onMounted(() => emits('initOverview'))
-</script>
+<script setup lang="ts"></script>
 <template>
-  <ul class="overview" v-if="props.stats">
+  <ul class="overview">
     <li class="overview__item">
       Total :
-      <span class="overview__number">{{ props.stats.totalUsers }}</span>
+      <span class="overview__number">20</span>
     </li>
     <li class="overview__item">
       Activé :
-      <span class="overview__number">{{ props.stats.totalActiveAccount }}</span>
+      <span class="overview__number">5</span>
     </li>
     <li class="overview__item">
       Non activé :
-      <span class="overview__number">{{ props.stats.totalInactiveAccount }}</span>
+      <span class="overview__number">6</span>
     </li>
     <li class="overview__item">
       Désactivé :
-      <span class="overview__number">{{ props.stats.totalDisableAccount }}</span>
+      <span class="overview__number">6</span>
     </li>
     <li class="overview__item">
       Bloqué :
-      <span class="overview__number">{{ props.stats.totalAccountLocked }}</span>
+      <span class="overview__number">6</span>
     </li>
   </ul>
 </template>
@@ -40,11 +27,14 @@ onMounted(() => emits('initOverview'))
 @use '@/assets/style/abstracts/mixins' as m;
 
 .overview {
-  padding: 1rem 2rem;
+  grid-row: 2/3;
+  grid-column: 1/-1;
+  padding: 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   column-gap: 2rem;
   row-gap: 1rem;
+  background-color: var(--color-black-2);
 
   &__item {
     font-family: var(--font-subtitle);

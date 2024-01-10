@@ -6,10 +6,13 @@ import type { errorDevInterface, errorProdInterface, signupInterface } from '@/s
 import type { signupFieldType } from '@/shared/types/types'
 
 import { signupSchema } from '@/shared/schema'
-import { useCurrentUserStore } from '@/stores'
+
+import { initStore } from '@/shared/utils'
+
+const stores = initStore('userStore')
 
 const router = useRouter()
-const currentUserStore = useCurrentUserStore()
+
 const showPassword = ref<boolean>(false)
 const showPasswordConfirm = ref<boolean>(false)
 const formError = ref<string | null>(null)
@@ -71,7 +74,8 @@ const {
 } = useField('passwordConfirm', '', { validateOnValueUpdate: false })
 
 const onSubmit = handleSubmit(async (values: signupInterface, action) => {
-  await currentUserStore.fetchSignup(values)
+  if (!stores.userStore) return
+  await stores.userStore.fetchSignup(values)
 
   const errors = props.errors?.errors as Partial<signupInterface> | null
   formError.value = null
@@ -226,10 +230,18 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
             </div>
 
             <div class="form__group form__group-btn">
-              <button type="button" @click="router.back" class="btn form__btn-return">
+              <button
+                title="Retour à la page d'accueil"
+                aria-label="Retour à la page d'accueil"
+                type="button"
+                @click="router.back"
+                class="btn form__btn-return"
+              >
                 Retour
               </button>
               <button
+                title="Inscription"
+                aria-label="Inscription"
                 type="submit"
                 class="btn form__btn-submit"
                 :class="{

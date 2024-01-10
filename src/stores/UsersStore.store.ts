@@ -1,42 +1,41 @@
-import type {
-  AdminQueryInterface,
-  AdminUpdateUserInterface,
-  AdminUsersInterface,
-  AdminUsersStatsInterface,
-  jsonResponseInterface
+import {
+  DEFAULT_PAGE,
+  DEFAULT_QUERY,
+  type AdminQueryInterface,
+  type AdminUpdateUserInterface,
+  type AdminUsersInterface,
+  type AdminUsersStatsInterface,
+  type PageInterface
 } from '@/shared/interfaces'
-import { formatQueryString, sendRequest } from '@/shared/utils'
+import { formatQueryString, initStore, sendRequest } from '@/shared/utils'
 import { defineStore } from 'pinia'
 
-import { type Ref } from 'vue'
 
-interface UsersStateInterface {
+export interface UsersStateInterface {
   users: AdminUsersInterface[] | null
   user: AdminUsersInterface | null
   query: AdminQueryInterface
-  page: {
-    currentPage: number
-    totalPage: number
-    limitPerPage: number
-  }
+  page: PageInterface
   stats: AdminUsersStatsInterface | null
   results: number
-  refresh: boolean
+  refresh: {
+    users: boolean
+    user: boolean
+  }
 }
 
-export const useUsersStore = defineStore('UsersStore', {
+export const useUsersStore = defineStore('usersStore', {
   state: (): UsersStateInterface => ({
     users: null,
     user: null,
     results: 0,
-    refresh: true,
-    page: { currentPage: 1, totalPage: 1, limitPerPage: 10 },
+    refresh: {
+      users: true,
+      user: true
+    },
+    page: { ...DEFAULT_PAGE },
     query: {
-      search: '',
-      limit: 10,
-      fields: null,
-      sort: null,
-      parameters: null
+      ...DEFAULT_QUERY
     },
     stats: null
   }),
@@ -59,7 +58,7 @@ export const useUsersStore = defineStore('UsersStore', {
       return this.results
     },
 
-    getRefresh(): boolean {
+    getRefresh(): { users: boolean; user: boolean } {
       return this.refresh
     },
 
@@ -88,10 +87,7 @@ export const useUsersStore = defineStore('UsersStore', {
 
     getCurrentPage(): number {
       return this.page.currentPage
-    },
-  
-
-  
+    }
   },
   actions: {
     // USERS
@@ -99,10 +95,10 @@ export const useUsersStore = defineStore('UsersStore', {
     async fetchAdminGetAllUsers(): Promise<void> {
       if (this.query.search) {
         this.resetUsersStore()
-        this.refresh = true
+        this.updateRefresh({ users: true })
       }
 
-      if (!this.users) this.updateRefresh(true)
+      if (!this.users) this.updateRefresh({ users: true })
 
       if (
         !this.getRefresh ||
@@ -149,31 +145,44 @@ export const useUsersStore = defineStore('UsersStore', {
         }
       }
 
-      this.updateRefresh(false)
+      this.updateRefresh({ users: false })
     },
 
     async fetchAdminGetUser(idUser: string) {
-      const devUrl = `/playground-connect/v1/admin/users/${idUser}`
-      const { data } = await sendRequest(devUrl, 'GET')
+      if (idUser) {
+        const devUrl = `/playground-connect/v1/admin/users/${idUser}`
+        const { data } = await sendRequest(devUrl, 'GET')
 
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.user = data.value.data
+        if (data.value && data.value.status === 'success' && data.value.data) {
+          this.user = data.value.data
+        }
       }
+      return
     },
 
     async fetchAdminDeleteUser(iduser: string): Promise<void> {
-      const devUrl = `/playground-connect/v1/admin/users/${iduser}`
-      const { data } = await sendRequest(devUrl, 'DELETE')
-      await this.reloadAllUsers(data)
+      if (iduser) {
+        const devUrl = `/playground-connect/v1/admin/users/${iduser}`
+        const { data } = await sendRequest(devUrl, 'DELETE')
+
+        if (data.value && data.value.status === 'success') {
+          this.resetAllUsers()
+        }
+      }
+      return
     },
 
     async fetchAdminUpdateUser(values: AdminUpdateUserInterface, idUser: string) {
-      const devUrl = `/playground-connect/v1/admin/users/${idUser}`
+      if (values && idUser) {
+        const devUrl = `/playground-connect/v1/admin/users/${idUser}`
 
-      const { data } = await sendRequest(devUrl, 'PATCH', values)
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.user = data.value.data
+        const { data } = await sendRequest(devUrl, 'PATCH', values)
+        if (data.value && data.value.status === 'success' && data.value.data) {
+          this.user = data.value.data
+          this.resetAllUsers()
+        }
       }
+      return
     },
 
     async fetchDashboardUsersInfo(): Promise<void> {
@@ -188,21 +197,25 @@ export const useUsersStore = defineStore('UsersStore', {
 
     async fetchAmdinCreateUser() {},
 
-    async reloadAllUsers(data: Ref<jsonResponseInterface | null>): Promise<void> {
-      if (data.value && data.value.status === 'success') {
-        this.refresh = true
-        await initUsersStore()
-      }
-    },
-
     // Other
 
     resetUsersStore(): void {
       this.users = null
       this.user = null
       this.results = 0
-      this.refresh = true
+      this.refresh = {
+        users: true,
+        user: true
+      }
       this.page = { currentPage: 1, totalPage: 1, limitPerPage: 10 }
+    },
+
+    resetAllUsers(): void {
+      this.users = null
+    },
+
+    resetSelectedUser(): void {
+      this.user = null
     },
 
     resetAllQuery(): void {
@@ -224,8 +237,9 @@ export const useUsersStore = defineStore('UsersStore', {
       this.page.currentPage = page < 1 ? 1 : page
     },
 
-    updateRefresh(status: boolean): void {
-      this.refresh = status
+    updateRefresh(status: { users?: boolean; user?: boolean }): void {
+      this.refresh.users = status.users ?? this.refresh.users
+      this.refresh.user = status.user ?? this.refresh.user
     },
 
     updateResults(value: number = 0): void {
@@ -235,7 +249,6 @@ export const useUsersStore = defineStore('UsersStore', {
     updateLimitPerPage(value: number = 10): void {
       this.page.limitPerPage = value
     },
-
 
     updateQuery(query: Partial<AdminQueryInterface>): void {
       this.query = {
@@ -249,11 +262,39 @@ export const useUsersStore = defineStore('UsersStore', {
   }
 })
 
-export async function initUsersStore(): Promise<void> {
-  const usersStore = useUsersStore()
+/**
+ * Initialize all users in the store.
+ */
+export async function initAllUsers(): Promise<void> {
+  const { usersStore } = initStore('usersStore')
+  if (!usersStore) return
 
-  if (usersStore.refresh) {
+  if (usersStore.getRefresh.users) {
+    // Fetch all users if the refresh status is true
     await usersStore.fetchAdminGetAllUsers()
+    usersStore.updateRefresh({ users: false })
   }
-  usersStore.refresh = false
 }
+
+/**
+ * Initialize the selected user in the store.
+ * @param idUser - The ID of the user to be initialized.
+ */
+export async function initSelectedUser(idUser: string): Promise<void> {
+  const { usersStore } = initStore('usersStore')
+  if (!usersStore) return
+
+  if (usersStore.getUser && usersStore.getUser._id !== idUser) {
+    // Reset the selected user if the ID is different
+    usersStore.resetSelectedUser()
+    usersStore.updateRefresh({ user: true })
+  }
+
+  if (usersStore.getRefresh.user) {
+    // Fetch the user if the refresh status is true
+    await usersStore.fetchAdminGetUser(idUser)
+    usersStore.updateRefresh({ user: false })
+  }
+}
+
+export type UsersStore = ReturnType<typeof useUsersStore>

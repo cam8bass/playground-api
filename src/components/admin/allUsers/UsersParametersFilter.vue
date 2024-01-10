@@ -4,11 +4,12 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
+import type { queryType } from '@/shared/types/types'
 
 const checkedValues = ref<Record<string, string>>({})
 
 const emits = defineEmits<{
-  (e: 'updateParameters', value: {} | null): void
+  (e: 'updateQuery', query: { input: queryType; value: {} | null }): void
   (e: 'updateBtnDisable', value: boolean): void
 }>()
 
@@ -58,7 +59,7 @@ const updateCheckedValues = (group: string, event: Event) => {
   const target = event.target as HTMLInputElement
   const value = typeof filters[group][0] === 'boolean' ? target.value === 'true' : target.value
   checkedValues.value[group] = value as string
-  emits('updateParameters', checkedValues.value)
+  emits('updateQuery', { input: 'parameters', value: checkedValues.value })
 }
 
 function resetCheckedValues() {
@@ -98,7 +99,7 @@ function resetCheckedValues() {
       type="button"
       @click="
         uncheckInputs('.filter__checkbox'),
-          emits('updateParameters', null),
+          emits('updateQuery', { input: 'parameters', value: null }),
           resetCheckedValues(),
           resetForm(),
           emits('updateBtnDisable', false)

@@ -109,3 +109,4 @@ export const useErrorStore = defineStore('errorStore', {
 })
 
 export function initErrorStore(): void {}
+export type ErrorStore = ReturnType<typeof useErrorStore>

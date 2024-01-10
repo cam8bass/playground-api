@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import type { ShowType } from '@/shared/types/types';
+
 const props = defineProps<{
   showFilterParameters: boolean
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateShowFilterParameters'): void
+  (e: 'updateShow',show:ShowType): void
+
 }>()
 </script>
 <template>
   <button
     class="btnFilter"
-    @click="emits('updateShowFilterParameters')"
+    @click="emits('updateShow','parameters')"
     aria-label="Afficher le filtre des critères"
     title="Afficher le filtre des critères"
   >

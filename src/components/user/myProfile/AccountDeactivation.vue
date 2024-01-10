@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useAppStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 
-const appStore = useAppStore()
+
+const { appStore } = initStore('appStore')
 </script>
 <template>
-  <div class="deactivation">
+  <div class="deactivation" v-if="appStore">
     <h4 class="component__subtitle">Désactivation de compte</h4>
     <div class="deactivation__content">
       <p class="deactivation__text">
@@ -23,8 +24,8 @@ const appStore = useAppStore()
                 message: 'désactiver votre compte ?'
               })
             : appStore.getModal && appStore.getModal.type === 'deactivation'
-            ? appStore.resetModal
-            : ''
+              ? appStore.resetModal
+              : ''
         "
       >
         Désactiver

@@ -2,18 +2,11 @@
 import type { AdminUpdateUserInterface } from '@/shared/interfaces'
 import { adminUpdateUserSchema } from '@/shared/schema'
 import { submitFilter } from '@/shared/utils'
-import { useCurrentUserStore, useErrorStore, useUsersStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 import { useField, useForm } from 'vee-validate'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
-const errorStore = useErrorStore()
-const currentUserStore = useCurrentUserStore()
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
+const { usersStore } = initStore('usersStore')
 
 const emits = defineEmits<{
   (e: 'modify', value: boolean): void
@@ -23,9 +16,8 @@ const formError = ref<string | null>(null)
 
 const {
   handleSubmit,
-  meta: formMeta,
-  isSubmitting,
-  resetForm
+
+  isSubmitting
 } = useForm({ validationSchema: adminUpdateUserSchema })
 
 const {
@@ -37,7 +29,7 @@ const {
   meta: firstnameMeta
 } = useField('firstname', '', {
   validateOnValueUpdate: false,
-  initialValue: usersStore.value?.getUser?.firstname
+  initialValue: usersStore && usersStore.getUser ? usersStore.getUser.firstname : ''
 })
 
 const {
@@ -49,7 +41,7 @@ const {
   meta: lastnameMeta
 } = useField('lastname', '', {
   validateOnValueUpdate: false,
-  initialValue: usersStore.value?.getUser?.lastname
+  initialValue: usersStore && usersStore.getUser ? usersStore.getUser.lastname : ''
 })
 
 const {
@@ -61,48 +53,45 @@ const {
   meta: emailMeta
 } = useField('email', '', {
   validateOnValueUpdate: false,
-  initialValue: usersStore.value?.getUser?.email
+  initialValue: usersStore && usersStore.getUser ? usersStore.getUser.email : ''
 })
 
 const {
   value: inputRole,
   errors: roleErrors,
-  errorMessage: roleErrorMessage,
-  handleBlur: handleBlurRole,
-  handleChange: handleChangerole,
-  meta: roleMeta
+  errorMessage: roleErrorMessage
 } = useField('role', '', {
   validateOnValueUpdate: false,
-  initialValue: usersStore.value?.getUser?.role
+  initialValue: usersStore && usersStore.getUser ? usersStore.getUser.role : ''
 })
 
 const {
   value: inputActive,
   errors: activeErrors,
-  errorMessage: activeErrorMessage,
-  handleBlur: handleBlurActive,
-  handleChange: handleChangeActive,
-  meta: activeMeta
+  errorMessage: activeErrorMessage
 } = useField('active', '', {
   validateOnValueUpdate: false,
-  initialValue: usersStore.value?.getUser?.active
+  initialValue: usersStore && usersStore.getUser ? usersStore.getUser.active : ''
 })
 
 const onSubmit = handleSubmit(async (values: AdminUpdateUserInterface, action) => {
+  const { errorStore, userStore } = initStore('errorStore', 'userStore')
+
+  if (!userStore || !errorStore) return
   if (
-    currentUserStore.getCurrentUser &&
-    currentUserStore.getCurrentUser.role === 'admin' &&
-    usersStore.value &&
-    usersStore.value.getUser
+    userStore.getCurrentUser &&
+    userStore.getCurrentUser.role === 'admin' &&
+    usersStore &&
+    usersStore.getUser
   ) {
     const filteredValues = submitFilter(
       values,
       ['firstname', 'lastname', 'email', 'active', 'role'],
-      usersStore.value.getUser
+      usersStore.getUser
     )
 
     if (filteredValues) {
-      await usersStore.value.fetchAdminUpdateUser(filteredValues, usersStore.value.getUser._id)
+      await usersStore.fetchAdminUpdateUser(filteredValues, usersStore.getUser._id)
 
       const errors = errorStore.getError?.errors as AdminUpdateUserInterface
       formError.value = null

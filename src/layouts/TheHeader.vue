@@ -1,38 +1,106 @@
 <script setup lang="ts">
 import TheNavigation from '@/layouts/TheNavigation.vue'
-import { useAppStore, useCurrentUserStore } from '@/stores'
+import TheNotification from '@/components/common-components/notification/TheNotification.vue'
+import BtnNotification from '@/components/shared-components/BtnNotification.vue'
+import BtnMenu from '@/components/shared-components/BtnMenu.vue'
+import { initStore } from '@/shared/utils'
+import {
+  updateModal,
+  updateNavigation,
+  updateReadNotification,
+  deleteSelectedNotification,
+  resetModal,
+  updateShow
+} from '@/stores/utilities'
+import type { FilterAppInterface } from '@/shared/interfaces'
 
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
+const { appStore, userStore } = initStore('appStore', 'userStore')
+
+/**
+ * Updates the filter of the notifications
+ * @param filter the new filter to apply
+ * @return {void} void
+ */
+function updateFilterNotification(filter: Partial<FilterAppInterface>): void {
+  if (!userStore) return
+  userStore.updateFilter({ notification: filter.notification })
+}
+
+/**
+ * Updates all the notifications of the user
+ * @return {Promise<void>} Promise(void)
+ */
+async function updateAllNoticationsUser(): Promise<void> {
+  if (!userStore) return
+  await userStore.fetchUpdateAllNotificationsUser()
+}
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" v-if="appStore && userStore">
     <div class="header__brand">
       <RouterLink class="header__brand-link" to="/home" title="Retour à la page home">
         <img src="@/assets/img/logo.webp" alt="logo playground api" class="header__logo" />
       </RouterLink>
     </div>
-
-    <RouterLink v-if="currentUserStore.getCurrentUser" class="header__account" to="/dashboard"
-      >Mon compte</RouterLink
-    >
-
-    <div class="header__navigation">
-      <input
-        @click="appStore.updateLogin(false), appStore.updateMenu(!appStore.getMenu)"
-        type="checkbox"
-        class="header__navigation-checkbox"
-        id="navi-toggle"
-        :checked="appStore.getMenu"
+    <div class="header__content">
+      <BtnNotification
+        v-if="userStore.isLoggedIn"
+        :unreadNotificationCount="userStore.getUnreadNotificationsCount"
+        @updateNavigation="updateNavigation($event)"
       />
 
-      <label for="navi-toggle" class="header__navigation-btn">
-        <span class="header__navigation-icon">&nbsp;</span>
-      </label>
-    </div>
+      <Transition name="translateLeft" mode="out-in" appear>
+        <TheNotification
+          v-if="appStore.getNavigation.notification"
+          :showMore="appStore.getShow.notificationMore"
+          :notifications="userStore.getUserNotifications"
+          :idNotification="userStore.getNotificationId"
+          :filterNotification="userStore.getFilterNotification"
+          :totalNotifications="userStore.getTotalNotificationsCount"
+          :totalUnreadNotifications="userStore.getUnreadNotificationsCount"
+          :totalReadNotifications="userStore.getReadNotificationsCount"
+          :modal="appStore.getModal"
+          @updateNavigation="updateNavigation($event)"
+          @update-read-notification="updateReadNotification($event)"
+          @delete-selected-notification="deleteSelectedNotification($event)"
+          @get-user-notifications="updateFilterNotification($event)"
+          @update-all-notications-user="updateAllNoticationsUser"
+          @reset-modal="resetModal"
+          @update-modal="updateModal($event)"
+          @update-show="updateShow($event)"
+        />
+      </Transition>
 
-    <TheNavigation />
+      <RouterLink
+        v-if="userStore.isLoggedIn"
+        class="header__account"
+        to="/dashboard"
+        title="Mon compte"
+        aria-label="Mon compte"
+      >
+        <svg class="header__account-icon">
+          <use xlink:href="@/components/icons/sprite.svg#icon-user-circle-o"></use>
+        </svg>
+      </RouterLink>
+
+      <BtnMenu
+        :openMenu="appStore.getNavigation.menu"
+        @updateNavigation="updateNavigation($event)"
+      />
+      <Teleport to="body" :disabled="appStore.getNavigation.menu">
+        <Transition mode="out-in" name="translateLeft">
+          <TheNavigation
+            v-if="appStore.getNavigation.menu"
+            :modal="appStore.getModal"
+            :isLoggedIn="userStore.isLoggedIn"
+            @updateNavigation="updateNavigation($event)"
+            @update-modal="updateModal($event)"
+            @reset-modal="resetModal"
+          />
+        </Transition>
+      </Teleport>
+    </div>
   </header>
 </template>
 
@@ -43,8 +111,7 @@ const currentUserStore = useCurrentUserStore()
   background-color: var(--color-black-3);
   box-shadow: var(--boxshadow-black);
   display: grid;
-  grid-template-columns: min-content 1fr min-content;
-  align-items: center;
+  grid-template-columns: min-content 1fr;
   column-gap: 2rem;
 
   &__brand {
@@ -53,6 +120,15 @@ const currentUserStore = useCurrentUserStore()
     &-link {
       display: flex;
     }
+  }
+
+  &__content {
+    grid-column: 2/-1;
+
+    justify-self: flex-end;
+    display: flex;
+    align-items: center;
+    column-gap: 2rem;
   }
 
   &__logo {
@@ -68,80 +144,21 @@ const currentUserStore = useCurrentUserStore()
   }
 
   &__account {
-    grid-column: 2/3;
-    color: var(--color-white);
-    font-family: var(--font-subtitle);
-    justify-self: end;
-    transition: color 0.4s;
-
-    &:hover,
-    &:active {
-      color: var(--color-purple-1);
-    }
-  }
-
-  &__navigation {
-    grid-column: 3/-1;
-
-    &-checkbox {
-      display: none;
+    display: flex;
+    &:hover &-icon,
+    &:active &-icon {
+      fill: var(--color-purple-1);
     }
 
-    &-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background-color: transparent;
-      height: 4rem;
-      width: 4rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      z-index: 3000;
-    }
-
-    //ICON
     &-icon {
-      position: relative;
-
-      &,
-      &::before,
-      &::after {
+      width: 2.5rem;
+      height: 2.5rem;
+      @include m.lg {
         width: 3rem;
-        height: 3px;
-        background-color: var(--color-white);
-        display: inline-block;
+        height: 3rem;
       }
-
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        transition: all 0.2s;
-      }
-
-      &::before {
-        top: -0.8rem;
-      }
-      &::after {
-        top: 0.8rem;
-      }
-    }
-
-    &-checkbox:checked + &-btn &-icon {
-      background-color: transparent;
-      position: fixed;
-    }
-
-    &-checkbox:checked + &-btn &-icon::before {
-      top: 0;
-      transform: rotate(135deg);
-    }
-
-    &-checkbox:checked + &-btn &-icon::after {
-      top: 0;
-      transform: rotate(-135deg);
+      fill: var(--color-white);
+      transition: fill 0.2s;
     }
   }
 }

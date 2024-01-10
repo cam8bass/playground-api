@@ -3,21 +3,23 @@ import type { forgotPasswordSubmitInterface, loginInterface } from '@/shared/int
 
 import { forgotPasswordSchema, loginSchema } from '@/shared/schema'
 import type { loginFieldType } from '@/shared/types/types'
-import { useAppStore, useCurrentUserStore, useErrorStore } from '@/stores'
+import { initStore } from '@/shared/utils'
+
 import { useField, useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const currentUserStore = useCurrentUserStore()
-const errorStore = useErrorStore()
-const appStore = useAppStore()
+
+const stores = initStore('userStore', 'appStore', 'errorStore')
+
 const login = ref<boolean>(true)
 const forgotpassword = ref<boolean>(false)
 const formError = ref<string | null>(null)
 
 function resetFormErrors(): void {
-  errorStore.resetError()
+  if (!stores.errorStore) return
+  stores.errorStore.resetError()
   formError.value = null
   resetForm()
 }
@@ -59,13 +61,14 @@ const {
 
 const onSubmit = handleSubmit(
   async (values: loginInterface | forgotPasswordSubmitInterface, action) => {
+    if (!stores.userStore || !stores.errorStore || !stores.appStore) return
     if (login.value && !forgotpassword.value) {
-      await currentUserStore.fetchLogin(values as loginInterface)
+      await stores.userStore.fetchLogin(values as loginInterface)
     } else if (!login.value && forgotpassword.value) {
-      await currentUserStore.fetchForgotPassword(values as forgotPasswordSubmitInterface)
+      await stores.userStore.fetchForgotPassword(values as forgotPasswordSubmitInterface)
     }
 
-    const errors = errorStore.getError?.errors as
+    const errors = stores.errorStore.getError?.errors as
       | Partial<loginInterface>
       | Partial<forgotPasswordSubmitInterface>
       | null
@@ -80,7 +83,7 @@ const onSubmit = handleSubmit(
       if (errors.request) formError.value = errors.request
     } else {
       forgotpassword.value = false
-      appStore.updateLogin(false)
+      stores.appStore.updateNavigation({ login: false })
       resetForm()
 
       if (login.value && !forgotpassword.value) {
@@ -92,7 +95,7 @@ const onSubmit = handleSubmit(
 </script>
 
 <template>
-  <div class="login">
+  <div class="login" v-if="stores.appStore">
     <!-- LOGIN FORM -->
     <Transition name="translateLeft" mode="out-in" @after-leave="forgotpassword = !forgotpassword">
       <form @submit="onSubmit" class="form" v-if="login">
@@ -137,7 +140,7 @@ const onSubmit = handleSubmit(
           <div class="form__group form__group-btn">
             <button
               type="button"
-              @click="appStore.updateLogin(false), resetFormErrors()"
+              @click="stores.appStore.updateNavigation({ login: false }), resetFormErrors()"
               class="form__btn btn"
             >
               Retour
@@ -226,7 +229,6 @@ const onSubmit = handleSubmit(
   position: fixed;
   overflow-y: scroll;
   z-index: 1000;
-  top: 0;
   right: 0;
   height: 100vh;
   width: 100%;

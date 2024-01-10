@@ -1,93 +1,110 @@
 <script setup lang="ts">
-import { useApiKeysStore, useAppStore, useCurrentUserStore, useUsersStore } from '@/stores'
-import { computed } from 'vue'
+import { initStore } from '@/shared/utils'
+import { logout } from '@/stores/utilities'
 import { useRouter } from 'vue-router'
 
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
+const { appStore } = initStore('appStore')
 
-const apiKeysStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useApiKeysStore()
-  }
-  return null
-})
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
 const router = useRouter()
 
-async function logout(): Promise<void> {
-  await currentUserStore.fetchLogout()
-  if (
-    currentUserStore.getCurrentUser &&
-    currentUserStore.getCurrentUser.role === 'admin' &&
-    usersStore.value
-  ) {
-    usersStore.value.resetUsersStore()
-  }
-
-  if (
-    currentUserStore.getCurrentUser &&
-    currentUserStore.getCurrentUser.role === 'admin' &&
-    apiKeysStore.value
-  ) {
-    apiKeysStore.value.resetApiKeysStore()
-  }
-  currentUserStore.resetCurrentUserStore()
-  appStore.resetModal()
-  router.push('/home')
-}
-
+/**
+ * request a renewal api key
+ * @param {object} id - the id of the api key
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchRenewalApiKey(id: { idApi: string }): Promise<void> {
-  await currentUserStore.fetchUserRequestRenewalApiKey(id.idApi)
+  const { apiKeysStore } = initStore('apiKeysStore')
 
+  if (!apiKeysStore || !appStore) return
+  await apiKeysStore.fetchUserRequestRenewalApiKey(id.idApi)
   appStore.resetModal()
 }
 
+/**
+ * request a deactivation of the user's account
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchDeactivationAccount(): Promise<void> {
-  await currentUserStore.fetchDeactivationAccount()
+  const { userStore } = initStore('userStore')
+
+  if (!userStore || !appStore) return
+// make a request to the backend to deactivate the user's account
+  await userStore.fetchDeactivationAccount()
+  // reset the modal state
   appStore.resetModal()
-  currentUserStore.resetCurrentUserStore()
+  // reset the user store
+  userStore.resetUserStore()
+  // navigate to the home page
   router.push('/home')
 }
 
+
+/**
+ * request a change of the user's email
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchRequestChangeEmail(): Promise<void> {
-  await currentUserStore.fetchChangeEmailRequest()
+  const { userStore } = initStore('userStore')
+
+  if (!userStore || !appStore) return
+  await userStore.fetchChangeEmailRequest()
   appStore.resetModal()
 }
+
 
 async function fetchDeleteSelectedApiKey(id: { idApi: string }): Promise<void> {
-  await currentUserStore.fetchUserDeleteSelectedApiKey(id.idApi)
+  const { apiKeysStore } = initStore('apiKeysStore')
+
+  if (!apiKeysStore || !appStore) return
+  await apiKeysStore.fetchUserDeleteSelectedApiKey(id.idApi)
   appStore.resetModal()
 }
 
+
 async function fetchAdminDeleteSelectedUser(id: { idUser: string }) {
-  if (usersStore.value) {
-    await usersStore.value.fetchAdminDeleteUser(id.idUser)
-    appStore.resetModal()
-    router.back()
-  }
+  const { usersStore } = initStore('usersStore')
+
+  if (!appStore || !usersStore) return
+
+  await usersStore.fetchAdminDeleteUser(id.idUser)
+  appStore.resetModal()
+  router.back()
 }
 
 async function fetchAdminDeleteSelectedApiKey(id: {
   idUser: string
   idApi: string
 }): Promise<void> {
-  if (apiKeysStore.value) {
-    await apiKeysStore.value.fetchAdminDeleteSelectedApiKey(id.idUser, id.idApi)
-    appStore.resetModal()
-  }
+  const { apiKeysStore } = initStore('apiKeysStore')
+
+  if (!appStore || !apiKeysStore) return
+
+  await apiKeysStore.fetchAdminDeleteSelectedApiKey(id.idUser, id.idApi)
+  appStore.resetModal()
+}
+
+async function fetchAdminDeleteAllApiKeysFromUser(id: { idApi: string }): Promise<void> {
+  const { apiKeysStore } = initStore('apiKeysStore')
+
+  if (!appStore || !apiKeysStore) return
+
+  await apiKeysStore.fetchAdminDeleteAllApiKeysFromUser(id.idApi)
+  appStore.resetModal()
+}
+
+async function deleteAllNoticationsUser(id: { idNotification: string }): Promise<void> {
+  const { userStore } = initStore('userStore')
+
+  if (!appStore || !userStore) return
+
+  await userStore.fetchDeleteAllNotificationsUser(id.idNotification)
+  appStore.resetModal()
 }
 </script>
 <template>
   <Teleport to="body">
     <Transition mode="out-in" name="fade">
-      <div class="modal" v-if="appStore.getModal">
+      <div class="modal" v-if="appStore && appStore.getModal">
         <div class="modal__content">
           <h3 class="modal__title">{{ appStore.getModal.title }}</h3>
           <p class="modal__message">Êtes-vous sûr de vouloir {{ appStore.getModal.message }}</p>
@@ -112,6 +129,32 @@ async function fetchAdminDeleteSelectedApiKey(id: {
               v-if="appStore.getModal.type === 'deactivation'"
               class="btn modal__btn--confirm"
               @click="fetchDeactivationAccount"
+            >
+              Confirmer
+            </button>
+
+            <button
+              v-if="
+                appStore.getModal.type === 'deleteAllNoticationsUser' &&
+                appStore.getModal.id &&
+                appStore.getModal.id.idNotification
+              "
+              class="btn modal__btn--confirm"
+              @click="
+                deleteAllNoticationsUser({ idNotification: appStore.getModal.id.idNotification })
+              "
+            >
+              Confirmer
+            </button>
+
+            <button
+              v-if="
+                appStore.getModal.type === 'adminDeleteAllApiKeysFromUser' &&
+                appStore.getModal.id &&
+                appStore.getModal.id.idApi
+              "
+              class="btn modal__btn--confirm"
+              @click="fetchAdminDeleteAllApiKeysFromUser({ idApi: appStore.getModal.id.idApi })"
             >
               Confirmer
             </button>

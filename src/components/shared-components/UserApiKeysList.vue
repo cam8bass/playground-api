@@ -1,31 +1,25 @@
 <script setup lang="ts">
-import { useUsersStore, useCurrentUserStore, useAppStore, useApiKeysStore } from '@/stores'
 import { formatDate } from '@/shared/utils'
 import { computed } from 'vue'
 import ActiveApiKey from '@/components/admin/userProfile/ActiveApiKey.vue'
+import { initStore } from '@/shared/utils'
 
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
+const { appStore, userStore, usersStore } = initStore('appStore', 'userStore', 'usersStore')
 
 const userApiKeys = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    const apiKeysStore = useApiKeysStore()
-    return apiKeysStore.getKeys
+  const { apiKeysStore } = initStore('apiKeysStore')
+
+  if (!userStore || !apiKeysStore) return null
+  if (userStore.isAdmin) {
+    return apiKeysStore.getSelectedUserApiKeys
   } else {
-    return currentUserStore.getKeys
+    return apiKeysStore.getCurrentUserApiKeys
   }
 })
 </script>
 <template>
-  <div class="apiKeyList">
-    <div class="apiKeyList__group" v-for="apiKey in userApiKeys" :key="apiKey._id">
+  <div class="apiKeyList" v-if="appStore && userStore">
+    <div class="apiKeyList__group" v-for="apiKey in userApiKeys?.apiKeys" :key="apiKey._id">
       <ul class="apiKeyList__list">
         <li class="apiKeyList__item">
           Nom : <span class="apiKeyList__text">{{ apiKey.apiName }}</span>
@@ -51,9 +45,7 @@ const userApiKeys = computed(() => {
         <li
           class="apiKeyList__item"
           v-if="
-            currentUserStore.getCurrentUser &&
-            currentUserStore.getCurrentUser.role === 'admin' &&
-            !apiKey.active
+            userStore.getCurrentUser && userStore.getCurrentUser.role === 'admin' && !apiKey.active
           "
         >
           <ActiveApiKey :idApi="apiKey._id" />
@@ -62,9 +54,7 @@ const userApiKeys = computed(() => {
       <div class="apiKeyList__btn">
         <button
           v-if="
-            apiKey.active &&
-            currentUserStore.getCurrentUser &&
-            currentUserStore.getCurrentUser.role === 'user'
+            apiKey.active && userStore.getCurrentUser && userStore.getCurrentUser.role === 'user'
           "
           class="btn"
           @click="
@@ -76,15 +66,15 @@ const userApiKeys = computed(() => {
                   id: { idApi: apiKey._id }
                 })
               : appStore.getModal && appStore.getModal.type === 'renewalApiKey'
-              ? appStore.resetModal
-              : ''
+                ? appStore.resetModal
+                : ''
           "
         >
           Renouveller
         </button>
 
         <button
-          v-if="currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'user'"
+          v-if="userStore.getCurrentUser && userStore.getCurrentUser.role === 'user'"
           class="btn"
           @click="
             !appStore.getModal
@@ -95,8 +85,8 @@ const userApiKeys = computed(() => {
                   id: { idApi: apiKey._id }
                 })
               : appStore.getModal && appStore.getModal.type === 'deleteSelectedApiKey'
-              ? appStore.resetModal
-              : ''
+                ? appStore.resetModal
+                : ''
           "
         >
           Supprimer
@@ -104,8 +94,8 @@ const userApiKeys = computed(() => {
 
         <button
           v-if="
-            currentUserStore.getCurrentUser &&
-            currentUserStore.getCurrentUser.role === 'admin' &&
+            userStore.getCurrentUser &&
+            userStore.getCurrentUser.role === 'admin' &&
             usersStore &&
             usersStore.getUser
           "
@@ -122,8 +112,8 @@ const userApiKeys = computed(() => {
                   }
                 })
               : appStore.getModal && appStore.getModal.type === 'adminDeleteSelectedApiKey'
-              ? appStore.resetModal
-              : ''
+                ? appStore.resetModal
+                : ''
           "
         >
           Supprimer
@@ -136,7 +126,6 @@ const userApiKeys = computed(() => {
 @use '@/assets/style/abstracts/mixins' as m;
 
 .apiKeyList {
-  margin: 2rem 0;
   display: flex;
   flex-direction: column;
   row-gap: 1rem;

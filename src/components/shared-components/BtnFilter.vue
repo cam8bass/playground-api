@@ -1,20 +1,18 @@
 <script setup lang="ts">
+import type { NavigationType } from '@/shared/types/types'
+
 const props = defineProps<{
   showFilter: boolean
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateShowFilter'): void
+  (e: 'updateNavigation', navigation: { type: NavigationType; value?: boolean }): void
+
 }>()
 </script>
 <template>
   <div class="btnFilter">
-    <button
-      class="btnFilter__btn"
-      @click="emits('updateShowFilter')"
-      aria-label="Afficher les filtres"
-      title="Afficher les filtres"
-    >
+    <button class="btnFilter__btn" @click="emits('updateNavigation', {type:'menuFilter'})">
       <h3 class="btnFilter__title">Filtres</h3>
       <svg class="btnFilter__icon">
         <use
@@ -32,6 +30,5 @@ const emits = defineEmits<{
   align-items: center;
   padding: 1rem 2rem;
   align-self: center;
-  background-color: var(--color-black-2);
 }
 </style>

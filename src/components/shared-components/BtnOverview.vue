@@ -1,21 +1,24 @@
 <script setup lang="ts">
+import type { ShowType } from '@/shared/types/types';
+
 const props = defineProps<{
   showOverview: boolean
+  textBtn: string
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateShowOverview'): void
+  (e: 'updateShow',show:ShowType): void
 }>()
 </script>
 <template>
   <div class="btnFilter btnOverview">
     <button
       class="btnFilter__btn"
-      @click="emits('updateShowOverview')"
+      @click="emits('updateShow','overview')"
       aria-label="Afficher les statistiques"
       title="Afficher les statistiques"
     >
-      <h3 class="btnFilter__title">Utilisateurs</h3>
+      <h3 class="btnFilter__title">{{ props.textBtn }}</h3>
 
       <svg class="btnFilter__icon">
         <use

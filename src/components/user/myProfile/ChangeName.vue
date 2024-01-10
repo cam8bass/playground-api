@@ -6,12 +6,13 @@ import type {
 } from '@/shared/interfaces'
 import { profileNameSchema } from '@/shared/schema'
 import { submitFilter } from '@/shared/utils'
-import { useCurrentUserStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
 
-const currentUserStore = useCurrentUserStore()
+const { userStore } = initStore('userStore')
+
 const formError = ref<string | null>(null)
 
 const props = defineProps<{
@@ -34,7 +35,7 @@ const {
   meta: firstnameMeta
 } = useField('firstname', '', {
   validateOnValueUpdate: false,
-  initialValue: currentUserStore.getCurrentUser?.firstname
+  initialValue: userStore && userStore.getCurrentUser ? userStore.getCurrentUser.firstname : ''
 })
 
 const {
@@ -46,19 +47,16 @@ const {
   meta: lastnameMeta
 } = useField('lastname', '', {
   validateOnValueUpdate: false,
-  initialValue: currentUserStore.getCurrentUser?.lastname
+  initialValue: userStore && userStore.getCurrentUser ? userStore.getCurrentUser.lastname : ''
 })
 
 const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
-  if (currentUserStore.getCurrentUser) {
-    const filteredValues = submitFilter(
-      values,
-      ['firstname', 'lastname'],
-      currentUserStore.getCurrentUser
-    )
+  if (!userStore) return
+  if (userStore.getCurrentUser) {
+    const filteredValues = submitFilter(values, ['firstname', 'lastname'], userStore.getCurrentUser)
 
     if (filteredValues) {
-      await currentUserStore.fetchUpdateUser(filteredValues)
+      await userStore.fetchUpdateUser(filteredValues)
 
       const errors = props.errors?.errors as Partial<nameSubmitInterface>
 
@@ -71,8 +69,8 @@ const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
       } else {
         resetForm({
           values: {
-            firstname: currentUserStore.getCurrentUser?.firstname,
-            lastname: currentUserStore.getCurrentUser?.lastname
+            firstname: userStore.getCurrentUser?.firstname,
+            lastname: userStore.getCurrentUser?.lastname
           }
         })
       }

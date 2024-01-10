@@ -5,7 +5,8 @@ import type {
   passwordSubmitInterface
 } from '@/shared/interfaces'
 import { profilePasswordSchema } from '@/shared/schema'
-import { useCurrentUserStore } from '@/stores'
+import { initStore } from '@/shared/utils'
+
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
 
@@ -56,8 +57,11 @@ const {
 
 const onSubmit = handleSubmit(async (values: passwordSubmitInterface, action) => {
   if (values.password && values.newPassword && values.passwordConfirm) {
-    const currentUserStore = useCurrentUserStore()
-    await currentUserStore.fetchUpdatePassword(values)
+    const { userStore } = initStore('userStore')
+
+    if (!userStore) return
+    
+    await userStore.fetchUpdatePassword(values)
 
     const errors = props.errors?.errors as Partial<passwordSubmitInterface>
     formError.value = null

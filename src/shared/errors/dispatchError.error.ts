@@ -7,6 +7,7 @@ export default (err: any) => {
   err.statusCode = err.statusCode || 500
 
   if (vueEnv === 'development') {
+
     handleErrorDev(err)
   } else if (vueEnv === 'production') {
     // let error = err

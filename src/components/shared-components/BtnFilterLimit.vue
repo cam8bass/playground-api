@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import type { ShowType } from '@/shared/types/types';
+
 const props = defineProps<{
   showFilterLimit: boolean
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateShowFilterLimit'): void
+  (e: 'updateShow',show:ShowType): void
+
 }>()
 </script>
 <template>
   <button
     class="btnFilter"
-    @click="emits('updateShowFilterLimit')"
+    @click="emits('updateShow','limit')"
     aria-label="Afficher le filtre de limitation d'éléments"
     title="Afficher le filtre de limitation d'éléments"
   >

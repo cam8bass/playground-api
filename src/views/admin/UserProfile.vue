@@ -3,66 +3,29 @@ import UserInfo from '@/components/admin/userProfile/UserInfo.vue'
 import UserDetail from '@/components/admin/userProfile/UserDetail.vue'
 import UserApiKey from '@/components/admin/userProfile/UserApiKey.vue'
 import BtnReturn from '@/components/shared-components/BtnReturn.vue'
-import { useRoute } from 'vue-router'
-import type {
-  errorDevInterface,
-  errorProdInterface,
-  updateModalInterface
-} from '@/shared/interfaces'
-import { computed, onMounted } from 'vue'
-import { useApiKeysStore, useCurrentUserStore, useUsersStore, useAppStore } from '@/stores'
+import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import { updateModal, resetModal } from '@/stores/utilities'
+import { initStore } from '@/shared/utils'
 
-const route = useRoute()
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
-
-const apiKeysStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useApiKeysStore()
-  }
-  return null
-})
+const { appStore, usersStore, apiKeysStore } = initStore('apiKeysStore', 'usersStore', 'appStore')
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
 }>()
 
-function updateModal(modal: updateModalInterface): void {
-  appStore.updateModal(modal)
-}
 
-function resetModal(): void {
-  appStore.resetModal()
-}
-
-const fetchUserProfile = async () => {
-  const { id } = route.params
-  if (usersStore.value) {
-    await usersStore.value.fetchAdminGetUser(id as string)
-
-    if (apiKeysStore.value && usersStore.value.getUser) {
-      await apiKeysStore.value.fetchAdminGetSelectedUserApiKeys(usersStore.value.getUser._id)
-    }
-  }
-}
-
-onMounted(fetchUserProfile)
 </script>
 <template>
-  <div class="profile" v-if="usersStore">
+  <div class="profile" v-if="usersStore && apiKeysStore && appStore">
     <h1 class="section__title profile__title">
       Profil de l'utilisateur
 
       <BtnReturn />
     </h1>
-    <div class="profile__content">
+    <div
+      class="profile__content"
+      :class="{ isAdmin: usersStore.getUser && usersStore.getUser.role === 'admin' }"
+    >
       <UserInfo
         class="profile__info"
         :selectedUser="usersStore.getUser"
@@ -72,12 +35,16 @@ onMounted(fetchUserProfile)
       />
       <UserDetail class="profile__detail" :selectedUser="usersStore.getUser" />
       <UserApiKey
-        v-if="apiKeysStore"
+        v-if="usersStore.getUser && usersStore.getUser.role === 'user'"
         class="profile__apiKey"
         :errors="props.errors"
-        :apiKeysCount="apiKeysStore?.getUserApiKeysCount"
-        :activeApiKeysCount="apiKeysStore?.getUserActiveApiKeysCount"
-        :pendingApiKeysCount="apiKeysStore?.getUserPendingApiKeysCount"
+        :apiKeysCount="apiKeysStore.getSelectedUserApiKeysCount"
+        :activeApiKeysCount="apiKeysStore.getSelectedUserActiveApiKeysCount"
+        :pendingApiKeysCount="apiKeysStore.getSelectedUserPendingApiKeysCount"
+        :modal="appStore.getModal"
+        :apiKeys="apiKeysStore.getSelectedUserApiKeys"
+        @resetModal="resetModal"
+        @updateModal="updateModal($event)"
       />
     </div>
   </div>
@@ -87,6 +54,7 @@ onMounted(fetchUserProfile)
 @import '@/assets/style/abstracts/debug.scss';
 .profile {
   background-color: var(--color-black-2);
+
   &__content {
     padding: 2rem;
     display: grid;
@@ -123,6 +91,19 @@ onMounted(fetchUserProfile)
 
   &__apiKey {
     grid-area: apiKey;
+  }
+}
+
+.isAdmin {
+  grid-template-areas:
+    'info'
+    'detail';
+  grid-template-rows: repeat(2, min-content);
+
+  @include m.xl {
+    grid-template-areas: 'info detail';
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
   }
 }
 </style>

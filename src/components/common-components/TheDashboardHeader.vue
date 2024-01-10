@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useAppStore, useCurrentUserStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
+const { appStore, userStore } = initStore('appStore', 'userStore')
 </script>
 <template>
-  <div class="dashboardHeader" v-if="currentUserStore.getCurrentUser">
+  <div class="dashboardHeader" v-if="appStore && userStore && userStore.getCurrentUser">
     <ul class="dashboardHeader-list">
       <li class="dashboardHeader-item">
         <RouterLink to="/myDashboard" class="dashboardHeader-btn" title="Retour à la page home">
@@ -35,7 +34,7 @@ const currentUserStore = useCurrentUserStore()
         </RouterLink>
       </li>
 
-      <li class="dashboardHeader-item" v-if="currentUserStore.getCurrentUser.role === 'user'">
+      <li class="dashboardHeader-item" v-if="userStore.isUser">
         <RouterLink to="/myApikeys" class="dashboardHeader-btn" title="Accéder à mes clés d'API">
           <svg class="dashboardHeader-icon" aria-label="Accéder à mes clés d'API">
             <use
@@ -46,7 +45,7 @@ const currentUserStore = useCurrentUserStore()
         </RouterLink>
       </li>
 
-      <li class="dashboardHeader-item" v-if="currentUserStore.getCurrentUser.role === 'admin'">
+      <li class="dashboardHeader-item" v-if="userStore.isAdmin">
         <RouterLink
           to="/users"
           class="dashboardHeader-btn"
@@ -55,21 +54,6 @@ const currentUserStore = useCurrentUserStore()
           <svg class="dashboardHeader-icon" aria-label="Accéder à la liste des utilisateurs">
             <use
               xlink:href="@/components/icons/sprite.svg#icon-group"
-              fill="url(#iconGradient)"
-            ></use>
-          </svg>
-        </RouterLink>
-      </li>
-
-      <li class="dashboardHeader-item" v-if="currentUserStore.getCurrentUser.role === 'admin'">
-        <RouterLink
-          to="/apiKeys"
-          class="dashboardHeader-btn"
-          title="Accéder à la liste des clés d'API"
-        >
-          <svg class="dashboardHeader-icon" aria-label="Accéder à la liste des clés d'API">
-            <use
-              xlink:href="@/components/icons/sprite.svg#icon-key"
               fill="url(#iconGradient)"
             ></use>
           </svg>
@@ -89,8 +73,8 @@ const currentUserStore = useCurrentUserStore()
                   message: 'vous déconnecter ?'
                 })
               : appStore.getModal && appStore.getModal.type === 'logout'
-              ? appStore.resetModal
-              : ''
+                ? appStore.resetModal
+                : ''
           "
         >
           <svg class="dashboardHeader-icon" aria-label="Se déconnecter">

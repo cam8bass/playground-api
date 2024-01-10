@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const emits = defineEmits<{
-  (e: 'resetFetchAdminGetAllUsers'): void
+  (e: 'refreshList'): void
 }>()
 </script>
 <template>
@@ -8,7 +8,7 @@ const emits = defineEmits<{
     class="refresh"
     aria-label="Actualiser"
     title="Actualiser"
-    @click="emits('resetFetchAdminGetAllUsers')"
+    @click="emits('refreshList')"
   >
     <svg class="refresh__icon">
       <use xlink:href="@/components/icons/sprite.svg#icon-loop2"></use>

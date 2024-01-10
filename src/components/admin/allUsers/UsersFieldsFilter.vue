@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { filterType } from '@/shared/types/types'
+import type { filterType, queryType } from '@/shared/types/types'
 import { uncheckInputs } from '@/shared/utils'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -9,7 +9,7 @@ import { useField, useForm } from 'vee-validate'
 const checkedValues = ref<string[]>([])
 
 const emits = defineEmits<{
-  (e: 'updateFields', value: string[] | null): void
+  (e: 'updateQuery', query: { input: queryType; value: string | null }): void
   (e: 'updateBtnDisable', value: boolean): void
 }>()
 
@@ -50,7 +50,10 @@ const updateCheckedValues = (value: filterType, event: Event) => {
     }
   }
 
-  emits('updateFields', checkedValues.value)
+  emits('updateQuery', {
+    input: 'fields',
+    value: Array.isArray(checkedValues.value) ? checkedValues.value.join(',') : checkedValues.value
+  })
 }
 
 function resetCheckedValues() {
@@ -83,7 +86,7 @@ function resetCheckedValues() {
       type="button"
       @click="
         uncheckInputs('.filter__checkbox'),
-          emits('updateFields', null),
+          emits('updateQuery', { input: 'fields', value: null }),
           resetCheckedValues(),
           resetForm(),
           emits('updateBtnDisable', false)

@@ -7,13 +7,13 @@ export interface modalInterface {
   id?: {
     idUser?: string
     idApi?: string
+    idNotification?: string
   }
 }
-
 
 export interface updateModalInterface {
   type: modalType | null
   title: string
   message: string
-  id?: { idUser?: string; idApi?: string }
+  id?: { idUser?: string; idApi?: string; idNotification?: string }
 }

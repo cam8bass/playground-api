@@ -1,7 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type NavigationGuardNext,
+  type RouteLocationNormalized
+} from 'vue-router'
 import HomeView from '@/views/TheHome.vue'
 
-import { initCurrentUserStore } from '@/stores'
+import { initCurrentUserProfile, initUserNotifications } from '@/stores'
 import confirmRoutes from './confirm.routes'
 import dashboardRoutes from './dashboard.routes'
 import signupRoutes from './signup.routes'
@@ -45,10 +50,19 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
-  await initCurrentUserStore()
-
-  next()
-})
+/**
+ * A function that is executed before each route change.
+ * @param {RouteLocationNormalized} to - the target route
+ * @param {RouteLocationNormalized} from - the current route
+ * @param {NavigationGuardNext} next - a function to invoke to continue the navigation
+ */
+router.beforeEach(
+  async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+    // Initialize the current user profile and notifications store state
+    await initCurrentUserProfile()
+    await initUserNotifications()
+    next()
+  }
+)
 
 export default router

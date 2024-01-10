@@ -8,16 +8,16 @@ import type {
 } from '@/shared/interfaces'
 import { loginSchema, passwordSchema } from '@/shared/schema'
 import type { loginFieldType } from '@/shared/types/types'
-import { useCurrentUserStore } from '@/stores'
+
 import { profileEmailSchema } from '@/shared/schema'
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { initStore } from '@/shared/utils'
 
 const router = useRouter()
 const route = useRoute()
-
-const currentUserStore = useCurrentUserStore()
+const stores = initStore('userStore', 'apiKeysStore')
 
 const props = defineProps<{
   errors: errorDevInterface | errorProdInterface | null
@@ -38,12 +38,12 @@ const {
     route.name === 'activationAccount'
       ? loginSchema
       : route.name === 'resetEmail'
-      ? profileEmailSchema
-      : route.name === 'resetPassword'
-      ? passwordSchema
-      : route.name === 'confirmRenewal'
-      ? loginSchema
-      : ''
+        ? profileEmailSchema
+        : route.name === 'resetPassword'
+          ? passwordSchema
+          : route.name === 'confirmRenewal'
+            ? loginSchema
+            : ''
 })
 
 const {
@@ -87,22 +87,17 @@ const onSubmit = handleSubmit(
     values: loginInterface | confirmResetEmailInterface | confirmResetPasswordInterface,
     action
   ) => {
+    if (!stores.userStore || !stores.apiKeysStore) return
     const { token } = route.params
 
     if (route.name === 'resetEmail') {
-      await currentUserStore.fetchResetEmail(values as confirmResetEmailInterface, token as string)
+      await stores.userStore.fetchResetEmail(values as confirmResetEmailInterface, token as string)
     } else if (route.name === 'activationAccount') {
-      await currentUserStore.fetchActivationAccountForm(values as loginInterface, token as string)
+      await stores.userStore.fetchActivationAccountForm(values as loginInterface, token as string)
     } else if (route.name === 'resetPassword') {
-      await currentUserStore.fetchResetPassword(
-        values as confirmResetPasswordInterface,
-        token as string
-      )
+      await stores.userStore.fetchResetPassword(values as confirmResetPasswordInterface, token as string)
     } else if (route.name === 'confirmRenewal') {
-      await currentUserStore.fetchUserConfirmRenewalApiKey(
-        values as loginInterface,
-        token as string
-      )
+      await stores.apiKeysStore.fetchUserConfirmRenewalApiKey(values as loginInterface, token as string)
     }
 
     const errors = props.errors?.errors as Partial<loginInterface> | null

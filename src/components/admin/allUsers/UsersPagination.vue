@@ -1,60 +1,41 @@
 <script setup lang="ts">
-import { useCurrentUserStore, useUsersStore } from '@/stores'
-import { computed } from 'vue'
-
-const currentUserStore = useCurrentUserStore()
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
-
-async function nextPage(): Promise<void> {
-  if (usersStore.value) {
-    const page = usersStore.value.getCurrentPage
-    const nextPage = page + 1
-    usersStore.value.updateCurrentPage(nextPage)
-    usersStore.value.updateRefresh(true)
-    await usersStore.value.fetchAdminGetAllUsers()
-  }
-}
-function previousPage(): void {
-  if (usersStore.value) {
-    const page = usersStore.value.getCurrentPage
-    usersStore.value.updateCurrentPage(page - 1)
-  }
-}
+import { initStore } from '@/shared/utils'
+import { nextPage, previousPage } from '@/stores/utilities'
+const store = initStore('usersStore')
 </script>
 <template>
-  <div class="pagination" v-if="usersStore && usersStore.getTotalPages !== 1">
+  <div class="pagination" v-if="store.usersStore && store.usersStore.getTotalPages !== 1">
     <!-- Button preview -->
     <button
-      :disabled="usersStore.getCurrentPage === 1"
+      :disabled="store.usersStore.getCurrentPage === 1"
       class="pagination__btn"
       @click="previousPage"
     >
-      <svg class="pagination__icon" :class="usersStore.getCurrentPage === 1 ? 'btn-disable' : ''">
+      <svg
+        class="pagination__icon"
+        :class="store.usersStore.getCurrentPage === 1 ? 'btn-disable' : ''"
+      >
         <use xlink:href="@/components/icons/sprite.svg#icon-arrow-left-circle"></use>
       </svg>
     </button>
 
     <!-- Current page -->
     <p class="pagination__text">
-      Page <span class="pagination__text-number">{{ usersStore.getCurrentPage }}</span> sur
-      <span class="pagination__text-number">{{ usersStore.getTotalPages }}</span>
+      Page <span class="pagination__text-number">{{ store.usersStore.getCurrentPage }}</span> sur
+      <span class="pagination__text-number">{{ store.usersStore.getTotalPages }}</span>
     </p>
 
     <!-- Button next -->
     <button
-      :disabled="usersStore.getCurrentPage >= usersStore.getTotalPages"
+      :disabled="store.usersStore.getCurrentPage >= store.usersStore.getTotalPages"
       class="pagination__btn"
       @click="nextPage"
     >
       <svg
         class="pagination__icon"
-        :class="usersStore.getCurrentPage >= usersStore.getTotalPages ? 'btn-disable' : ''"
+        :class="
+          store.usersStore.getCurrentPage >= store.usersStore.getTotalPages ? 'btn-disable' : ''
+        "
       >
         <use xlink:href="@/components/icons/sprite.svg#icon-arrow-right-circle"></use>
       </svg>
@@ -99,5 +80,13 @@ function previousPage(): void {
   }
 }
 
+.btn-disable {
+  fill: var(--color-gray-2);
 
+  cursor: not-allowed;
+  &:hover,
+  &:active {
+    fill: currentColor;
+  }
+}
 </style>

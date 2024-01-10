@@ -1,8 +1,6 @@
 <script setup lang="ts">
+import { initObserver } from '@/shared/utils'
 import { ref, onMounted } from 'vue'
-/**
- * This component is responsible for animating a target element when it becomes visible in the viewport.
- */
 
 const props = defineProps<{
   animationType: string
@@ -11,21 +9,11 @@ const props = defineProps<{
 const target = ref<HTMLDivElement | null>(null)
 const animate = ref<boolean>(false)
 
-const observer = new IntersectionObserver(
-  ([entry]) => {
-    animate.value = entry.isIntersecting
-  },
-  {
-    threshold: 0.2
-  }
-)
-
 onMounted(() => {
-  if (target.value) {
-    observer.observe(target.value)
-  }
+  initObserver(target, animate)
 })
 </script>
+
 <template>
   <Transition
     :name="props.animationType"
@@ -37,6 +25,7 @@ onMounted(() => {
     <slot></slot>
   </Transition>
 </template>
+
 <style scoped lang="scss">
 .animated-component.fade-enter-from,
 .animated-component.translateLeft-enter-from,

@@ -1,5 +1,11 @@
 import type { routeMetaInterface } from '@/shared/interfaces'
 import { protect } from '@/shared/utils'
+import {
+  initAllUsers,
+  initCurrentUserApiKeys,
+  initSelectedUser,
+  initSelectedUserApiKeys
+} from '@/stores'
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 
 export default [
@@ -47,6 +53,7 @@ export default [
       },
 
       {
+        beforeEnter: [initCurrentUserApiKeys],
         path: '/myApiKeys',
         name: 'myApiKeys',
         component: () => import('@/views/user/MyApiKeys.vue'),
@@ -57,6 +64,7 @@ export default [
         } as routeMetaInterface
       },
       {
+        beforeEnter: [initAllUsers],
         path: '/users',
         name: 'users',
         component: () => import('@/views/admin/AllUsers.vue'),
@@ -68,22 +76,22 @@ export default [
       },
 
       {
+        beforeEnter: (
+          to: RouteLocationNormalized,
+          from: RouteLocationNormalized,
+          next: NavigationGuardNext
+        ) => {
+          const { id } = to.params
+          initSelectedUser(String(id))
+          initSelectedUserApiKeys(String(id))
+
+          next()
+        },
         path: '/users/:id',
         name: 'user',
         component: () => import('@/views/admin/UserProfile.vue'),
         meta: {
           title: 'Playground Api - Profil utilisateur',
-          requiresAuth: true,
-          role: ['admin']
-        } as routeMetaInterface
-      },
-
-      {
-        path: '/apiKeys',
-        name: 'apiKeys',
-        component: () => import('@/views/admin/AllApiKeys.vue'),
-        meta: {
-          title: 'Playground Api - Liste apis',
           requiresAuth: true,
           role: ['admin']
         } as routeMetaInterface

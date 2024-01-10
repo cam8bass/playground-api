@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import type { ShowType } from '@/shared/types/types';
+
 const props = defineProps<{
   showFilterFields: boolean
 }>()
 const emits = defineEmits<{
-  (e: 'updateShowFilterFields'): void
+  (e: 'updateShow',show:ShowType): void
+
 }>()
 </script>
 <template>
   <button
     type="button"
     class="btnFilter"
-    @click="emits('updateShowFilterFields')"
+    @click="emits('updateShow','fields')"
     aria-label="Afficher les filtres de sélection de champs"
     title="Afficher les filtres de sélection de champs"
   >

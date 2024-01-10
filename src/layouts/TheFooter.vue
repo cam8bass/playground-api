@@ -14,7 +14,6 @@
   justify-content: center;
   background-color: var(--color-black-1);
 
-
   &__logo {
     width: 15rem;
 

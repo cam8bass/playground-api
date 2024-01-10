@@ -1,115 +1,69 @@
-<script setup lang="ts">
-import UsersList from '@/components/admin/allUsers/UsersList.vue'
-import UsersFilter from '@/components/admin/allUsers/UsersFilter.vue'
-import BtnFilter from '@/components/shared-components/BtnFilter.vue'
+import {
+  type userInterface,
+  type NotificationInterface,
+  type FilterAppInterface,
+  DEFAULT_FILTER_NOTIFICATION
+} from '@/shared/interfaces'
 
-import { useAppStore } from '@/stores'
+import { defineStore } from 'pinia'
+import { userStoreActions } from './CurrentUserStore.action'
+import { userStoreGetters } from './CurrentUserStore.getters'
 
-const appStore = useAppStore()
-
-function updateShowFilter() {
-  appStore.updateMenuFilter(!appStore.getMenuFilter)
+interface UserStateInterface {
+  currentUser: userInterface | null
+  notification: NotificationInterface | null
+  refresh: {
+    currentUser: boolean
+    notification: boolean
+  }
+  filter: FilterAppInterface
 }
 
-</script>
-<template>
-  <div class="users">
-    <div class="users__content">
-      <h1 class="users__title">Utilisateurs</h1>
-      <BtnFilter
-        :showFilter="appStore.getMenuFilter"
-        @updateShowFilter="updateShowFilter"
-        class="users__btnFilter"
-      />
-      
+export const useCurrentUserStore = defineStore('currentUserStore', {
+  state: (): UserStateInterface => ({
+    currentUser: null,
 
-      <Transition name="translateDown" mode="out-in" appear>
-        <UsersFilter class="users__filter" v-show="appStore.getMenuFilter" />
-      </Transition>
-
-      <UsersList class="users__list" :class="!appStore.getMenuFilter ? 'hideOptions' : ''" />
-    </div>
-  </div>
-</template>
-<style scoped lang="scss">
-@use '@/assets/style/abstracts/mixins' as m;
-
-.users {
-  &__title {
-    grid-area: title;
-    grid-column: 2/-1;
-    grid-row: 1/2;
-    padding: 1rem 2rem;
-    align-self: center;
-    justify-self: flex-end;
-    font-size: 1.8rem;
-    font-family: var(--font-subtitle);
-    font-weight: 300;
-  }
-
-  &__content {
-    display: grid;
-    grid-template-areas:
-      'btnFilter title'
-      'filter filter'
-      'list list';
-    grid-template-rows: min-content min-content 1fr;
-    grid-template-columns: repeat(2, 1fr);
-    margin: 2rem;
-    background-color: var(--color-black-2);
-
-    @include m.lg {
-      grid-template-areas:
-        'btnFilter title'
-        'filter list';
-      grid-template-columns: max-content 1fr;
-      grid-template-rows: min-content 1fr;
-      column-gap: 1rem;
-      margin: 4rem;
+    notification: null,
+    refresh: {
+      currentUser: true,
+      notification: true
+    },
+    filter: {
+      notification: { ...DEFAULT_FILTER_NOTIFICATION }
     }
-  }
+  }),
+  getters: userStoreGetters(),
+  actions: userStoreActions()
+})
 
-  &__filter {
-    grid-area: filter;
-  }
+/**
+ * Initialize the current user's profile.
+ *
+ * This function will fetch the current user's profile from the server and store it in the store. It will also update the refresh property to false, indicating that the profile has been loaded.
+ *
+ * @returns {void}
+ */
+// export async function initCurrentUserProfile(): Promise<void> {
+//   const userStore = useUserStore()
+//   if (userStore.getRefresh.currentUser) {
+//     await userStore.fetchGetUser()
+//     userStore.updateRefresh({ user: false })
+//   }
+// }
 
-  &__list {
-    grid-area: list;
-  }
+/**
+ * Initialize the user's notifications.
+ *
+ * This function will fetch the user's notifications from the server and store them in the store. It will also update the refresh property to false, indicating that the notifications have been loaded.
+ *
+ * @returns {void}
+ */
+// export async function initUserNotifications(): Promise<void> {
+//   const userStore = useUserStore()
+//   if (userStore.getRefresh.notification && userStore.isLoggedIn) {
+//     await userStore.fetchUserNotifications()
+//     userStore.updateRefresh({ notification: false })
+//   }
+// }
 
-  &__btnFilter {
-    grid-area: btnFilter;
-  }
-}
-
-.hideOptions {
-  grid-column: 1/-1;
-
-  grid-row: 2/-1;
-  animation: fullList-mob 0.8s ease;
-  @include m.lg {
-    grid-column: 1/-1;
-    animation: fullList-desk 0.8s ease;
-  }
-}
-
-@keyframes fullList-desk {
-  0% {
-    transform: translateX(20%);
-  }
-
-  100% {
-    transform: translateX(0%);
-  }
-}
-
-@keyframes fullList-mob {
-  0% {
-    transform: translateY(20%);
-  }
-
-  100% {
-    transform: translateY(0%);
-  }
-}
-</style>
+export type CurrentUserStore = ReturnType<typeof useCurrentUserStore>

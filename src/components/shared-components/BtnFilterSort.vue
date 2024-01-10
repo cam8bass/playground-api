@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { ShowType } from '@/shared/types/types'
+
 const props = defineProps<{
   showFilterSort: boolean
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateShowFilterSort'): void
+  (e: 'updateShow', show: ShowType): void
 }>()
 </script>
 <template>
@@ -15,7 +17,7 @@ const emits = defineEmits<{
         -->
   <button
     class="btnFilter"
-    @click="emits('updateShowFilterSort')"
+    @click="emits('updateShow', 'sort')"
     aria-label="Afficher le filtre de trie"
     title="Afficher le filtre de trie"
   >

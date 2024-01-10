@@ -6,6 +6,8 @@ export type modalType =
   | 'deleteSelectedApiKey'
   | 'adminDeleteSelectedUser'
   | 'adminDeleteSelectedApiKey'
+  | 'adminDeleteAllApiKeysFromUser'
+  | 'deleteAllNoticationsUser'
 
 export type signupFieldType = 'firstname' | 'lastname' | 'email' | 'password' | 'passwordConfirm'
 
@@ -25,5 +27,15 @@ export type filterType = 'role' | 'email' | 'firstname' | 'lastname' | 'active' 
 
 export type sortFilterType = 'createAt' | '-createAt'
 
+export type parametersFilterType = 'role' | 'active' | 'accountLocked' | 'accountDisable'
 
-export type parametersFilterType="role"|"active"|"accountLocked"|"accountDisable"
+export type queryType = 'search' | 'limit' | 'fields' | 'sort' | 'parameters'
+
+
+export type StoreType = 'usersStore' | 'apiKeysStore' | 'appStore' | 'errorStore' | 'userStore'
+
+export type ShowType =  'fields'|'limit'|'parameters'|'sort'|'overview'|'notificationMore'
+
+
+export type NavigationType = 'login' | 'menu' | 'popup' | 'menuFilter' |'notification'
+

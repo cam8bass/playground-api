@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { useAppStore, useCurrentUserStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 
-const currentUserStore = useCurrentUserStore()
-const appStore = useAppStore()
+const { userStore, appStore } = initStore('appStore', 'userStore')
 </script>
 <template>
-  <div class="email">
+  <div class="email" v-if="appStore && userStore">
     <h3 class="component__subtitle">Adresse email</h3>
 
     <div class="email__content">
       <span class="email__label"
-        >Email : <span class="email__text">{{ currentUserStore.getCurrentUser?.email }}</span></span
+        >Email : <span class="email__text">{{ userStore.getCurrentUser?.email }}</span></span
       >
 
       <button
@@ -24,8 +23,8 @@ const appStore = useAppStore()
                 message: 'changer votre adresse email ?'
               })
             : appStore.getModal && appStore.getModal.type === 'logout'
-            ? appStore.resetModal
-            : ''
+              ? appStore.resetModal
+              : ''
         "
       >
         Modifier

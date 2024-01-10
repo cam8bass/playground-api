@@ -1,169 +1,186 @@
 <script setup lang="ts">
-import { useAppStore, useCurrentUserStore } from '@/stores'
+import type { modalInterface, updateModalInterface } from '@/shared/interfaces'
+import type { NavigationType } from '@/shared/types/types'
+const props = defineProps<{
+  modal: modalInterface | null
+  isLoggedIn: boolean
+}>()
 
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
+const emits = defineEmits<{
+  (e: 'updateNavigation', navigation: { type: NavigationType; value?: boolean }): void
+  (e: 'updateModal', modal: updateModalInterface): void
+  (e: 'resetModal'): void
+}>()
 </script>
 
 <template>
-  <Teleport to="body" :disabled="!appStore.getMenu">
-    <Transition mode="out-in" name="translateLeft">
-      <div class="navigation" v-if="appStore.getMenu">
-        <div class="navigation__header">
-          <span class="navigation__header-title">Playground @pi</span>
-          <a href="mailto:test@email.com" class="navigation__header-link">
-            <svg class="navigation__header-icon">
-              <use xlink:href="@/components/icons/sprite.svg#icon-mail-envelope-closed"></use>
-            </svg>
-          </a>
-          <span class="navigation__header-line">&nbsp;</span>
-        </div>
+  <div class="navigation">
+    <div class="navigation__header">
+      <span class="navigation__header-title">Playground @pi</span>
+      <a href="mailto:test@email.com" class="navigation__header-link">
+        <svg class="navigation__header-icon">
+          <use xlink:href="@/components/icons/sprite.svg#icon-mail-envelope-closed"></use>
+        </svg>
+      </a>
+      <span class="navigation__header-line">&nbsp;</span>
+    </div>
 
-        <nav class="navigation__nav">
-          <ul class="navigation__nav-list">
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/home#intro"
-                class="navigation__nav-link navigation__nav-link--main"
-                >Home</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/home#discover"
-                class="navigation__nav-link"
-                >Pratiquez en Conditions Réelles</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/home#explore"
-                class="navigation__nav-link"
-                >Explorez, Apprenez, Créez</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/home#access"
-                class="navigation__nav-link"
-                >Simple et accessible</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/home#achieve"
-                class="navigation__nav-link"
-                >Partagez Vos Réalisations</RouterLink
-              >
-            </li>
-          </ul>
-
-          <ul class="navigation__nav-list">
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/apis"
-                class="navigation__nav-link navigation__nav-link--main"
-                >Apis</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-travel</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
-            </li>
-          </ul>
-
-          <ul class="navigation__nav-list">
-            <li class="navigation__nav-item">
-              <RouterLink
-                @click="appStore.updateMenu(false)"
-                to="/documentation"
-                class="navigation__nav-link navigation__nav-link--main"
-                >Documentation</RouterLink
-              >
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-travel</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
-            </li>
-
-            <li class="navigation__nav-item">
-              <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
-            </li>
-          </ul>
-        </nav>
-
-        <div class="navigation__auth">
-          <RouterLink @click="appStore.updateMenu(false)" to="/signup" class="btn"
-            >Inscription</RouterLink
+    <nav class="navigation__nav">
+      <ul class="navigation__nav-list">
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/home#intro"
+            class="navigation__nav-link navigation__nav-link--main"
+            >Home</RouterLink
           >
-          <button
-            v-if="!currentUserStore.getCurrentUser"
-            type="button"
-            @click="appStore.updateMenu(false), appStore.updateLogin(true)"
-            class="btn navigation__auth-btn"
-          >
-            Connexion
-          </button>
+        </li>
 
-          <button
-            v-else
-            type="button"
-            @click="
-              appStore.updateMenu(false),
-                !appStore.getModal
-                  ? appStore.updateModal({
-                      type: 'logout',
-                      title: 'Deconnection',
-                      message: 'vous déconnecter ?'
-                    })
-                  : appStore.getModal && appStore.getModal.type === 'logout'
-                  ? appStore.resetModal
-                  : ''
-            "
-            class="btn navigation__auth-btn"
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/home#discover"
+            class="navigation__nav-link"
+            >Pratiquez en Conditions Réelles</RouterLink
           >
-            Deconnexion
-          </button>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/home#explore"
+            class="navigation__nav-link"
+            >Explorez, Apprenez, Créez</RouterLink
+          >
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/home#access"
+            class="navigation__nav-link"
+            >Simple et accessible</RouterLink
+          >
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/home#achieve"
+            class="navigation__nav-link"
+            >Partagez Vos Réalisations</RouterLink
+          >
+        </li>
+      </ul>
+
+      <ul class="navigation__nav-list">
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/apis"
+            class="navigation__nav-link navigation__nav-link--main"
+            >Apis</RouterLink
+          >
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Api-travel</RouterLink>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
+        </li>
+      </ul>
+
+      <ul class="navigation__nav-list">
+        <li class="navigation__nav-item">
+          <RouterLink
+            @click="emits('updateNavigation', { type: 'menu' })"
+            to="/documentation"
+            class="navigation__nav-link navigation__nav-link--main"
+            >Documentation</RouterLink
+          >
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Doc Api-travel</RouterLink>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
+        </li>
+
+        <li class="navigation__nav-item">
+          <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="navigation__auth">
+      <RouterLink
+        @click="emits('updateNavigation', { type: 'menu' })"
+        to="/signup"
+        class="btn"
+        title="Créer un compte"
+        aria-label="Créer un compte"
+        >Inscription</RouterLink
+      >
+      <button
+        v-if="!isLoggedIn"
+        title="Se connecter à votre compte"
+        aria-label="Se connecter à votre compte"
+        type="button"
+        @click="
+          emits('updateNavigation', { type: 'menu' }),
+            emits('updateNavigation', { type: 'login', value: true })
+        "
+        class="btn navigation__auth-btn"
+      >
+        Connexion
+      </button>
+
+      <button
+        v-else
+        type="button"
+        title="Se déconnecter de votre compte"
+        aria-label="Se déconnecter de votre compte"
+        @click="
+          emits('updateNavigation', { type: 'menu' }),
+            !props.modal
+              ? emits('updateModal', {
+                  type: 'logout',
+                  title: 'Deconnection',
+                  message: 'vous déconnecter ?'
+                })
+              : props.modal && props.modal.type === 'logout'
+                ? emits('resetModal')
+                : ''
+        "
+        class="btn navigation__auth-btn"
+      >
+        Deconnexion
+      </button>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/style/abstracts/mixins' as m;
 @import '@/assets/style/base/animation';
 .navigation {
+  z-index: 1000;
   width: 100%;
   height: 100vh;
   position: fixed;
@@ -174,7 +191,6 @@ const currentUserStore = useCurrentUserStore()
   grid-template-rows: 1fr 2fr 1fr;
   row-gap: 2rem;
   align-items: center;
-
   background-color: var(--color-black-2);
   backdrop-filter: blur(5px);
 

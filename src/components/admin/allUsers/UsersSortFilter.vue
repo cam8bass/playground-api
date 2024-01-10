@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { sortFilterType } from '@/shared/types/types'
+import type { queryType } from '@/shared/types/types'
 import { uncheckInputs } from '@/shared/utils'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
@@ -24,7 +24,7 @@ const radio = filters.map((filter) => {
 })
 
 const emits = defineEmits<{
-  (e: 'updateSort', value: sortFilterType | null): void
+  (e: 'updateQuery', query: { input: queryType; value: string | null }): void
   (e: 'updateBtnDisable', value: boolean): void
 }>()
 </script>
@@ -39,7 +39,7 @@ const emits = defineEmits<{
           :value="filter"
           class="filter__radio"
           @change="
-            emits('updateSort', filter),
+            emits('updateQuery', { input: 'sort', value: filter }),
               meta.dirty && Object.keys(errors).length === 0
                 ? emits('updateBtnDisable', false)
                 : emits('updateBtnDisable', true)
@@ -53,7 +53,7 @@ const emits = defineEmits<{
       class="filter__btn"
       @click="
         uncheckInputs('.filter__radio'),
-          emits('updateSort', null),
+          emits('updateQuery', { input: 'sort', value: null }),
           resetForm(),
           emits('updateBtnDisable', false)
       "

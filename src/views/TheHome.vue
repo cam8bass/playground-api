@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import AnimatedComponent from '@/components/common-components/AnimatedComponent.vue'
-import { useAppStore, useCurrentUserStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 
-const appStore = useAppStore()
-const currentUserStore = useCurrentUserStore()
+const { appStore, userStore } = initStore('appStore', 'userStore')
 </script>
 
 <template>
-  <main class="home">
+  <main class="home" v-if="appStore && userStore">
     <section class="home__section intro" id="intro">
       <div class="section__content intro__content">
         <AnimatedComponent animation-type="translateLeft">
@@ -37,15 +36,15 @@ const currentUserStore = useCurrentUserStore()
               >
               <button
                 title="Connexion"
-                v-if="!currentUserStore.getCurrentUser"
-                @click="appStore.updateLogin(true)"
+                v-if="!userStore.getCurrentUser"
+                @click="appStore.updateNavigation({ login: true })"
                 class="btn"
               >
                 Connexion
               </button>
 
               <RouterLink
-                v-if="currentUserStore.getCurrentUser"
+                v-if="userStore.getCurrentUser"
                 to="/dashboard"
                 class="btn"
                 title="Mon compte"
@@ -196,7 +195,13 @@ const currentUserStore = useCurrentUserStore()
                 <span class="access__item-text">Cliquez sur Ajouter une Nouvelle Clé</span>
               </li>
             </ol>
-            <RouterLink to="/login" class="btn access__btn">Inscription</RouterLink>
+            <RouterLink
+              title="Créer un compte"
+              aria-label="Créer un compte"
+              to="/signup"
+              class="btn access__btn"
+              >Inscription</RouterLink
+            >
           </div>
         </div>
       </section>
@@ -398,6 +403,7 @@ const currentUserStore = useCurrentUserStore()
   }
 
   &__cardBlock {
+    justify-items: center;
     grid-column: 1/-1;
     grid-row: 1/2;
     display: grid;

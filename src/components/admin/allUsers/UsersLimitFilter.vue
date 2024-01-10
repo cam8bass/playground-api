@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { usersLimitSchema } from '@/shared/schema'
+import type { queryType } from '@/shared/types/types'
 import { useField } from 'vee-validate'
 
 /**
@@ -13,7 +14,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateLimit', limit: number): void
+  (e: 'updateQuery', query: { input: queryType; value: number }): void
   (e: 'updateBtnDisable', value: boolean): void
 }>()
 
@@ -39,49 +40,47 @@ const {
   },
   {
     validateOnValueUpdate: false,
-    initialValue: 0
-    // initialValue: props.limitPerPage
+    initialValue: props.limitPerPage
   }
 )
 </script>
 <template>
-  <Transition name="translateDown" mode="out-in">
-    <div class="limit">
-      <div class="limit__group">
-        <!-- Component for setting the limit of displayed users.
+  <div class="limit">
+    <div class="limit__group">
+      <!-- Component for setting the limit of displayed users.
              * @props   {number} results - The total number of users. 
              * @props   {number} limit - The current limit of displayed users.
              * @emits input - Emitted when the limit value is changed.
              -->
-        <input
-          type="number"
-          name="limit"
-          id="limit"
-          class="limit__input"
-          min="1"
-          :max="results"
-          v-model="inputLimit"
-          @blur="handleChangeLimit"
-          @focus="handleBlurLimit"
-          @input="
-            inputLimit <= 0
-              ? (inputLimit = 1)
-              : inputLimit > props.results
+      <input
+        type="number"
+        name="limit"
+        id="limit"
+        class="limit__input"
+        min="1"
+        :max="results"
+        v-model="inputLimit"
+        @blur="handleChangeLimit"
+        @focus="handleBlurLimit"
+        @input="
+          inputLimit <= 0
+            ? (inputLimit = 1)
+            : inputLimit > props.results
               ? (inputLimit = props.results)
               : (inputLimit = ($event.target as HTMLInputElement).valueAsNumber),
-              emits('updateLimit', inputLimit),
-              limitMeta.dirty && limitMeta.valid
-                ? emits('updateBtnDisable', false)
-                : emits('updateBtnDisable', true)
-          "
-        />
+            emits('updateQuery', { input: 'limit', value: inputLimit }),
+            (limitMeta.dirty && limitMeta.valid) ||
+            (limitMeta.valid && inputLimit === limitMeta.initialValue)
+              ? emits('updateBtnDisable', false)
+              : emits('updateBtnDisable', true)
+        "
+      />
 
-        <span class="form__textError limit__textError" v-if="limitErrors">{{
-          limitErrorMessage
-        }}</span>
-      </div>
+      <span class="form__textError limit__textError" v-if="limitErrors">{{
+        limitErrorMessage
+      }}</span>
     </div>
-  </Transition>
+  </div>
 </template>
 <style lang="scss" scoped>
 .limit {

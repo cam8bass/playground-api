@@ -1,5 +1,3 @@
-
-
 export function submitFilter<T, K extends keyof T>(
   values: Partial<T>,
   allowedFields: K[],
@@ -16,5 +14,5 @@ export function submitFilter<T, K extends keyof T>(
     }
   })
 
-  return Object.keys(filteredValues).length > 0 ? filteredValues : null;
+  return Object.keys(filteredValues).length > 0 ? filteredValues : null
 }

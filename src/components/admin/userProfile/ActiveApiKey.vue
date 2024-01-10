@@ -1,26 +1,9 @@
 <script lang="ts" setup>
 import type { adminSubmitActiveApiKey } from '@/shared/interfaces'
 import { activeApiKeySchema } from '@/shared/schema'
-import { useApiKeysStore, useCurrentUserStore, useErrorStore, useUsersStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 import { useForm, useField } from 'vee-validate'
-import { computed, ref } from 'vue'
-
-const errorStore = useErrorStore()
-const currentUserStore = useCurrentUserStore()
-
-const apiKeysStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useApiKeysStore()
-  }
-  return null
-})
-
-const usersStore = computed(() => {
-  if (currentUserStore.getCurrentUser && currentUserStore.getCurrentUser.role === 'admin') {
-    return useUsersStore()
-  }
-  return null
-})
+import { ref } from 'vue'
 
 const props = defineProps<{
   idApi: string
@@ -36,21 +19,26 @@ const {
 } = useField('active', '', { validateOnValueUpdate: false })
 
 const onSubmit = handleSubmit(async (value: adminSubmitActiveApiKey, action) => {
+  const stores = initStore(
+    'errorStore',
+    'userStore',
+    'apiKeysStore',
+    'usersStore'
+  )
+
+  if (!stores.userStore || !stores.errorStore) return
+  
   if (
-    currentUserStore.getCurrentUser &&
-    currentUserStore.getCurrentUser.role === 'admin' &&
-    usersStore.value &&
-    usersStore.value.getUser &&
-    apiKeysStore.value
+    stores.userStore.getCurrentUser &&
+    stores.userStore.getCurrentUser.role === 'admin' &&
+    stores.usersStore &&
+    stores.usersStore.getUser &&
+    stores.apiKeysStore
   ) {
-    await apiKeysStore.value.fetchAdminActiveApiKey(
-      value,
-      usersStore.value.getUser._id,
-      props.idApi
-    )
+    await stores.apiKeysStore.fetchAdminActiveApiKey(value, stores.usersStore.getUser._id, props.idApi)
   }
 
-  const errors = errorStore.getError?.errors as Partial<adminSubmitActiveApiKey> | null
+  const errors = stores.errorStore.getError?.errors as Partial<adminSubmitActiveApiKey> | null
   formError.value = null
 
   if (errors) {

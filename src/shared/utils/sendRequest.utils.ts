@@ -1,7 +1,7 @@
-import { useAppStore, useErrorStore } from '@/stores'
 import type { jsonResponseInterface, errorInterface } from '@/shared/interfaces'
 import { ref, type Ref } from 'vue'
 import type { requestHttpType } from '../types/types'
+import { initStore } from '@/shared/utils'
 
 export async function sendRequest(
   url: string,
@@ -10,8 +10,11 @@ export async function sendRequest(
 ): Promise<{
   data: Ref<jsonResponseInterface | null>
 }> {
-  const appStore = useAppStore()
-  const errorStore = useErrorStore()
+  const { appStore, errorStore } = initStore('appStore', 'errorStore')
+
+  // TODO: a voir
+  if (!appStore || !errorStore) return { data: ref(null) }
+
   const data = ref<jsonResponseInterface | null>(null)
   errorStore.resetError()
   try {
@@ -32,8 +35,16 @@ export async function sendRequest(
     } else {
       data.value = res
       if (data.value.notification) {
-        appStore.updateNotification(data.value.notification.type, data.value.notification.message)
-        appStore.updatePopup(true)
+        appStore.updateNotificationApp(data.value.notification)
+
+        appStore.updateNavigation({ popup: true })
+
+        const { userStore } = initStore('userStore')
+
+        if (userStore && userStore.isLoggedIn) {
+          userStore.updateRefresh({ notification: true })
+          await userStore.fetchUserNotifications()
+        }
       }
     }
   } catch (e: any) {

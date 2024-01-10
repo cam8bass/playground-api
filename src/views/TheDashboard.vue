@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import DashboardHeader from '@/components/common-components/TheDashboardHeader.vue'
 import TheModal from '@/components/common-components/TheModal.vue'
-import { useErrorStore } from '@/stores'
+import { initStore } from '@/shared/utils'
 
-const errorStore = useErrorStore()
+const { errorStore } = initStore('errorStore')
 </script>
 <template>
-  <main class="dashboard">
+  <main class="dashboard" v-if="errorStore">
     <DashboardHeader class="dashboard__header" />
 
     <RouterView v-slot="{ Component, route }">

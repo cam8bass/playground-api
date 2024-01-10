@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
 import { usersSearchSchema } from '@/shared/schema'
+import type { queryType } from '@/shared/types/types'
 
 const emits = defineEmits<{
-  (e: 'updateSearch', value: string): void
-
+  (e: 'updateQuery', query: { input: queryType; value: string }): void
   (e: 'fetchAllUsersWithQuerySearch'): void
-
   (e: 'updateBtnDisable', value: boolean): void
 }>()
 
@@ -20,7 +19,7 @@ const {
 } = useField('search', usersSearchSchema, { validateOnValueUpdate: false })
 
 const handleInput = () => {
-  emits('updateSearch', inputSearch.value)
+  emits('updateQuery', { input: 'search', value: inputSearch.value })
 }
 </script>
 <template>
@@ -42,7 +41,7 @@ const handleInput = () => {
           borderError: searchMeta.touched && searchMeta.validated && !searchMeta.valid
         }"
         @input="
-          handleInput,
+          handleInput(),
             searchMeta.dirty && searchMeta.valid
               ? emits('updateBtnDisable', false)
               : emits('updateBtnDisable', true)
