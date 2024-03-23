@@ -13,7 +13,7 @@ export type signupFieldType = 'firstname' | 'lastname' | 'email' | 'password' | 
 
 export type loginFieldType = 'email' | 'password'
 
-export type requestStatusType = 'success' | 'fail' | 'error'
+export type requestStatusType = 'success' | 'fail' | 'error' | 'no-content'
 
 export type userRoleType = 'user' | 'admin'
 
@@ -31,11 +31,22 @@ export type parametersFilterType = 'role' | 'active' | 'accountLocked' | 'accoun
 
 export type queryType = 'search' | 'limit' | 'fields' | 'sort' | 'parameters'
 
-
 export type StoreType = 'usersStore' | 'apiKeysStore' | 'appStore' | 'errorStore' | 'userStore'
 
-export type ShowType =  'fields'|'limit'|'parameters'|'sort'|'overview'|'notificationMore'
+export type ShowType = 'fields' | 'limit' | 'parameters' | 'sort' | 'overview' | 'notificationMore'
 
+export type NavigationType = 'login' | 'menu' | 'popup' | 'menuFilter' | 'notification'
 
-export type NavigationType = 'login' | 'menu' | 'popup' | 'menuFilter' |'notification'
+export type errorCategoriesType =
+  | 'external'
+  | 'validation'
+  | 'server'
+  | 'storage'
+  | 'security'
+  | 'unexpected'
+
+export type errorPriorityType = 'critical' | 'warning' | 'info'
+
+export type errorStatusType = "fail" | "error";
+
 

@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import type {
-  errorDevInterface,
-  errorProdInterface,
-  nameSubmitInterface
-} from '@/shared/interfaces'
+import type { AppErrorInterface, nameSubmitInterface } from '@/shared/interfaces'
 import { profileNameSchema } from '@/shared/schema'
 import { submitFilter } from '@/shared/utils'
 import { initStore } from '@/shared/utils'
-
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
 
@@ -16,7 +11,7 @@ const { userStore } = initStore('userStore')
 const formError = ref<string | null>(null)
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface| null
 }>()
 
 const {
@@ -58,14 +53,14 @@ const onSubmit = handleSubmit(async (values: nameSubmitInterface, action) => {
     if (filteredValues) {
       await userStore.fetchUpdateUser(filteredValues)
 
-      const errors = props.errors?.errors as Partial<nameSubmitInterface>
+      const errors = props.errors ? props.errors.fields : null
 
       if (errors) {
         Object.entries(errors).forEach(([key, value]) => {
           action.setFieldError(key, value)
         })
 
-        if (errors.request) formError.value = errors.request
+        if (errors.form) formError.value = errors.form
       } else {
         resetForm({
           values: {

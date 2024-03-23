@@ -77,7 +77,6 @@ const {
 const onSubmit = handleSubmit(async (values: AdminUpdateUserInterface, action) => {
   const { errorStore, userStore } = initStore('errorStore', 'userStore')
 
-  if (!userStore || !errorStore) return
   if (
     userStore.getCurrentUser &&
     userStore.getCurrentUser.role === 'admin' &&
@@ -93,7 +92,7 @@ const onSubmit = handleSubmit(async (values: AdminUpdateUserInterface, action) =
     if (filteredValues) {
       await usersStore.fetchAdminUpdateUser(filteredValues, usersStore.getUser._id)
 
-      const errors = errorStore.getError?.errors as AdminUpdateUserInterface
+      const errors = errorStore.getLastInfoError ? errorStore.getLastInfoError.fields : null
       formError.value = null
 
       if (errors) {
@@ -101,7 +100,7 @@ const onSubmit = handleSubmit(async (values: AdminUpdateUserInterface, action) =
           action.setFieldError(key, value)
         })
 
-        if (errors.request) formError.value = errors.request
+        if (errors.form) formError.value = errors.form
       }
     }
   }

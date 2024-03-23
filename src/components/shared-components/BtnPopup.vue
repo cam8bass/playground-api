@@ -4,7 +4,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (e: 'closePopup'): void
+  (e: 'closePopup', id: string): void
   (e: 'updateNotification', idNotification: string): void
   (e: 'deleteSelectedNotification', idNotification: string): void
 }>()
@@ -16,7 +16,9 @@ const emits = defineEmits<{
       class="btn-small btnPopup__btn"
       title="Cliquez pour marquer la notification comme lue"
       aria-label="Cliquez pour marquer la notification comme lue"
-      @click="emits('updateNotification', props.idNotification), emits('closePopup')"
+      @click="
+        emits('updateNotification', props.idNotification), emits('closePopup', props.idNotification)
+      "
     >
       Lue
     </button>
@@ -26,7 +28,10 @@ const emits = defineEmits<{
       class="btn-small btnPopup__btn"
       title="Cliquez pour supprimer la notification"
       aria-label="Cliquez pour supprimer la notification"
-      @click="emits('deleteSelectedNotification', props.idNotification), emits('closePopup')"
+      @click="
+        emits('deleteSelectedNotification', props.idNotification),
+          emits('closePopup', props.idNotification)
+      "
     >
       Supprimer
     </button>

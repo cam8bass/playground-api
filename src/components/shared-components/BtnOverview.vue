@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShowType } from '@/shared/types/types';
+import type { ShowType } from '@/shared/types/types'
 
 const props = defineProps<{
   showOverview: boolean
@@ -7,14 +7,15 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateShow',show:ShowType): void
+  (e: 'updateShow', show: ShowType): void
+  (e: 'initOverview'): void
 }>()
 </script>
 <template>
   <div class="btnFilter btnOverview">
     <button
       class="btnFilter__btn"
-      @click="emits('updateShow','overview')"
+      @click="emits('updateShow', 'overview'), !props.showOverview ? emits('initOverview') : ''"
       aria-label="Afficher les statistiques"
       title="Afficher les statistiques"
     >

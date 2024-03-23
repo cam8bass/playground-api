@@ -10,7 +10,8 @@ import {
   updateReadNotification,
   deleteSelectedNotification,
   resetModal,
-  updateShow
+  updateShow,
+  closeAllPopup
 } from '@/stores/utilities'
 import type { FilterAppInterface } from '@/shared/interfaces'
 
@@ -69,6 +70,7 @@ async function updateAllNoticationsUser(): Promise<void> {
           @reset-modal="resetModal"
           @update-modal="updateModal($event)"
           @update-show="updateShow($event)"
+          @close-all-popup="closeAllPopup"
         />
       </Transition>
 
@@ -124,7 +126,6 @@ async function updateAllNoticationsUser(): Promise<void> {
 
   &__content {
     grid-column: 2/-1;
-
     justify-self: flex-end;
     display: flex;
     align-items: center;

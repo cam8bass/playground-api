@@ -4,6 +4,7 @@ import TheModal from '@/components/common-components/TheModal.vue'
 import { initStore } from '@/shared/utils'
 
 const { errorStore } = initStore('errorStore')
+
 </script>
 <template>
   <main class="dashboard" v-if="errorStore">
@@ -15,7 +16,7 @@ const { errorStore } = initStore('errorStore')
           class="dashboard__content"
           :is="Component"
           :key="route.fullPath"
-          :errors="errorStore.getError"
+          :errors="errorStore.getLastInfoError"
         />
       </Transition>
     </RouterView>

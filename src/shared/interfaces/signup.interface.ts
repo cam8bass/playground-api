@@ -4,5 +4,4 @@ export interface signupInterface {
   email: string
   password: string
   passwordConfirm: string
-  request?: string
 }

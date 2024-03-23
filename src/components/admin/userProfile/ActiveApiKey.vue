@@ -19,15 +19,8 @@ const {
 } = useField('active', '', { validateOnValueUpdate: false })
 
 const onSubmit = handleSubmit(async (value: adminSubmitActiveApiKey, action) => {
-  const stores = initStore(
-    'errorStore',
-    'userStore',
-    'apiKeysStore',
-    'usersStore'
-  )
+  const stores = initStore('errorStore', 'userStore', 'apiKeysStore', 'usersStore')
 
-  if (!stores.userStore || !stores.errorStore) return
-  
   if (
     stores.userStore.getCurrentUser &&
     stores.userStore.getCurrentUser.role === 'admin' &&
@@ -35,17 +28,23 @@ const onSubmit = handleSubmit(async (value: adminSubmitActiveApiKey, action) => 
     stores.usersStore.getUser &&
     stores.apiKeysStore
   ) {
-    await stores.apiKeysStore.fetchAdminActiveApiKey(value, stores.usersStore.getUser._id, props.idApi)
+    await stores.apiKeysStore.fetchAdminActiveApiKey(
+      value,
+      stores.usersStore.getUser._id,
+      props.idApi
+    )
   }
 
-  const errors = stores.errorStore.getError?.errors as Partial<adminSubmitActiveApiKey> | null
+  const errors = stores.errorStore.getLastInfoError
+    ? stores.errorStore.getLastInfoError.fields
+    : null
   formError.value = null
 
   if (errors) {
     Object.entries(errors).forEach(([key, value]) => {
       action.setFieldError(key, value)
     })
-    if (errors.request) formError.value = errors.request
+    if (errors.form) formError.value = errors.form
   } else {
     resetForm()
   }

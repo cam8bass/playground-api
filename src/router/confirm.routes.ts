@@ -13,6 +13,7 @@ export default [
     component: () => import('@/views/TheConfirm.vue'),
     meta: {
       title: "Playground Api - Réinitialisation de l'e-mail"
+
     }
   },
   {

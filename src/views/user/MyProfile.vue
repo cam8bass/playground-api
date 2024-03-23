@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import MyAccount from '@/components/user/myProfile/MyAccount.vue'
-import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import type { AppErrorInterface } from '@/shared/interfaces'
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 </script>
 <template>
@@ -22,7 +22,9 @@ const props = defineProps<{
   background-color: var(--color-black-2);
 
   &__content {
-    align-self: center;
+    @include m.xl {
+      align-self: center;
+    }
   }
 }
 </style>

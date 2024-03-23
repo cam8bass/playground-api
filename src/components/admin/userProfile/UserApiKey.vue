@@ -2,8 +2,7 @@
 import AddApiKey from '@/components/shared-components/AddApiKey.vue'
 import type {
   ApiKeyInterface,
-  errorDevInterface,
-  errorProdInterface,
+  AppErrorInterface,
   modalInterface,
   updateModalInterface
 } from '@/shared/interfaces'
@@ -13,7 +12,7 @@ const props = defineProps<{
   apiKeysCount: number
   activeApiKeysCount: number
   pendingApiKeysCount: number
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
   modal: modalInterface | null
   apiKeys: ApiKeyInterface | null
 }>()
@@ -66,8 +65,8 @@ const emits = defineEmits<{
                 id: { idApi: apiKeys._id }
               })
             : modal && modal.type === 'adminDeleteAllApiKeysFromUser'
-            ? emits('resetModal')
-            : ''
+              ? emits('resetModal')
+              : ''
         "
       >
         Supprimer les clés

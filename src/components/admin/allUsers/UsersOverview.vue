@@ -1,25 +1,31 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { AdminUsersOverviewInterface } from '@/shared/interfaces'
+
+const props = defineProps<{
+  usersOverview: AdminUsersOverviewInterface
+}>()
+</script>
 <template>
   <ul class="overview">
     <li class="overview__item">
       Total :
-      <span class="overview__number">20</span>
+      <span class="overview__number">{{ props.usersOverview.totalUsers }}</span>
     </li>
     <li class="overview__item">
       Activé :
-      <span class="overview__number">5</span>
+      <span class="overview__number">{{ props.usersOverview.totalActiveAccount }}</span>
     </li>
     <li class="overview__item">
       Non activé :
-      <span class="overview__number">6</span>
+      <span class="overview__number">{{ props.usersOverview.totalInactiveAccount }}</span>
     </li>
     <li class="overview__item">
       Désactivé :
-      <span class="overview__number">6</span>
+      <span class="overview__number">{{ props.usersOverview.totalDisableAccount }}</span>
     </li>
     <li class="overview__item">
       Bloqué :
-      <span class="overview__number">6</span>
+      <span class="overview__number">{{ props.usersOverview.totalAccountLocked }}</span>
     </li>
   </ul>
 </template>

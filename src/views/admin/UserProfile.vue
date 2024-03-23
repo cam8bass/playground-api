@@ -3,14 +3,14 @@ import UserInfo from '@/components/admin/userProfile/UserInfo.vue'
 import UserDetail from '@/components/admin/userProfile/UserDetail.vue'
 import UserApiKey from '@/components/admin/userProfile/UserApiKey.vue'
 import BtnReturn from '@/components/shared-components/BtnReturn.vue'
-import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import type { AppErrorInterface } from '@/shared/interfaces'
 import { updateModal, resetModal } from '@/stores/utilities'
 import { initStore } from '@/shared/utils'
 
 const { appStore, usersStore, apiKeysStore } = initStore('apiKeysStore', 'usersStore', 'appStore')
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors:AppErrorInterface | null
 }>()
 
 

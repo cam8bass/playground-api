@@ -4,19 +4,20 @@ import {
   type AdminQueryInterface,
   type AdminUpdateUserInterface,
   type AdminUsersInterface,
-  type AdminUsersStatsInterface,
-  type PageInterface
+  type PageInterface,
+  type AdminOverviewInterface,
+  DEFAULT_USERS_OVERVIEW,
+  type jsonResponseInterface
 } from '@/shared/interfaces'
 import { formatQueryString, initStore, sendRequest } from '@/shared/utils'
 import { defineStore } from 'pinia'
-
 
 export interface UsersStateInterface {
   users: AdminUsersInterface[] | null
   user: AdminUsersInterface | null
   query: AdminQueryInterface
   page: PageInterface
-  stats: AdminUsersStatsInterface | null
+  overview: AdminOverviewInterface
   results: number
   refresh: {
     users: boolean
@@ -37,7 +38,9 @@ export const useUsersStore = defineStore('usersStore', {
     query: {
       ...DEFAULT_QUERY
     },
-    stats: null
+    overview: {
+      users: { ...DEFAULT_USERS_OVERVIEW }
+    }
   }),
   getters: {
     getAllUsers(): AdminUsersInterface[] | null {
@@ -81,8 +84,8 @@ export const useUsersStore = defineStore('usersStore', {
       return this.page.totalPage
     },
 
-    getUsersStats(): AdminUsersStatsInterface | null {
-      return this.stats
+    getOverview(): AdminOverviewInterface {
+      return this.overview
     },
 
     getCurrentPage(): number {
@@ -117,20 +120,17 @@ export const useUsersStore = defineStore('usersStore', {
 
       const queryString = formatQueryString(devUrl, this.getQuery, this.getCurrentPage)
 
-      const { data } = await sendRequest(queryString, 'GET')
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        const { data: newUsers, results = 0 } = data.value as {
-          data: AdminUsersInterface[]
-          results: number
-          limit: number
-        }
+      const response: jsonResponseInterface = await sendRequest(queryString, 'GET')
 
+      const newUsers: AdminUsersInterface[] = response.data
+
+      if (newUsers && response.status === 'success') {
         if (this.query.limit) {
           this.updateLimitPerPage(this.query.limit)
         }
 
-        if (results) {
-          this.updateResults(results)
+        if (response.results) {
+          this.updateResults(response.results)
           this.updateTotalPage()
         }
 
@@ -151,10 +151,10 @@ export const useUsersStore = defineStore('usersStore', {
     async fetchAdminGetUser(idUser: string) {
       if (idUser) {
         const devUrl = `/playground-connect/v1/admin/users/${idUser}`
-        const { data } = await sendRequest(devUrl, 'GET')
+        const response = await sendRequest(devUrl, 'GET')
 
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.user = data.value.data
+        if (response.data && response.status === 'success') {
+          this.user = response.data
         }
       }
       return
@@ -163,10 +163,11 @@ export const useUsersStore = defineStore('usersStore', {
     async fetchAdminDeleteUser(iduser: string): Promise<void> {
       if (iduser) {
         const devUrl = `/playground-connect/v1/admin/users/${iduser}`
-        const { data } = await sendRequest(devUrl, 'DELETE')
+        const response = await sendRequest(devUrl, 'DELETE')
 
-        if (data.value && data.value.status === 'success') {
+        if (response.data && response.status === 'success') {
           this.resetAllUsers()
+          this.updateRefresh({ users: true })
         }
       }
       return
@@ -176,22 +177,22 @@ export const useUsersStore = defineStore('usersStore', {
       if (values && idUser) {
         const devUrl = `/playground-connect/v1/admin/users/${idUser}`
 
-        const { data } = await sendRequest(devUrl, 'PATCH', values)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.user = data.value.data
+        const response = await sendRequest(devUrl, 'PATCH', values)
+        if (response.data && response.status === 'success') {
+          this.user = response.data
           this.resetAllUsers()
         }
       }
       return
     },
 
-    async fetchDashboardUsersInfo(): Promise<void> {
-      const devUrl = '/playground-connect/v1/admin/dashboardUsers'
+    async fetchAllUsersOverview(): Promise<void> {
+      const devUrl = '/playground-connect/v1/admin/getAllUserOverview'
 
-      const { data } = await sendRequest(devUrl, 'GET')
+      const response = await sendRequest(devUrl, 'GET')
 
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.stats = data.value.data
+      if (response.data && response.status === 'success') {
+        this.overview.users = response.data
       }
     },
 
@@ -208,6 +209,11 @@ export const useUsersStore = defineStore('usersStore', {
         user: true
       }
       this.page = { currentPage: 1, totalPage: 1, limitPerPage: 10 }
+      this.overview = {
+        users: {
+          ...DEFAULT_USERS_OVERVIEW
+        }
+      }
     },
 
     resetAllUsers(): void {
@@ -267,7 +273,6 @@ export const useUsersStore = defineStore('usersStore', {
  */
 export async function initAllUsers(): Promise<void> {
   const { usersStore } = initStore('usersStore')
-  if (!usersStore) return
 
   if (usersStore.getRefresh.users) {
     // Fetch all users if the refresh status is true
@@ -282,7 +287,6 @@ export async function initAllUsers(): Promise<void> {
  */
 export async function initSelectedUser(idUser: string): Promise<void> {
   const { usersStore } = initStore('usersStore')
-  if (!usersStore) return
 
   if (usersStore.getUser && usersStore.getUser._id !== idUser) {
     // Reset the selected user if the ID is different

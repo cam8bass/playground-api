@@ -32,7 +32,7 @@ async function refreshFetchAdminGetAllUsers(): Promise<void> {
  */
 async function initOverview(): Promise<void> {
   if (!usersStore) return
-  await usersStore.fetchDashboardUsersInfo()
+  await usersStore.fetchAllUsersOverview()
 }
 
 /**
@@ -53,16 +53,18 @@ const fetchAdminGetAllUsersWithQuery = async (): Promise<void> => {
         :showOverview="appStore.getShow.overview"
         :textBtn="'Utilisateurs'"
         @update-show="updateShow($event)"
+        @initOverview="initOverview"
       />
 
       <BtnRefresh class="users__btnRefresh" @refresh-list="refreshFetchAdminGetAllUsers" />
 
       <UsersOverview
+        
         class="users__overview"
         :showOverview="appStore.getShow.overview"
-        :stats="usersStore.getUsersStats"
+        :usersOverview="usersStore.getOverview.users"
         v-show="appStore.getShow.overview"
-        @initOverview="initOverview"
+
       />
 
       <BtnFilter

@@ -6,5 +6,4 @@ export interface AdminUpdateUserInterface {
   email?: string
   role?: userRoleType
   active?: boolean
-  request?: string
 }

@@ -1,4 +1,3 @@
-import { boolean } from 'zod'
 import type { requestStatusType } from '../types/types'
 
 export interface NotificationInterface {
@@ -11,22 +10,15 @@ export interface NotificationDetailInterface {
   type: requestStatusType
   message: string
   read: boolean
-  createAt: Date
+  createdAt: Date
   readAt: Date
   _id: string
-}
-
-export interface NotificationAppInterface {
-  _id?: string
-  type: requestStatusType
-  message: string
+  view: boolean
 }
 
 export interface FilterAppInterface {
   notification: FilterNotificationInterface
 }
-
-
 
 export interface FilterNotificationInterface {
   all: boolean

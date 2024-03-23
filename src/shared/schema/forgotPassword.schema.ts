@@ -14,6 +14,11 @@ export const forgotPasswordSchema = toTypedSchema(
 export const passwordSchema = toTypedSchema(
   z
     .object({
+      email: z
+        .string({ required_error: 'Ce champ est obligatoire' })
+
+        .email({ message: 'Veuillez saisir une adresse email valide' }),
+
       password: z
         .string({ required_error: 'Ce champ est obligatoire' })
 

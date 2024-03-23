@@ -11,9 +11,11 @@ import {
   type loginInterface,
   type nameSubmitInterface,
   type passwordSubmitInterface,
-  type signupInterface
+  type signupInterface,
+  type jsonResponseInterface
 } from '@/shared/interfaces'
-import { initStore, sendRequest } from '@/shared/utils'
+
+import { AppError, initStore, sendRequest } from '@/shared/utils'
 import { defineStore } from 'pinia'
 
 interface UserStateInterface {
@@ -39,13 +41,6 @@ export const useUserStore = defineStore('userStore', {
     }
   }),
   getters: {
-    // getCurrentUser(): userInterface | null {
-    //   if (this.currentUser) {
-    //     return this.currentUser
-    //   }
-    //   return null
-    // },
-
     getCurrentUser(): userInterface | null {
       return this.currentUser
     },
@@ -60,15 +55,17 @@ export const useUserStore = defineStore('userStore', {
     getUserNotifications(): NotificationDetailInterface[] | [] {
       if (this.notification) {
         if (this.filter.notification.all) {
-          return this.notification.notifications.sort((a, b) => (a.createAt < b.createAt ? 1 : -1))
+          return this.notification.notifications.sort((a, b) =>
+            a.createdAt < b.createdAt ? 1 : -1
+          )
         } else if (this.filter.notification.unread) {
           return this.notification.notifications
             .filter((notification) => !notification.read)
-            .sort((a, b) => (a.createAt < b.createAt ? 1 : -1))
+            .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
         } else if (this.filter.notification.read) {
           return this.notification.notifications
             .filter((notification) => notification.read)
-            .sort((a, b) => (a.createAt < b.createAt ? 1 : -1))
+            .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
         }
       }
       return []
@@ -120,10 +117,10 @@ export const useUserStore = defineStore('userStore', {
   actions: {
     async fetchGetUser(): Promise<void> {
       const devUrl = '/playground-connect/v1/users/me'
-      const { data } = await sendRequest(devUrl, 'GET')
+      const response = await sendRequest(devUrl, 'GET')
 
-      if (data.value && data.value.data && data.value.status === 'success') {
-        this.currentUser = data.value.data as userInterface
+      if (response.status === 'success' && response.data) {
+        this.currentUser = response.data as userInterface
       }
     },
 
@@ -143,10 +140,9 @@ export const useUserStore = defineStore('userStore', {
     async fetchLogin(values: loginInterface): Promise<void> {
       if (values) {
         const devUrl = '/playground-connect/v1/users/login'
-        const { data } = await sendRequest(devUrl, 'POST', values)
-
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'POST', values)
+        if (response.data && response.status === 'success') {
+          this.currentUser = response.data
         }
       }
       return
@@ -155,9 +151,10 @@ export const useUserStore = defineStore('userStore', {
     async fetchActivationAccountForm(values: loginInterface, token: string): Promise<void> {
       if (values && token) {
         const devUrl = `/playground-connect/v1/users/activationAccount/${token}`
-        const { data } = await sendRequest(devUrl, 'PATCH', values)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH', values)
+
+        if (response.data && response.status === 'success') {
+          this.currentUser = response.data
         }
       }
       return
@@ -166,9 +163,10 @@ export const useUserStore = defineStore('userStore', {
     async fetchUpdateUser(values: nameSubmitInterface): Promise<void> {
       if (values) {
         const devUrl = '/playground-connect/v1/users/updateProfile'
-        const { data } = await sendRequest(devUrl, 'PATCH', values)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH', values)
+
+        if (response.data && response.status === 'success') {
+          this.currentUser = response.data
         }
       }
       return
@@ -189,9 +187,10 @@ export const useUserStore = defineStore('userStore', {
     async fetchResetEmail(values: confirmResetEmailInterface, token: string): Promise<void> {
       if (values && token) {
         const devUrl = `/playground-connect/v1/users/resetEmail/${token}`
-        const { data } = await sendRequest(devUrl, 'PATCH', values)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH', values)
+
+        if (response.data && response.status === 'success') {
+          this.currentUser = response.data
         }
       }
       return
@@ -223,39 +222,54 @@ export const useUserStore = defineStore('userStore', {
     async fetchUserNotifications(): Promise<void> {
       const devUrl = '/playground-connect/v1/notification/myNotifications'
 
-      const { data } = await sendRequest(devUrl, 'GET')
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.notification = data.value.data
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'GET')
+
+      if (response.data && response.status === 'success') {
+        this.notification = response.data
       }
     },
+
+    async fetchUpdateViewUserNotification(idNotification: string): Promise<void> {
+      const devUrl = `/playground-connect/v1/notification/updateViewNotification/${idNotification}`
+
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH')
+
+      if (response.data && response.status === 'success') {
+        this.notification = response.data
+      }
+    },
+
     async fetchUpdateUserNotification(idNotification: string): Promise<void> {
       const devUrl = `/playground-connect/v1/notification/updateNotification/${idNotification}`
 
-      const { data } = await sendRequest(devUrl, 'PATCH')
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH')
 
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.notification = data.value.data
+      if (response.data && response.status === 'success') {
+        this.notification = response.data
       }
     },
     async fetchDeleteSelectedUserNotification(idNotification: string): Promise<void> {
       const devUrl = `/playground-connect/v1/notification/deleteSelectedNotification/${idNotification}`
 
-      const { data } = await sendRequest(devUrl, 'PATCH')
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.notification = data.value.data
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH')
+
+      if (response.data && response.status === 'success') {
+        this.notification = response.data
       }
     },
     async fetchUpdateAllNotificationsUser(): Promise<void> {
       const devUrl = `/playground-connect/v1/notification/updateAllNotification`
-      const { data } = await sendRequest(devUrl, 'PATCH')
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.notification = data.value.data
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH')
+
+      if (response.data && response.status === 'success') {
+        this.notification = response.data
       }
     },
     async fetchDeleteAllNotificationsUser(idNotification: string): Promise<void> {
       const devUrl = `/playground-connect/v1/notification/deleteAllNotifications/${idNotification}`
-      const { data } = await sendRequest(devUrl, 'DELETE')
-      if (data.value && data.value.status === 'success') {
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'DELETE')
+
+      if (response.status === 'success') {
         this.notification = null
       }
     },
@@ -299,7 +313,6 @@ export const useUserStore = defineStore('userStore', {
  */
 export async function initCurrentUserProfile(): Promise<void> {
   const { userStore } = initStore('userStore')
-  if (!userStore) return
 
   if (userStore.getRefresh.currentUser) {
     await userStore.fetchGetUser()
@@ -316,11 +329,37 @@ export async function initCurrentUserProfile(): Promise<void> {
  */
 export async function initUserNotifications(): Promise<void> {
   const { userStore } = initStore('userStore')
-  if (!userStore) return
 
-  if (userStore.getRefresh.notification && userStore.isLoggedIn) {
+  if (userStore.isLoggedIn && userStore.getRefresh.notification) {
     await userStore.fetchUserNotifications()
+
     userStore.updateRefresh({ notification: false })
+  }
+}
+
+/**
+ * Initialize unviewed notifications.
+ *
+ * This function will check if the user is logged in, and if there are any unviewed notifications. If there are unviewed notifications, the function will update the notification app state with the unviewed notifications, and update the refresh property to false, indicating that the notifications have been loaded.
+ *
+ * @returns {void}
+ */
+export async function initUnviewedNotifications(): Promise<void> {
+  const { userStore, appStore } = initStore('userStore', 'appStore')
+
+  if (
+    userStore.isLoggedIn &&
+    userStore.getUserNotifications.length &&
+    appStore.getRefresh.notification
+  ) {
+    const unviewedNotification = userStore.getUserNotifications.filter(
+      (notification) => !notification.view
+    )
+
+    if (unviewedNotification.length) {
+      appStore.updateNotificationApp(unviewedNotification)
+      appStore.updateRefresh({ notification: false })
+    }
   }
 }
 

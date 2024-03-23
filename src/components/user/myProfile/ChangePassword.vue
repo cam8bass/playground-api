@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import type {
-  errorDevInterface,
-  errorProdInterface,
-  passwordSubmitInterface
-} from '@/shared/interfaces'
+import type { AppErrorInterface, passwordSubmitInterface } from '@/shared/interfaces'
 import { profilePasswordSchema } from '@/shared/schema'
 import { initStore } from '@/shared/utils'
-
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 
 const showPassword = ref<boolean>(false)
@@ -60,10 +55,10 @@ const onSubmit = handleSubmit(async (values: passwordSubmitInterface, action) =>
     const { userStore } = initStore('userStore')
 
     if (!userStore) return
-    
+
     await userStore.fetchUpdatePassword(values)
 
-    const errors = props.errors?.errors as Partial<passwordSubmitInterface>
+    const errors = props.errors ? props.errors.fields : null
     formError.value = null
 
     if (errors) {
@@ -71,7 +66,7 @@ const onSubmit = handleSubmit(async (values: passwordSubmitInterface, action) =>
         action.setFieldError(key, value)
       })
 
-      if (errors.request) formError.value = errors.request
+      if (errors.form) formError.value = errors.form
     } else {
       resetForm({
         values: {

@@ -1,25 +1,23 @@
 <script setup lang="ts">
 import type { forgotPasswordSubmitInterface, loginInterface } from '@/shared/interfaces'
-
 import { forgotPasswordSchema, loginSchema } from '@/shared/schema'
 import type { loginFieldType } from '@/shared/types/types'
-import { initStore } from '@/shared/utils'
-
+import { catchAsync, initStore } from '@/shared/utils'
 import { useField, useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const stores = initStore('userStore', 'appStore', 'errorStore')
+const stores = initStore('appStore', 'errorStore', 'userStore')
 
 const login = ref<boolean>(true)
 const forgotpassword = ref<boolean>(false)
 const formError = ref<string | null>(null)
 
+// TODO: A voir pour rendre reutilisable
 function resetFormErrors(): void {
-  if (!stores.errorStore) return
-  stores.errorStore.resetError()
+  stores.errorStore.deleteInfoErrorByUrl('/login')
   formError.value = null
   resetForm()
 }
@@ -61,17 +59,17 @@ const {
 
 const onSubmit = handleSubmit(
   async (values: loginInterface | forgotPasswordSubmitInterface, action) => {
-    if (!stores.userStore || !stores.errorStore || !stores.appStore) return
+    stores.errorStore.deleteInfoErrorByUrl('/login')
+
     if (login.value && !forgotpassword.value) {
       await stores.userStore.fetchLogin(values as loginInterface)
     } else if (!login.value && forgotpassword.value) {
       await stores.userStore.fetchForgotPassword(values as forgotPasswordSubmitInterface)
     }
 
-    const errors = stores.errorStore.getError?.errors as
-      | Partial<loginInterface>
-      | Partial<forgotPasswordSubmitInterface>
-      | null
+    const errors = stores.errorStore.getLastInfoError
+      ? stores.errorStore.getLastInfoError.fields
+      : null
 
     formError.value = null
 
@@ -80,7 +78,7 @@ const onSubmit = handleSubmit(
         action.setFieldError(key as loginFieldType, value)
       })
 
-      if (errors.request) formError.value = errors.request
+      if (errors.form) formError.value = errors.form
     } else {
       forgotpassword.value = false
       stores.appStore.updateNavigation({ login: false })
@@ -140,12 +138,16 @@ const onSubmit = handleSubmit(
           <div class="form__group form__group-btn">
             <button
               type="button"
+              title="Cliquez pour fermer la fenêtre de connexion"
+              aria-label="Cliquez pour fermer la fenêtre de connexion"
               @click="stores.appStore.updateNavigation({ login: false }), resetFormErrors()"
               class="form__btn btn"
             >
               Retour
             </button>
             <button
+              title="Cliquez pour soumettre le formulaire de connexion"
+              aria-label="Cliquez pour soumettre le formulaire de connexion"
               type="submit"
               class="form__btn btn"
               :class="{
@@ -230,8 +232,9 @@ const onSubmit = handleSubmit(
   overflow-y: scroll;
   z-index: 1000;
   right: 0;
-  height: 100vh;
+  height: 100svh;
   width: 100%;
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   background-color: var(--color-black-3);
   display: flex;

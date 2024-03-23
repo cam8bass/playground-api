@@ -13,5 +13,5 @@ export interface userInterface {
   passwordChangeAt?: Date
   activationAccountAt?: Date
   disableAccountAt?: Date
-  createAt?: Date
+  createdAt?: Date
 }

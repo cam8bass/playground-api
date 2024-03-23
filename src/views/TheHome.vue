@@ -278,6 +278,7 @@ const { appStore, userStore } = initStore('appStore', 'userStore')
   grid-template-rows: minmax(min-content, 90vh) repeat(4, min-content);
   justify-content: center;
   height: 100%;
+
   @include m.xl {
     &::before {
       content: '';
@@ -666,7 +667,7 @@ const { appStore, userStore } = initStore('appStore', 'userStore')
     @include m.xl {
       grid-row: 1/2;
       grid-column: 2/-1;
-      max-height: 100vh;
+      max-height: 100svh;
 
       overflow-x: unset;
       overflow-y: scroll;

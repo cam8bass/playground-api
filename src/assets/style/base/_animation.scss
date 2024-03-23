@@ -44,3 +44,15 @@
   transform: translateY(-10%);
   opacity: 0;
 }
+
+// *** TRANSLATE UP ***
+.translateUp-enter-active,
+.translateUp-leave-active {
+  transition: all 0.4s ease;
+}
+
+.translateUp-enter-from,
+.translateUp-leave-to {
+  transform: translateY(10%);
+  opacity: 0;
+}

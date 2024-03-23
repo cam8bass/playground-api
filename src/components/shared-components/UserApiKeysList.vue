@@ -30,8 +30,8 @@ const userApiKeys = computed(() => {
           <span class="apiKeyList__text">{{ apiKey.apiKey ?? 'En attente de validation' }}</span>
         </li>
 
-        <li class="apiKeyList__item" v-if="apiKey.createAt">
-          Création : <span class="apiKeyList__text">{{ formatDate(apiKey.createAt) }}</span>
+        <li class="apiKeyList__item" v-if="apiKey.createdAt">
+          Création : <span class="apiKeyList__text">{{ formatDate(apiKey.createdAt) }}</span>
         </li>
 
         <li class="apiKeyList__item" v-if="apiKey.apiKeyExpire">

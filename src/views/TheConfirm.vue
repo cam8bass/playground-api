@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import type {
+  AppErrorInterface,
   confirmResetEmailInterface,
   confirmResetPasswordInterface,
-  errorDevInterface,
-  errorProdInterface,
   loginInterface
 } from '@/shared/interfaces'
 import { loginSchema, passwordSchema } from '@/shared/schema'
@@ -20,7 +19,7 @@ const route = useRoute()
 const stores = initStore('userStore', 'apiKeysStore')
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 
 const showPassword = ref<boolean>(false)
@@ -95,12 +94,18 @@ const onSubmit = handleSubmit(
     } else if (route.name === 'activationAccount') {
       await stores.userStore.fetchActivationAccountForm(values as loginInterface, token as string)
     } else if (route.name === 'resetPassword') {
-      await stores.userStore.fetchResetPassword(values as confirmResetPasswordInterface, token as string)
+      await stores.userStore.fetchResetPassword(
+        values as confirmResetPasswordInterface,
+        token as string
+      )
     } else if (route.name === 'confirmRenewal') {
-      await stores.apiKeysStore.fetchUserConfirmRenewalApiKey(values as loginInterface, token as string)
+      await stores.apiKeysStore.fetchUserConfirmRenewalApiKey(
+        values as loginInterface,
+        token as string
+      )
     }
 
-    const errors = props.errors?.errors as Partial<loginInterface> | null
+    const errors = props.errors ? props.errors.fields : null
 
     formError.value = null
 
@@ -109,7 +114,7 @@ const onSubmit = handleSubmit(
         action.setFieldError(key as loginFieldType, value)
       })
 
-      if (errors.request) formError.value = errors.request
+      if (errors.form) formError.value = errors.form
     } else {
       resetForm()
 
@@ -126,7 +131,8 @@ const onSubmit = handleSubmit(
         v-if="
           route.name === 'resetEmail' ||
           route.name === 'activationAccount' ||
-          route.name === 'confirmRenewal'
+          route.name === 'confirmRenewal' ||
+          route.name === 'resetPassword'
         "
       >
         <label for="email" class="label form__label">Email</label>

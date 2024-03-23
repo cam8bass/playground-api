@@ -6,12 +6,13 @@ import {
 } from 'vue-router'
 import HomeView from '@/views/TheHome.vue'
 
-import { initCurrentUserProfile, initUserNotifications } from '@/stores'
+import { initCurrentUserProfile, initUnviewedNotifications, initUserNotifications } from '@/stores'
 import confirmRoutes from './confirm.routes'
 import dashboardRoutes from './dashboard.routes'
 import signupRoutes from './signup.routes'
 import apisRoutes from './apis.routes'
 import documentationRoutes from './documentation.routes'
+import { handleError } from '@/error'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,11 +59,15 @@ const router = createRouter({
  */
 router.beforeEach(
   async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-    // Initialize the current user profile and notifications store state
+    // Initialize the current user profile and notifications store state and unviewed notifications
+
     await initCurrentUserProfile()
     await initUserNotifications()
+    await initUnviewedNotifications()
+
     next()
   }
 )
+
 
 export default router

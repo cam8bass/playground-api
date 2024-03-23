@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import type { AppErrorInterface } from '@/shared/interfaces'
 import UserApiKeysList from '@/components/shared-components/UserApiKeysList.vue'
 
 import AddApiKey from '@/components/shared-components/AddApiKey.vue'
@@ -8,7 +8,7 @@ import { initStore } from '@/shared/utils'
 const { userStore, apiKeysStore } = initStore('userStore', 'apiKeysStore')
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 </script>
 <template>

@@ -2,6 +2,7 @@
 import { initStore } from '@/shared/utils'
 import { logout } from '@/stores/utilities'
 import { useRouter } from 'vue-router'
+import { closeAllPopup } from '@/stores/utilities'
 
 const { appStore } = initStore('appStore')
 
@@ -28,7 +29,7 @@ async function fetchDeactivationAccount(): Promise<void> {
   const { userStore } = initStore('userStore')
 
   if (!userStore || !appStore) return
-// make a request to the backend to deactivate the user's account
+  // make a request to the backend to deactivate the user's account
   await userStore.fetchDeactivationAccount()
   // reset the modal state
   appStore.resetModal()
@@ -37,7 +38,6 @@ async function fetchDeactivationAccount(): Promise<void> {
   // navigate to the home page
   router.push('/home')
 }
-
 
 /**
  * request a change of the user's email
@@ -51,7 +51,11 @@ async function fetchRequestChangeEmail(): Promise<void> {
   appStore.resetModal()
 }
 
-
+/**
+ * request a deletion of an api key
+ * @param {object} id - the id of the api key
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchDeleteSelectedApiKey(id: { idApi: string }): Promise<void> {
   const { apiKeysStore } = initStore('apiKeysStore')
 
@@ -60,7 +64,11 @@ async function fetchDeleteSelectedApiKey(id: { idApi: string }): Promise<void> {
   appStore.resetModal()
 }
 
-
+/**
+ * request the deletion of a user
+ * @param {object} id - the id of the user
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchAdminDeleteSelectedUser(id: { idUser: string }) {
   const { usersStore } = initStore('usersStore')
 
@@ -71,6 +79,11 @@ async function fetchAdminDeleteSelectedUser(id: { idUser: string }) {
   router.back()
 }
 
+/**
+ * request the deletion of an api key from a user
+ * @param {object} id - the id of the user and the api key
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchAdminDeleteSelectedApiKey(id: {
   idUser: string
   idApi: string
@@ -83,6 +96,11 @@ async function fetchAdminDeleteSelectedApiKey(id: {
   appStore.resetModal()
 }
 
+/**
+ * request the deletion of all api keys from a user
+ * @param {object} id - the id of the api key
+ * @return {Promise<void>} Promise(void)
+ */
 async function fetchAdminDeleteAllApiKeysFromUser(id: { idApi: string }): Promise<void> {
   const { apiKeysStore } = initStore('apiKeysStore')
 
@@ -92,12 +110,18 @@ async function fetchAdminDeleteAllApiKeysFromUser(id: { idApi: string }): Promis
   appStore.resetModal()
 }
 
+/**
+ * request the deletion of all notifications from a user
+ * @param {object} id - the id of the notification
+ * @return {Promise<void>} Promise(void)
+ */
 async function deleteAllNoticationsUser(id: { idNotification: string }): Promise<void> {
   const { userStore } = initStore('userStore')
 
   if (!appStore || !userStore) return
 
   await userStore.fetchDeleteAllNotificationsUser(id.idNotification)
+  closeAllPopup()
   appStore.resetModal()
 }
 </script>
@@ -225,6 +249,7 @@ async function deleteAllNoticationsUser(id: { idNotification: string }): Promise
   left: 0;
   z-index: 5000;
   background-color: var(--color-black-2);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   width: 100%;
   height: 100%;

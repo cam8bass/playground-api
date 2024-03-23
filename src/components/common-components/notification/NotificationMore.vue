@@ -7,6 +7,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
+  (e: 'closeAllPopup'): void
   (e: 'updateAllNoticationsUser'): void
   (e: 'updateModal', modal: updateModalInterface): void
   (e: 'resetModal'): void
@@ -21,7 +22,7 @@ const emits = defineEmits<{
       class="more__btn"
       title="Marquer toutes les notifications comme lues"
       aria-label="Marquer toutes les notifications comme lues"
-      @click="emits('updateAllNoticationsUser')"
+      @click="emits('updateAllNoticationsUser'),emits('closeAllPopup')"
     >
       Tout marquer comme lues
     </button>

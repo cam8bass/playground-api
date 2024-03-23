@@ -13,11 +13,9 @@ export async function logout(): Promise<void> {
     'appStore'
   )
 
-  if (!userStore || !appStore) return
   await userStore.fetchLogout()
 
   if (userStore.isAdmin) {
-    if (!usersStore || !apiKeysStore) return
     usersStore.resetUsersStore()
     apiKeysStore.resetApiKeysStore()
   }

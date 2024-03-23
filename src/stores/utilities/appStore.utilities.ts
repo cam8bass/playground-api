@@ -9,7 +9,7 @@ import { initStore } from '@/shared/utils'
  */
 export function updateModal(modal: updateModalInterface): void {
   const { appStore } = initStore('appStore')
-  if (!appStore) return
+
   appStore.updateModal(modal)
 }
 
@@ -20,8 +20,6 @@ export function updateModal(modal: updateModalInterface): void {
  */
 export function updateNavigation(navigation: { type: NavigationType; value?: boolean }): void {
   const { appStore } = initStore('appStore')
-
-  if (!appStore) return
 
   appStore.updateNavigation({
     [navigation.type]: navigation.value ?? !appStore.getNavigation[navigation.type]
@@ -35,7 +33,6 @@ export function updateNavigation(navigation: { type: NavigationType; value?: boo
 export function resetModal(): void {
   const { appStore } = initStore('appStore')
 
-  if (!appStore) return
   appStore.resetModal()
 }
 
@@ -47,8 +44,6 @@ export function resetModal(): void {
 export function updateShow(show: ShowType): void {
   const { appStore } = initStore('appStore')
 
-  if (!appStore) return
-
   appStore.updateShow({ [show]: !appStore.getShow[show] })
 }
 
@@ -59,7 +54,32 @@ export function updateShow(show: ShowType): void {
 export function resetPopup(): void {
   const { appStore } = initStore('appStore')
 
-  if (!appStore) return
   appStore.updateNavigation({ popup: false })
   appStore.resetNotificationApp()
+}
+
+/**
+ * @description Close the selected popup
+ * @param {string} id - The id of the selected popup
+ * @returns {void}
+ */
+export function closeSelectedPopup(id: string): void {
+  const { appStore } = initStore('appStore')
+
+  appStore.deleteSelectedNotificationApp(id)
+
+  if (!appStore.getNotificationAppMessage.length) {
+    appStore.updateNavigation({ popup: false })
+    appStore.resetNotificationApp()
+  }
+}
+
+/**
+ * @description Close all popups
+ */
+export function closeAllPopup(): void {
+  const { appStore } = initStore('appStore')
+
+  appStore.resetNotificationApp()
+  appStore.updateNavigation({ popup: false })
 }

@@ -2,12 +2,10 @@
 import { useRouter } from 'vue-router'
 import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
-import type { errorDevInterface, errorProdInterface, signupInterface } from '@/shared/interfaces'
+import type { AppErrorInterface, signupInterface } from '@/shared/interfaces'
 import type { signupFieldType } from '@/shared/types/types'
-
 import { signupSchema } from '@/shared/schema'
-
-import { initStore } from '@/shared/utils'
+import { AppError, initStore } from '@/shared/utils'
 
 const stores = initStore('userStore')
 
@@ -18,7 +16,7 @@ const showPasswordConfirm = ref<boolean>(false)
 const formError = ref<string | null>(null)
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 
 const {
@@ -27,7 +25,6 @@ const {
   isSubmitting,
   resetForm
 } = useForm({ validationSchema: signupSchema })
-
 const {
   value: inputFirstname,
   errors: firstnameErrors,
@@ -74,10 +71,10 @@ const {
 } = useField('passwordConfirm', '', { validateOnValueUpdate: false })
 
 const onSubmit = handleSubmit(async (values: signupInterface, action) => {
-  if (!stores.userStore) return
   await stores.userStore.fetchSignup(values)
 
-  const errors = props.errors?.errors as Partial<signupInterface> | null
+  const errors = props.errors ? props.errors.fields : null
+
   formError.value = null
 
   if (errors) {
@@ -85,12 +82,14 @@ const onSubmit = handleSubmit(async (values: signupInterface, action) => {
       action.setFieldError(key as signupFieldType, value)
     })
 
-    if (errors.request) formError.value = errors.request
+    if (errors.form) formError.value = errors.form
   } else {
     resetForm()
     router.push('/home')
   }
 })
+
+
 </script>
 
 <template>

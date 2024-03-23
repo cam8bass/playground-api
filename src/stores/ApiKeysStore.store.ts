@@ -1,6 +1,7 @@
 import {
   type ApiKeyInterface,
   type adminSubmitActiveApiKey,
+  type jsonResponseInterface,
   type loginInterface,
   type requestCreateNewApiKeyInterface
 } from '@/shared/interfaces'
@@ -84,9 +85,9 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     async fetchAdminGetApiKeys(idApi: string): Promise<void> {
       if (idApi) {
         const devUrl = `/playground-connect/v1/admin/apiKeys/${idApi}`
-        const { data } = await sendRequest(devUrl, 'GET')
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.selectedUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'GET')
+        if (response.data && response.status === 'success') {
+          this.apiKeys.selectedUser = response.data
         }
       }
       return
@@ -95,9 +96,9 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     async fetchAdminGetSelectedUserApiKeys(idUser: string): Promise<void> {
       if (idUser) {
         const devUrl = `/playground-connect/v1/admin/getUserApiKeys/${idUser}`
-        const { data } = await sendRequest(devUrl, 'GET')
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.selectedUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'GET')
+        if (response.data && response.status === 'success') {
+          this.apiKeys.selectedUser = response.data
         }
       }
       return
@@ -106,9 +107,12 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     async fetchAdminCreateApiKey(values: string, idUser: string): Promise<void> {
       if (idUser && values) {
         const devUrl = '/playground-connect/v1/admin/apiKeys'
-        const { data } = await sendRequest(devUrl, 'POST', { apiName: values, user: idUser })
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.selectedUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'POST', {
+          apiName: values,
+          idUser: idUser
+        })
+        if (response.data && response.status === 'success') {
+          this.apiKeys.selectedUser = response.data
         }
       }
       return
@@ -117,10 +121,10 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     async fetchAdminDeleteSelectedApiKey(idUser: string, idApi: string): Promise<void> {
       if (idUser && idApi) {
         const devUrl = `/playground-connect/v1/admin/users/${idUser}/apiKeys/deleteApiKey/${idApi}`
-        const { data } = await sendRequest(devUrl, 'DELETE')
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'DELETE')
 
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.selectedUser = data.value.data
+        if (response.data && response.status === 'success') {
+          this.apiKeys.selectedUser = response.data
         }
       }
       return
@@ -132,9 +136,9 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     ): Promise<void> {
       if (value && idUser && idApi) {
         const devUrl = `/playground-connect/v1/admin/users/${idUser}/apiKeys/activeApiKey/${idApi}`
-        const { data } = await sendRequest(devUrl, 'PATCH', value)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.selectedUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH', value)
+        if (response.data && response.status === 'success') {
+          this.apiKeys.selectedUser = response.data
         }
         if (this.apiKeys.selectedUser && this.apiKeys.selectedUser.apiKeys.length < 1) {
           this.resetSelectedUserApiKeys()
@@ -147,8 +151,8 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
       if (idApi) {
         const devUrl = `/playground-connect/v1/admin/apiKeys/${idApi}`
 
-        const { data } = await sendRequest(devUrl, 'DELETE')
-        if (data.value && data.value.status === 'success') {
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'DELETE')
+        if (response.data && response.status === 'success') {
           this.resetSelectedUserApiKeys()
         }
       }
@@ -158,17 +162,17 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     // USER
     async fetchUserGetMyApiKeys(): Promise<void> {
       const devUrl = '/playground-connect/v1/apiKeys/'
-      const { data } = await sendRequest(devUrl, 'GET')
-      if (data.value && data.value.status === 'success' && data.value.data) {
-        this.apiKeys.currentUser = data.value.data
+      const response: jsonResponseInterface = await sendRequest(devUrl, 'GET')
+      if (response.data && response.status === 'success') {
+        this.apiKeys.currentUser = response.data
       }
     },
     async fetchUserRequestCreateNewApiKey(value: requestCreateNewApiKeyInterface): Promise<void> {
       if (value) {
         const devUrl = '/playground-connect/v1/apiKeys'
-        const { data } = await sendRequest(devUrl, 'POST', value)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'POST', value)
+        if (response.data && response.status === 'success') {
+          this.apiKeys.currentUser = response.data
         }
       }
       return
@@ -177,9 +181,9 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     async fetchUserDeleteSelectedApiKey(idApi: string): Promise<void> {
       if (idApi) {
         const devUrl = `/playground-connect/v1/apiKeys/deleteApiKey/${idApi}`
-        const { data } = await sendRequest(devUrl, 'DELETE')
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'DELETE')
+        if (response.data && response.status === 'success') {
+          this.apiKeys.currentUser = response.data
         }
       }
       return
@@ -196,9 +200,9 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
     async fetchUserConfirmRenewalApiKey(values: loginInterface, token: string): Promise<void> {
       if (values && token) {
         const devUrl = `/playground-connect/v1/apiKeys/confirmRenewal/${token}`
-        const { data } = await sendRequest(devUrl, 'PATCH', values)
-        if (data.value && data.value.status === 'success' && data.value.data) {
-          this.apiKeys.currentUser = data.value.data
+        const response: jsonResponseInterface = await sendRequest(devUrl, 'PATCH', values)
+        if (response.data && response.status === 'success') {
+          this.apiKeys.currentUser = response.data
         }
       }
       return
@@ -237,8 +241,6 @@ export const useApiKeysStore = defineStore('apiKeysStore', {
 export async function initSelectedUserApiKeys(idUser: string): Promise<void> {
   const { apiKeysStore } = initStore('apiKeysStore')
 
-  if (!apiKeysStore) return
-
   //FIXME: si un utilisateur ne possède pas de clé d'api alors la requete de recherche de clé d'api ce lancera a chaque fois que lon clique sur le profil ce qui est pas bon
   if (!apiKeysStore.getSelectedUserApiKeys) {
     apiKeysStore.updateRefresh({ selectedUser: true })
@@ -258,7 +260,6 @@ export async function initSelectedUserApiKeys(idUser: string): Promise<void> {
   }
 }
 
-
 /**
  * Initialize the current user's API keys.
  *
@@ -268,7 +269,6 @@ export async function initSelectedUserApiKeys(idUser: string): Promise<void> {
  */
 export async function initCurrentUserApiKeys(): Promise<void> {
   const { apiKeysStore } = initStore('apiKeysStore')
-  if (!apiKeysStore) return
 
   if (apiKeysStore.getRefresh.currentUser) {
     await apiKeysStore.fetchUserGetMyApiKeys()
@@ -277,180 +277,3 @@ export async function initCurrentUserApiKeys(): Promise<void> {
 }
 
 export type ApiKeysStore = ReturnType<typeof useApiKeysStore>
-
-// import {
-//   type ApiKeyInterface,
-//   type KeyInterface,
-//   type adminSubmitActiveApiKey
-// } from '@/shared/interfaces'
-
-// import { sendRequest } from '@/shared/utils'
-// import { defineStore } from 'pinia'
-// import { computed } from 'vue'
-// import { useCurrentUserStore } from '.'
-
-// export interface ApiKeysStateInterface {
-//   apiKey: ApiKeyInterface | null
-//   refresh: {
-//     apiKey: boolean
-//   }
-// }
-
-// export const useApiKeysStore = defineStore('apiKeysStore', {
-
-//   state: (): ApiKeysStateInterface => ({
-//     apiKey: null,
-//     refresh: {
-//       apiKey: true
-//     }
-//   }),
-//   getters: {
-//     getKeys(): KeyInterface[] | null {
-//       if (this.apiKey) {
-//         return this.apiKey.apiKeys
-//       }
-//       return null
-//     },
-
-//     getUserApiKeys(): ApiKeyInterface | null {
-//       if (this.apiKey) return this.apiKey
-//       return null
-//     },
-
-//     getUserApiKeysCount(): number {
-//       if (this.apiKey) return this.apiKey.apiKeys.length
-//       return 0
-//     },
-
-//     getUserActiveApiKeysCount(): number {
-//       if (this.apiKey) return this.apiKey.apiKeys.filter((apiKey) => apiKey.active).length
-//       return 0
-//     },
-
-//     getUserPendingApiKeysCount(): number {
-//       if (this.apiKey) return this.apiKey.apiKeys.filter((apiKey) => !apiKey.active).length
-//       return 0
-//     },
-
-//     getRefresh(): { apiKey: boolean } {
-//       return this.refresh
-//     }
-//   },
-//   actions: {
-//     // ADMIN
-
-//     async fetchAdminGetApiKeys(idApi: string): Promise<void> {
-//       if (idApi) {
-//         const devUrl = `/playground-connect/v1/admin/apiKeys/${idApi}`
-//         const { data } = await sendRequest(devUrl, 'GET')
-//         if (data.value && data.value.status === 'success' && data.value.data) {
-//           this.apiKey = data.value.data
-//         }
-//       }
-//       return
-//     },
-
-//     async fetchAdminGetSelectedUserApiKeys(idUser: string): Promise<void> {
-//       if (idUser) {
-//         const devUrl = `/playground-connect/v1/admin/getUserApiKeys/${idUser}`
-//         const { data } = await sendRequest(devUrl, 'GET')
-//         if (data.value && data.value.status === 'success' && data.value.data) {
-//           this.apiKey = data.value.data
-//         }
-//       }
-//       return
-//     },
-
-//     async fetchAdminCreateApiKey(values: string, idUser: string): Promise<void> {
-//       if (idUser && values) {
-//         const devUrl = '/playground-connect/v1/admin/apiKeys'
-//         const { data } = await sendRequest(devUrl, 'POST', { apiName: values, user: idUser })
-//         if (data.value && data.value.status === 'success' && data.value.data) {
-//           this.apiKey = data.value.data
-//         }
-//       }
-//       return
-//     },
-
-//     async fetchAdminDeleteSelectedApiKey(idUser: string, idApi: string): Promise<void> {
-//       if (idUser && idApi) {
-//         const devUrl = `/playground-connect/v1/admin/users/${idUser}/apiKeys/deleteApiKey/${idApi}`
-//         const { data } = await sendRequest(devUrl, 'DELETE')
-
-//         if (data.value && data.value.status === 'success' && data.value.data) {
-//           this.apiKey = data.value.data
-//         }
-//       }
-//       return
-//     },
-//     async fetchAdminActiveApiKey(
-//       value: adminSubmitActiveApiKey,
-//       idUser: string,
-//       idApi: string
-//     ): Promise<void> {
-//       if (value && idUser && idApi) {
-//         const devUrl = `/playground-connect/v1/admin/users/${idUser}/apiKeys/activeApiKey/${idApi}`
-//         const { data } = await sendRequest(devUrl, 'PATCH', value)
-//         if (data.value && data.value.status === 'success' && data.value.data) {
-//           this.apiKey = data.value.data
-//         }
-//         if (this.apiKey && this.apiKey.apiKeys.length < 1) {
-//           this.resetApiKey()
-//         }
-//       }
-//       return
-//     },
-//     async fetchAdminDeleteAllApiKeysFromUser(idApi: string): Promise<void> {
-//       if (idApi) {
-//         const devUrl = `/playground-connect/v1/admin/apiKeys/${idApi}`
-
-//         const { data } = await sendRequest(devUrl, 'DELETE')
-//         if (data.value && data.value.status === 'success') {
-//           this.resetApiKey()
-//         }
-//       }
-//       return
-//     },
-
-//     // Other
-
-//     resetApiKey(): void {
-//       this.apiKey = null
-//     },
-
-//     updateRefresh(status: { apiKey?: boolean }): void {
-//       this.refresh.apiKey = status.apiKey ?? this.refresh.apiKey
-//     }
-//   }
-// })
-
-// export async function initSelectedUserApiKeys(idUser: string): Promise<void> {
-//   const currentUserStore = useCurrentUserStore()
-
-//   const apiKeysStore = computed(() => {
-//     if (currentUserStore.isAdmin) {
-//       return useApiKeysStore()
-//     }
-//     return null
-//   }).value
-//   //FIXME: si un utilisateur ne possède pas de clé d'api alors la requete de recherche de clé d'api ce lancera a chaque fois que lon clique sur le profil ce qui est pas bon
-//   if (apiKeysStore && !apiKeysStore.getUserApiKeys) {
-//     apiKeysStore.updateRefresh({ apiKey: true })
-//   }
-
-//   if (
-//     apiKeysStore &&
-//     apiKeysStore.getUserApiKeys &&
-//     apiKeysStore.getUserApiKeys.user._id !== idUser
-//   ) {
-//     apiKeysStore.resetApiKey()
-//     apiKeysStore.updateRefresh({ apiKey: true })
-//   }
-
-//   if (apiKeysStore && apiKeysStore.getRefresh.apiKey) {
-//     await apiKeysStore.fetchAdminGetSelectedUserApiKeys(idUser)
-//     apiKeysStore.updateRefresh({ apiKey: false })
-//   }
-// }
-
-// export type ApiKeysStore = ReturnType<typeof useApiKeysStore>

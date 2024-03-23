@@ -24,6 +24,7 @@ const props = defineProps<{
   showMore: boolean
 }>()
 const emits = defineEmits<{
+  (e: 'closeAllPopup'): void
   (e: 'updateNavigation', navigation: { type: NavigationType; value?: boolean }): void
   (e: 'updateReadNotification', idNotification: string): void
   (e: 'deleteSelectedNotification', idNotification: string): void
@@ -69,6 +70,7 @@ const emits = defineEmits<{
           @update-all-notications-user="emits('updateAllNoticationsUser')"
           @reset-modal="emits('resetModal')"
           @update-modal="emits('updateModal', $event)"
+          @close-all-popup="emits('closeAllPopup')"
         />
       </Transition>
     </div>
@@ -98,9 +100,10 @@ const emits = defineEmits<{
   position: fixed;
   right: 0;
   bottom: 0;
-  height: 100vh;
+  height: 100svh;
   width: 100%;
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   background-color: var(--color-black-3);
   display: grid;
   grid-template-areas:

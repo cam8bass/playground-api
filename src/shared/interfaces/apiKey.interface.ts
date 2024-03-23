@@ -8,7 +8,7 @@ export interface ApiKeyInterface  {
     email: string
   }
   apiKeys: [KeyInterface]
-  createAt: Date
+  createdAt: Date
   _id: string
 }
 
@@ -20,5 +20,5 @@ export interface KeyInterface {
   renewalToken: string
   renewalTokenExpire: Date
   _id: string
-  createAt: Date
+  createdAt: Date
 }

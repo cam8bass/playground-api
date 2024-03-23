@@ -8,11 +8,12 @@ import { initStore } from '@/shared/utils'
 export async function nextPage(): Promise<void> {
   const { usersStore } = initStore('usersStore')
 
-  if (!usersStore) return
   const page = usersStore.getCurrentPage
   const nextPage = page + 1
+
   usersStore.updateCurrentPage(nextPage)
   usersStore.updateRefresh({ users: true })
+  
   await usersStore.fetchAdminGetAllUsers()
 }
 
@@ -23,7 +24,6 @@ export async function nextPage(): Promise<void> {
 export function previousPage(): void {
   const { usersStore } = initStore('usersStore')
 
-  if (!usersStore) return
   const page = usersStore.getCurrentPage
   usersStore.updateCurrentPage(page - 1)
 }
@@ -41,6 +41,5 @@ export function updateQuery(query: {
 }): void {
   const { usersStore } = initStore('usersStore')
 
-  if (!usersStore) return
   usersStore.updateQuery({ [query.input]: query.value })
 }

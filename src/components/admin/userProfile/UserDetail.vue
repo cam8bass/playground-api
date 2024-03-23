@@ -36,7 +36,7 @@ const props = defineProps<{
         </li>
         <li class="detail__item">
           <span class="form__label detail__label"> Création du compte : </span>
-          <span class="detail__text">{{ formatDate(props.selectedUser.createAt!) }}</span>
+          <span class="detail__text">{{ formatDate(props.selectedUser.createdAt!) }}</span>
         </li>
         <li class="detail__item">
           <span class="form__label detail__label"> Désactivation du compte : </span>

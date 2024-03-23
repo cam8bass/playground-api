@@ -77,7 +77,7 @@ const updateShowFront = (id: string): void => {
 
       <div class="notificationList__time">
         <span class="notificationList__time-createAt">
-          {{ formatNotificationDate(notification.createAt) }}
+          {{ formatNotificationDate(notification.createdAt) }}
         </span>
 
         <span class="notificationList__time-readAt" v-if="notification.readAt"

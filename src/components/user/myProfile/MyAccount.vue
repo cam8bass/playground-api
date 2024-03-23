@@ -3,10 +3,10 @@ import ChangeName from '@/components/user/myProfile/ChangeName.vue'
 import ChangeEmail from '@/components/user/myProfile/ChangeEmail.vue'
 import ChangePassword from '@/components/user/myProfile/ChangePassword.vue'
 import AccountDeactivation from '@/components/user/myProfile/AccountDeactivation.vue'
-import type { errorDevInterface, errorProdInterface } from '@/shared/interfaces'
+import type { AppErrorInterface } from '@/shared/interfaces'
 
 defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 </script>
 <template>

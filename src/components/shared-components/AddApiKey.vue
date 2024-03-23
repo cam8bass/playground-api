@@ -1,17 +1,14 @@
 <script lang="ts" setup>
-import type {
-  errorDevInterface,
-  errorProdInterface,
-  requestCreateNewApiKeyInterface
-} from '@/shared/interfaces'
+import type {  AppErrorInterface, requestCreateNewApiKeyInterface } from '@/shared/interfaces'
 import { addApiKeySchema } from '@/shared/schema'
+import type { vueEnvType } from '@/shared/types/types'
 import { initStore } from '@/shared/utils'
 
 import { useForm, useField } from 'vee-validate'
 import { ref } from 'vue'
 
 const props = defineProps<{
-  errors: errorDevInterface | errorProdInterface | null
+  errors: AppErrorInterface | null
 }>()
 
 const formError = ref<string | null>(null)
@@ -29,8 +26,6 @@ const {
 const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, action) => {
   const stores = initStore('userStore', 'usersStore', 'apiKeysStore')
 
-  if (!stores.userStore || !stores.apiKeysStore) return
-
   if (value.apiName) {
     if (stores.userStore.getCurrentUser && stores.userStore.getCurrentUser.role === 'user') {
       await stores.apiKeysStore.fetchUserRequestCreateNewApiKey(value)
@@ -44,7 +39,7 @@ const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, act
       await stores.apiKeysStore.fetchAdminCreateApiKey(value.apiName, stores.usersStore.getUser._id)
     }
 
-    const errors = props.errors?.errors as Partial<requestCreateNewApiKeyInterface> | null
+    const errors = props.errors ? props.errors.fields : null
 
     formError.value = null
 
@@ -53,7 +48,7 @@ const onSubmit = handleSubmit(async (value: requestCreateNewApiKeyInterface, act
         action.setFieldError(key, value)
       })
 
-      if (errors.request) formError.value = errors.request
+      if (errors.form) formError.value = errors.form
     } else {
       resetForm()
     }

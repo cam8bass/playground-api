@@ -1,55 +1,49 @@
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import type { routeMetaInterface } from '../interfaces'
-import { notificationMessage } from '../messages'
-import { initStore } from '@/shared/utils'
+import { errorMesage } from '../messages'
+import { AppError, catchAsync, initStore } from '@/shared/utils'
 
-export const protect = (
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) => {
-  const meta = to.meta as routeMetaInterface
+export const protect = catchAsync(
+  async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+    const meta = to.meta as routeMetaInterface
 
-  if (meta.requiresAuth && meta.role) {
-    const { appStore, userStore } = initStore('appStore', 'userStore')
-    if (!appStore || !userStore) return
+    if (meta.requiresAuth && meta.role) {
+      const { userStore } = initStore('userStore')
 
-    let isLoggedIn = false
+      if (userStore.getCurrentUser) {
+        if (!userStore.getCurrentUser.active) {
+          next('/home')
+          throw new AppError({
+            message: errorMesage.ERROR_ACCOUNT_INACTIVE,
+            categories: 'security'
+          })
+        } else if (
+          userStore.getCurrentUser.accountLockedExpire &&
+          userStore.getCurrentUser.accountLocked
+        ) {
+          next('/home')
 
-    if (userStore.getCurrentUser) {
-      if (!userStore.getCurrentUser.active) {
-        appStore.updateNotificationApp({
-          type: 'fail',
-          message: notificationMessage.NOTIFICATION_ACCOUNT_INACTIVE
-        })
-        appStore.updateNavigation({ popup: true })
-      } else if (
-        userStore.getCurrentUser.accountLockedExpire &&
-        userStore.getCurrentUser.accountLocked
-      ) {
-        appStore.updateNotificationApp({
-          type: 'fail',
-          message: notificationMessage.NOTIFICATION_ACCOUNT_LOCKED
-        })
-        appStore.updateNavigation({ popup: true })
-      } else if (!meta.role.includes(userStore.getCurrentUser.role)) {
-        appStore.updateNotificationApp({
-          type: 'fail',
-          message: notificationMessage.NOTIFICATION_ACCESS_DENIED
-        })
-        appStore.updateNavigation({ popup: true })
+          throw new AppError({
+            message: errorMesage.ERROR_ACCOUNT_LOCKED,
+            categories: 'security'
+          })
+        } else if (!meta.role.includes(userStore.getCurrentUser.role)) {
+          next('/home')
+
+          throw new AppError({
+            message: errorMesage.ERROR_ACCESS_DENIED,
+            categories: 'security'
+          })
+        }
       } else {
-        isLoggedIn = true
+        next('/home')
+
+        throw new AppError({
+          message: errorMesage.ERROR_LOGIN_REQUIRED,
+          categories: 'security'
+        })
       }
     }
-
-    if (isLoggedIn) {
-      next()
-    } else {
-      appStore.updateNavigation({ login: true })
-      next('/home')
-    }
-  } else {
     next()
   }
-}
+)

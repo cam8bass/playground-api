@@ -4,40 +4,47 @@ import {
   type NavigationInterface,
   type modalInterface,
   type updateModalInterface,
-  type NotificationAppInterface,
-  type ShowInterface
+  type ShowInterface,
+  type NotificationDetailInterface
 } from '@/shared/interfaces'
+import { capitalizeFirstLetter } from '@/shared/utils'
 
 import { defineStore } from 'pinia'
 
 interface AppStateInterface {
   loading: boolean
-  notification: NotificationAppInterface | null
+  notification: NotificationDetailInterface[]
   modal: modalInterface | null
   navigation: NavigationInterface
-
   show: ShowInterface
+  refresh: {
+    notification: boolean
+  }
 }
 
 export const useAppStore = defineStore('appStore', {
   state: (): AppStateInterface => ({
     loading: false,
-    notification: null,
+    notification: [],
     navigation: { ...DEFAULT_NAVIGAION },
-
     show: { ...DEFAULT_SHOW },
-    modal: null
+    modal: null,
+    refresh: {
+      notification: true
+    }
   }),
   getters: {
+    getRefresh(): { notification: boolean } {
+      return this.refresh
+    },
+
     getNavigation(): NavigationInterface {
       return this.navigation
     },
 
-    getNotificationAppMessage(): NotificationAppInterface | null {
-      if (this.notification) {
-        return this.notification
-      }
-      return null
+    getNotificationAppMessage(): NotificationDetailInterface[] {
+      // TODO: Mettre en place le cas du tableau null dans les composants
+      return this.notification
     },
 
     getLoading(): boolean {
@@ -70,12 +77,25 @@ export const useAppStore = defineStore('appStore', {
       }
     },
 
-    updateNotificationApp(notification: NotificationAppInterface): void {
-      this.notification = notification
+    updateNotificationApp(notification: NotificationDetailInterface[]): void {
+      const updatedNotifications = notification.map((el) => ({
+        ...el,
+        message: capitalizeFirstLetter(el.message)
+      }))
+
+      this.notification = Array.from(new Set([...this.notification, ...updatedNotifications]))
+    },
+
+
+
+  
+
+    deleteSelectedNotificationApp(id: string): void {
+      this.notification = this.notification.filter((el) => el._id !== id)
     },
 
     resetNotificationApp() {
-      this.notification = null
+      this.notification = []
     },
 
     updateModal(modal: updateModalInterface): void {
@@ -99,6 +119,10 @@ export const useAppStore = defineStore('appStore', {
         overview: show.overview ?? this.show.overview,
         notificationMore: show.notificationMore ?? this.show.notificationMore
       }
+    },
+
+    updateRefresh(refresh: { notification?: boolean }): void {
+      this.refresh.notification = refresh.notification ?? this.refresh.notification
     }
   }
 })

@@ -90,14 +90,6 @@ const emits = defineEmits<{
         <li class="navigation__nav-item">
           <RouterLink to="" class="navigation__nav-link">Api-test-1</RouterLink>
         </li>
-
-        <li class="navigation__nav-item">
-          <RouterLink to="" class="navigation__nav-link">Api-test-2</RouterLink>
-        </li>
-
-        <li class="navigation__nav-item">
-          <RouterLink to="" class="navigation__nav-link">Api-test-3</RouterLink>
-        </li>
       </ul>
 
       <ul class="navigation__nav-list">
@@ -116,14 +108,6 @@ const emits = defineEmits<{
 
         <li class="navigation__nav-item">
           <RouterLink to="" class="navigation__nav-link">Doc Api-test-1</RouterLink>
-        </li>
-
-        <li class="navigation__nav-item">
-          <RouterLink to="" class="navigation__nav-link">Doc Api-test-2</RouterLink>
-        </li>
-
-        <li class="navigation__nav-item">
-          <RouterLink to="" class="navigation__nav-link">Doc Api-test-3</RouterLink>
         </li>
       </ul>
     </nav>
@@ -182,7 +166,7 @@ const emits = defineEmits<{
 .navigation {
   z-index: 1000;
   width: 100%;
-  height: 100vh;
+  height: 100svh;
   position: fixed;
   overflow-y: scroll;
   top: 0;
@@ -192,6 +176,7 @@ const emits = defineEmits<{
   row-gap: 2rem;
   align-items: center;
   background-color: var(--color-black-2);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
 
   @include m.xl {
